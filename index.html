@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PicScribe - English Writing Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- 知的でモダンなフォントの読み込み -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app-wrapper">
+        <!-- 🔽 モノトーン＆シックなヘッダー 🔽 -->
+        <header id="app-header">
+            <!-- 拡張子を logo.jpg に変更 -->
+            <img src="images/logo.webp" alt="PicScribe Logo" id="app-logo" onerror="this.src='https://via.placeholder.com/120x120?text=Logo'">
+            <div class="header-content">
+                <h1 class="app-title"><span class="title-pic">Pic</span><span class="title-scribe">Scribe</span></h1>
+                <div class="app-subtitle">ENGLISH WRITING PLATFORM</div>
+                <div class="app-desc">写真や画像を英語でタイピングして描写しよう！</div>
+                            </div>
+        </header>
+        
+        <div id="game-container">
+            <div class="two-column-layout">
+                <!-- 🔽 左カラム：画像とサポート機能 🔽 -->
+                <div id="left-column">
+                    <div id="support-controls">
+                        <label class="switch-label">
+                            <input type="checkbox" id="support-switch">
+                            Support Mode (Hint)
+                        </label>
+                        <select id="hint-level-select" class="hidden">
+                            <option value="primary">Gist (要点のみ)</option>
+                            <option value="all">All Details (詳細も含む)</option>
+                        </select>
+                    </div>
+
+                    <div id="image-area">
+                        <img id="target-image" src="" alt="Target Image">
+                        <div id="effect-container"></div>
+                        <div id="overlays-container"></div>
+                    </div>
+
+                    <!-- ヒントパネル -->
+                    <div id="hint-panel" class="hidden">
+                        <div class="hint-header">
+                            <h3 id="hint-title">Hint</h3>
+                            <button id="close-hint-btn">×</button>
+                        </div>
+                        <div id="hint-content"></div>
+                    </div>
+                </div>
+
+                <!-- 🔽 右カラム：スコア、信号機、入力エリア 🔽 -->
+                <div id="right-column">
+                    <!-- カバレッジ表示 -->
+                    <div id="live-status">
+                        <div class="status-header">Coverage Rate</div>
+                        <div class="coverage-wrapper">
+                            <div id="live-score">0<span class="pts">%</span></div>
+                            <div class="coverage-bar-container">
+                                <div id="coverage-bar"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 信号機インジケーター -->
+                    <div id="cognitive-indicators">
+                        <div class="indicator-title">Description Elements <span class="indicator-note">(3 hits to unlock!)</span></div>
+                        
+                        <div class="indicator-item" id="ind-gist">
+                            <div class="light red"></div>
+                            <div class="ind-text">
+                                <strong>1. Main Gist</strong>
+                                <span>(誰が何をしているか / 中心となる物)</span>
+                            </div>
+                            <div class="hit-counter" id="counter-gist">0/3</div>
+                        </div>
+
+                        <div class="indicator-item" id="ind-setting">
+                            <div class="light yellow"></div>
+                            <div class="ind-text">
+                                <strong>2. Setting & Context</strong>
+                                <span>(どこにいるか / 場所・背景・家具)</span>
+                            </div>
+                            <div class="hit-counter" id="counter-setting">0/3</div>
+                        </div>
+
+                        <div class="indicator-item" id="ind-details">
+                            <div class="light green"></div>
+                            <div class="ind-text">
+                                <strong>3. Atmosphere & Details</strong>
+                                <span>(どんな様子か / 装飾・自然・光・感情)</span>
+                            </div>
+                            <div class="hit-counter" id="counter-details">0/3</div>
+                        </div>
+                    </div>
+
+                    <!-- 入力エリア -->
+                    <div id="input-area">
+                        <textarea id="user-input" placeholder="Type your description here... 
+(e.g. A young woman is drinking coffee...)" autocomplete="off"></textarea>
+                        <button id="submit-btn">Finish & Check</button>
+                    </div>
+
+                    <!-- 結果表示エリア -->
+                    <div id="result-area" class="hidden">
+                        <h2 id="feedback-msg"></h2>
+                        <div class="model-answers">
+                            <h3>Model Answers:</h3>
+                            <ul id="model-answers-list"></ul>
+                        </div>
+                        <button id="retry-btn">Try Another</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="data/cafe_data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
