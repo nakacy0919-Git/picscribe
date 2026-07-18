@@ -18,7 +18,7 @@
                 <h1 class="app-title"><span class="title-pic">Pic</span><span class="title-scribe">Scribe</span></h1>
                 <div class="app-subtitle">ENGLISH WRITING PLATFORM</div>
                 <div class="app-desc">写真や画像を英語でタイピングして描写しよう！</div>
-                            </div>
+            </div>
         </header>
         
         <div id="game-container">
@@ -54,6 +54,15 @@
 
                 <!-- 🔽 右カラム：スコア、信号機、入力エリア 🔽 -->
                 <div id="right-column">
+                    
+                    <!-- ★追加箇所 1：スマート辞書検索ウィジェット -->
+                    <div id="dictionary-widget">
+                        <div class="search-icon">🔍</div>
+                        <input type="text" id="dict-search-input" placeholder="Search dictionary (En/Ja)..." autocomplete="off">
+                        <ul id="dict-suggestions" class="hidden"></ul>
+                    </div>
+                    <!-- /★追加箇所 1 ここまで -->
+
                     <!-- カバレッジ表示 -->
                     <div id="live-status">
                         <div class="status-header">Coverage Rate</div>
@@ -99,7 +108,14 @@
 
                     <!-- 入力エリア -->
                     <div id="input-area">
-                        <textarea id="user-input" placeholder="Type your description here... 
+                        <!-- 動的に変わるミッションガイド -->
+                        <div id="mission-guide" class="mission-gist">
+                            <span id="mission-icon">🔴</span>
+                            <span id="mission-text">Next Target: 誰が、何をしているか書いてみよう (Gist)</span>
+                        </div>
+                        
+                        <!-- スペルチェック機能をONにしたテキストエリア -->
+                        <textarea id="user-input" spellcheck="true" lang="en" placeholder="Type your description here... 
 (e.g. A young woman is drinking coffee...)" autocomplete="off"></textarea>
                         <button id="submit-btn">Finish & Check</button>
                     </div>
@@ -116,6 +132,33 @@
                 </div>
             </div>
         </div>
+        
+        <!-- ★追加箇所 2：辞書詳細ポップアップ（白の半透明モーダル） -->
+        <div id="dict-modal" class="hidden">
+            <div class="dict-modal-content">
+                <button id="close-dict-btn">×</button>
+                <div class="dict-header">
+                    <h2 id="dict-word-title">Word</h2>
+                    <span id="dict-word-meaning">意味</span>
+                </div>
+                <div class="dict-body">
+                    <div class="dict-section">
+                        <h4>💡 Explanation (解説)</h4>
+                        <p id="dict-explanation">解説テキストがここに入ります。</p>
+                    </div>
+                    <div class="dict-section">
+                        <h4>🔄 Thesaurus (類義語・ニュアンス)</h4>
+                        <ul id="dict-synonyms"></ul>
+                    </div>
+                    <div class="dict-section">
+                        <h4>📊 Corpus Data (コーパス・使用頻度)</h4>
+                        <p id="dict-corpus">★★★★☆ (日常会話でよく使われる)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /★追加箇所 2 ここまで -->
+
     </div>
 
     <script src="data/cafe_data.js"></script>

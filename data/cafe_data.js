@@ -6,6 +6,14 @@ const cafeData = {
   "overall_description_en": "A young woman is sitting by a large window in a cozy cafe, quietly enjoying a cup of coffee. A notebook, a pen, a vase of white flowers, a saucer, and a spoon are placed on the wooden table, while a menu board, an espresso machine, shelves, plants, and pendant lights can be seen in the background.",
   "overall_mood": ["cozy", "warm", "peaceful", "relaxed", "serene", "quiet", "calm", "comfortable", "inviting", "sunny", "softly lit", "natural", "gentle", "homey", "pleasant", "tranquil", "thoughtful", "restful"],
 
+　// ★追加：画像専用のミッションガイド
+  "mission_guides": {
+    "gist": "窓辺に座っている女性（woman）や、飲んでいるもの（coffee）を書いてみよう",
+    "setting": "彼女がいる場所（cafe）や、手前のテーブル（table）、窓（window）に注目しよう",
+    "details": "光の様子（sunlight）や、全体の雰囲気（peaceful, cozy）を付け足そう",
+    "complete": "素晴らしい！さらに花瓶（vase）やメニュー（menu）など細部を描写しよう！"
+  },
+
   "suggested_topics": [
     "a quiet moment at a cafe",
     "enjoying coffee alone",

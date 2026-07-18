@@ -182,28 +182,173 @@ button:hover { background-color: #333333; box-shadow: 0 4px 10px rgba(0,0,0,0.15
     #app-header { flex-direction: column; text-align: center; gap: 15px; }
     .header-content { align-items: center; }
 }
-
 /* =========================================
-   ここから下を追加：SOS Highlight Styles
+   ミッションガイド ＆ 視覚誘導アニメーション
 ========================================= */
 
-/* 未発見エリアのSOS点滅アニメーション */
-.sos-blink {
-    border-color: rgba(255, 165, 2, 0.8) !important;
-    background-color: rgba(255, 165, 2, 0.1) !important;
-    animation: sosPulse 2s infinite;
+#mission-guide {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    transition: all 0.4s ease;
 }
 
-@keyframes sosPulse {
-    0% { box-shadow: 0 0 0 0 rgba(255, 165, 2, 0.5); }
-    70% { box-shadow: 0 0 0 10px rgba(255, 165, 2, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(255, 165, 2, 0); }
+/* ターゲットごとのカラーテーマ */
+.mission-gist { border-left: 5px solid #ff4757 !important; color: #ff4757; }
+.mission-setting { border-left: 5px solid #ffa502 !important; color: #ffa502; }
+.mission-details { border-left: 5px solid #2ed573 !important; color: #2ed573; }
+.mission-complete { border-left: 5px solid #111 !important; color: #111; }
+
+/* 次に狙うべき信号機をふわっと強調するアニメーション */
+.indicator-item.next-target {
+    opacity: 0.9;
+    animation: pulseTarget 2s infinite ease-in-out;
+}
+.indicator-item.next-target .ind-text strong {
+    color: #0984e3; /* 次の目標の文字を青くして視線を誘導 */
 }
 
-/* 発見済み（Hit）エリアのスタイル */
-.overlay-hit {
-    border-color: #2ed573 !important;
-    background-color: rgba(46, 213, 115, 0.1) !important;
-    animation: none !important;
-    opacity: 0.5;
+@keyframes pulseTarget {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03) translateX(5px); }
+    100% { transform: scale(1); }
+}
+
+/* =========================================
+   辞書機能 ＆ 白半透明モーダル
+========================================= */
+
+/* 検索ウィジェット */
+#dictionary-widget {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 5px 15px;
+    margin-bottom: 20px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.search-icon { font-size: 16px; margin-right: 10px; opacity: 0.6; }
+
+#dict-search-input {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    padding: 10px 0;
+    font-size: 14px;
+    font-family: inherit;
+    color: #111;
+}
+
+#dict-suggestions {
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    background: #fff;
+    border: 1px solid #111;
+    border-radius: 6px;
+    margin-top: 5px;
+    padding: 0;
+    list-style: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    z-index: 100;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+#dict-suggestions li {
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+}
+#dict-suggestions li:hover { background: #f4f4f4; }
+#dict-suggestions li:last-child { border-bottom: none; }
+.sugg-en { font-weight: bold; color: #111; }
+.sugg-ja { color: #888; font-size: 12px; }
+
+/* 辞書モーダル（白半透明） */
+#dict-modal {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(255, 255, 255, 0.90); /* 白の半透明 */
+    backdrop-filter: blur(4px); /* 背景を少しぼかす */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.2s;
+}
+
+#dict-modal.hidden {
+    display: none !important;
+    opacity: 0;
+}
+
+.dict-modal-content {
+    background: #fff;
+    border: 2px solid #111;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    padding: 30px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    position: relative;
+}
+
+#close-dict-btn {
+    position: absolute;
+    top: 15px; right: 20px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #999;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    box-shadow: none;
+}
+#close-dict-btn:hover { color: #111; background: none; transform: none;}
+
+.dict-header { border-bottom: 2px solid #111; padding-bottom: 15px; margin-bottom: 20px; }
+#dict-word-title { font-family: 'Playfair Display', serif; font-size: 32px; margin: 0 0 5px 0; color: #111; }
+#dict-word-meaning { font-size: 16px; color: #555; font-weight: bold; }
+
+.dict-section { margin-bottom: 20px; }
+.dict-section h4 { margin: 0 0 8px 0; font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+#dict-explanation { margin: 0; font-size: 15px; color: #333; line-height: 1.6; }
+#dict-corpus { margin: 0; font-size: 14px; font-weight: bold; color: #0984e3; background: #f0f8ff; padding: 8px 12px; border-radius: 6px; display: inline-block;}
+
+#dict-synonyms { list-style: none; padding: 0; margin: 0; }
+#dict-synonyms li { margin-bottom: 8px; font-size: 14px; line-height: 1.5; color: #444; }
+/* 🔽 修正後：以下で上書きしてください */
+#dict-synonyms li { 
+    margin-bottom: 12px; 
+    font-size: 14px; 
+    line-height: 1.5; 
+    color: #555; 
+    display: flex;
+    flex-direction: column; /* 縦並びにしてスッキリさせる */
+    background: #fcfcfc;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-left: 3px solid #0984e3;
+}
+#dict-synonyms strong { 
+    color: #0984e3; 
+    font-size: 15px;
+    margin-bottom: 2px;
 }
