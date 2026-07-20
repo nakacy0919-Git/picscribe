@@ -5,14 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PicScribe - English Writing Platform</title>
     <link rel="stylesheet" href="style.css">
-    <!-- 知的でモダンなフォントの読み込み -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="app-wrapper">
-        <!-- 🔽 モノトーン＆シックなヘッダー 🔽 -->
         <header id="app-header">
-            <!-- 拡張子を logo.jpg に変更 -->
             <img src="images/logo.webp" alt="PicScribe Logo" id="app-logo" onerror="this.src='https://via.placeholder.com/120x120?text=Logo'">
             <div class="header-content">
                 <h1 class="app-title"><span class="title-pic">Pic</span><span class="title-scribe">Scribe</span></h1>
@@ -21,14 +18,85 @@
             </div>
         </header>
         
-        <div id="game-container">
+        <!-- ★修正：game-containerを確実に縦並びに固定 -->
+        <div id="game-container" style="display: flex; flex-direction: column;">
+            
+            <!-- ==============================================
+                 上部ブロック：トップダッシュボード（進行状況＋アシスト）
+                 ============================================== -->
+            <div id="top-dashboard" class="dashboard-layout">
+                
+                <!-- 洗練された半円グラフ (Coverage Rate) -->
+                <div id="live-status" class="dashboard-panel score-panel">
+                    <div class="status-header">COVERAGE RATE</div>
+                    <div class="gauge-container">
+                        <svg viewBox="0 0 100 50" class="half-donut">
+                            <path d="M 10 50 A 40 40 0 0 1 90 50" class="gauge-bg"/>
+                            <path d="M 10 50 A 40 40 0 0 1 90 50" class="gauge-fill" id="gauge-fill-path"/>
+                        </svg>
+                        <div id="live-score" class="gauge-text">0<span class="pts">%</span></div>
+                    </div>
+                </div>
+
+                <!-- ステップアップ型アシストパネル（プロフェッショナル版） -->
+                <div id="step-assistant-panel" class="dashboard-panel assistant-panel">
+                    <div class="assistant-header">
+                        <h2 id="current-step-title" class="modern-step-title">Step 1: Main Gist</h2>
+                        <div class="assistant-actions">
+                            <span id="step-progress-badge" class="modern-badge">1 / 3 挑戦中</span>
+                            <button id="skip-step-btn" class="skip-btn hidden">答えを見てスキップ ⏭</button>
+                        </div>
+                    </div>
+                    
+                    <!-- SVO スロットエリア -->
+                    <div id="svo-slots-container" class="modern-stepper">
+                        <div class="stepper-item" id="slot-subject">
+                            <div class="stepper-icon" id="icon-subject">1</div>
+                            <div class="stepper-text">
+                                <span class="stepper-title">Subject</span>
+                                <span class="stepper-subtitle">主語</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stepper-divider"></div>
+                        
+                        <div class="stepper-item" id="slot-verb">
+                            <div class="stepper-icon" id="icon-verb">2</div>
+                            <div class="stepper-text">
+                                <span class="stepper-title">Action</span>
+                                <span class="stepper-subtitle">動作</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stepper-divider"></div>
+                        
+                        <div class="stepper-item" id="slot-object">
+                            <div class="stepper-icon" id="icon-object">3</div>
+                            <div class="stepper-text">
+                                <span class="stepper-title">Object</span>
+                                <span class="stepper-subtitle">目的語</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ヒントメッセージ -->
+                    <div class="modern-message" id="assistant-message">
+                        まずは描写の中に主語を入れてみましょう。
+                    </div>
+                </div>
+            </div> <!-- 上部ブロック ここまで -->
+
+
+            <!-- ==============================================
+                 下部ブロック：メインプレイエリア（画像 ＋ 入力欄）
+                 ============================================== -->
             <div class="two-column-layout">
-                <!-- 🔽 左カラム：画像とサポート機能 🔽 -->
+                
+                <!-- 左カラム：画像とサポート機能 -->
                 <div id="left-column">
                     <div id="support-controls">
                         <label class="switch-label">
-                            <input type="checkbox" id="support-switch">
-                            Support Mode (Hint)
+                            <input type="checkbox" id="support-switch"> Support Mode (Hint)
                         </label>
                         <select id="hint-level-select" class="hidden">
                             <option value="primary">Gist (要点のみ)</option>
@@ -42,7 +110,6 @@
                         <div id="overlays-container"></div>
                     </div>
 
-                    <!-- ヒントパネル -->
                     <div id="hint-panel" class="hidden">
                         <div class="hint-header">
                             <h3 id="hint-title">Hint</h3>
@@ -52,71 +119,23 @@
                     </div>
                 </div>
 
-                <!-- 🔽 右カラム：スコア、信号機、入力エリア 🔽 -->
+                <!-- 右カラム：入力エリア -->
                 <div id="right-column">
-                    
-                    <!-- ★追加箇所 1：スマート辞書検索ウィジェット -->
+                    <!-- 辞書検索ウィジェット -->
                     <div id="dictionary-widget">
                         <div class="search-icon">🔍</div>
                         <input type="text" id="dict-search-input" placeholder="Search dictionary (En/Ja)..." autocomplete="off">
                         <ul id="dict-suggestions" class="hidden"></ul>
                     </div>
-                    <!-- /★追加箇所 1 ここまで -->
 
-                    <!-- カバレッジ表示 -->
-                    <div id="live-status">
-                        <div class="status-header">Coverage Rate</div>
-                        <div class="coverage-wrapper">
-                            <div id="live-score">0<span class="pts">%</span></div>
-                            <div class="coverage-bar-container">
-                                <div id="coverage-bar"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 信号機インジケーター -->
-                    <div id="cognitive-indicators">
-                        <div class="indicator-title">Description Elements <span class="indicator-note">(3 hits to unlock!)</span></div>
-                        
-                        <div class="indicator-item" id="ind-gist">
-                            <div class="light red"></div>
-                            <div class="ind-text">
-                                <strong>1. Main Gist</strong>
-                                <span>(誰が何をしているか / 中心となる物)</span>
-                            </div>
-                            <div class="hit-counter" id="counter-gist">0/3</div>
-                        </div>
-
-                        <div class="indicator-item" id="ind-setting">
-                            <div class="light yellow"></div>
-                            <div class="ind-text">
-                                <strong>2. Setting & Context</strong>
-                                <span>(どこにいるか / 場所・背景・家具)</span>
-                            </div>
-                            <div class="hit-counter" id="counter-setting">0/3</div>
-                        </div>
-
-                        <div class="indicator-item" id="ind-details">
-                            <div class="light green"></div>
-                            <div class="ind-text">
-                                <strong>3. Atmosphere & Details</strong>
-                                <span>(どんな様子か / 装飾・自然・光・感情)</span>
-                            </div>
-                            <div class="hit-counter" id="counter-details">0/3</div>
-                        </div>
-                    </div>
-
-                    <!-- 入力エリア -->
+                    <!-- 入力エリア本体 -->
                     <div id="input-area">
-                        <!-- 動的に変わるミッションガイド -->
-                        <div id="mission-guide" class="mission-gist">
-                            <span id="mission-icon">🔴</span>
-                            <span id="mission-text">Next Target: 誰が、何をしているか書いてみよう (Gist)</span>
-                        </div>
+                        <div id="user-input" 
+                             contenteditable="true" 
+                             spellcheck="true" 
+                             lang="en" 
+                             placeholder="Type your description here... (e.g. A young woman is drinking coffee...)"></div>
                         
-                        <!-- スペルチェック機能をONにしたテキストエリア -->
-                        <textarea id="user-input" spellcheck="true" lang="en" placeholder="Type your description here... 
-(e.g. A young woman is drinking coffee...)" autocomplete="off"></textarea>
                         <button id="submit-btn">Finish & Check</button>
                     </div>
 
@@ -130,10 +149,11 @@
                         <button id="retry-btn">Try Another</button>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div> <!-- 下部ブロック ここまで -->
+
+        </div> <!-- game-container ここまで -->
         
-        <!-- ★追加箇所 2：辞書詳細ポップアップ（白の半透明モーダル） -->
+        <!-- 辞書詳細ポップアップ -->
         <div id="dict-modal" class="hidden">
             <div class="dict-modal-content">
                 <button id="close-dict-btn">×</button>
@@ -144,20 +164,15 @@
                 <div class="dict-body">
                     <div class="dict-section">
                         <h4>💡 Explanation (解説)</h4>
-                        <p id="dict-explanation">解説テキストがここに入ります。</p>
+                        <p id="dict-explanation"></p>
                     </div>
                     <div class="dict-section">
-                        <h4>🔄 Thesaurus (類義語・ニュアンス)</h4>
-                        <ul id="dict-synonyms"></ul>
-                    </div>
-                    <div class="dict-section">
-                        <h4>📊 Corpus Data (コーパス・使用頻度)</h4>
-                        <p id="dict-corpus">★★★★☆ (日常会話でよく使われる)</p>
+                        <h4>📊 Corpus Data (使用頻度)</h4>
+                        <p id="dict-corpus"></p>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- /★追加箇所 2 ここまで -->
 
     </div>
 
