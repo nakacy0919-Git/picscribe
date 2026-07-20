@@ -92,18 +92,16 @@ body {
 #right-column { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 
 /* =========================================
-   4. トップダッシュボード (司令塔・指示パネル)
+   4. トップダッシュボード (司令塔パネル)
 ========================================= */
 .dashboard-layout {
     display: flex;
     gap: 20px;
     margin-bottom: 30px; 
     padding-bottom: 30px; 
-    /* ダッシュボード（指示）とプレイエリア（作業）を明確に区切る線 */
     border-bottom: 2px dashed #d5d5d5; 
 }
 
-/* 意味のない影をなくし、全体と統一感のあるソリッドな黒枠を採用 */
 .dashboard-panel {
     background: #fff;
     padding: 25px 30px;
@@ -120,7 +118,6 @@ body {
 }
 .assistant-panel { 
     flex: 1.65; 
-    /* 余計な青いborder-topは削除しました */
 }
 
 /* 半円グラフ (Coverage Rate) */
@@ -144,7 +141,7 @@ body {
 .gauge-bg { fill: none; stroke: #f0f0f0; stroke-width: 10; stroke-linecap: round; }
 .gauge-fill {
     fill: none;
-    stroke: #1a1a1a; /* グラフもシックな黒に統一 */
+    stroke: #1a1a1a; 
     stroke-width: 10;
     stroke-linecap: round;
     stroke-dasharray: 125.6; 
@@ -163,7 +160,7 @@ body {
 }
 .gauge-text .pts { font-size: 16px; color: #888; margin-left: 2px; }
 
-/* モダンステッパー (SVO) - アカデミックで毅然としたデザイン */
+/* モダンステッパー (SVO) */
 .assistant-header {
     display: flex;
     justify-content: space-between;
@@ -175,7 +172,7 @@ body {
     font-weight: 800; 
     color: #1a1a1a; 
     margin: 0; 
-    font-family: 'Playfair Display', serif; /* タイトルと同じフォントで権威づけ */
+    font-family: 'Playfair Display', serif; 
 }
 .assistant-actions { display: flex; align-items: center; gap: 12px; }
 .modern-badge { 
@@ -209,8 +206,6 @@ body {
     margin: 25px 0;
     padding: 0;
 }
-
-/* デフォルト（未達）は要素を薄くして視線を奪わない */
 .stepper-item { display: flex; align-items: center; gap: 12px; opacity: 0.3; filter: grayscale(100%); transition: all 0.3s ease; }
 .stepper-divider { flex: 1; height: 1px; background-color: #1a1a1a; margin: 0 15px; opacity: 0.2; }
 .stepper-icon {
@@ -231,19 +226,12 @@ body {
 .stepper-title { font-size: 14px; font-weight: 700; color: #1a1a1a; }
 .stepper-subtitle { font-size: 11px; color: #666; font-weight: bold; }
 
-/* 現在のステップ（入力待ち）を黒と影で強調 */
 .stepper-item.active-slot { opacity: 1; filter: none; }
-.stepper-item.active-slot .stepper-icon { 
-    background: #1a1a1a; 
-    color: #fff; 
-    box-shadow: 4px 4px 0px rgba(0,0,0,0.1); 
-}
-/* 完了ステップは緑で達成感を持たせる */
+.stepper-item.active-slot .stepper-icon { background: #1a1a1a; color: #fff; box-shadow: 4px 4px 0px rgba(0,0,0,0.1); }
 .stepper-item.completed-slot { opacity: 1; filter: none; }
 .stepper-item.completed-slot .stepper-icon { background: #fff; border-color: #27ae60; color: #27ae60; }
 .stepper-item.completed-slot .stepper-title { color: #27ae60; }
 
-/* 指示メッセージ（絵文字や青線をやめ、明確な「指示書」風に変更） */
 .modern-message {
     background: #f7f7f7;
     padding: 16px 20px;
@@ -254,7 +242,6 @@ body {
     display: block;
     border: 1px solid #e0e0e0;
 }
-/* 💡マークの代わりに、明確なテキストラベルを付与 */
 .modern-message::before {
     content: "NEXT ACTION";
     display: block;
@@ -265,12 +252,13 @@ body {
     margin-bottom: 6px;
 }
 .modern-message strong { 
-    color: #d35400; 
+    color: #3b82f6; /* オレンジを廃止し、モダンブルーに変更 */
     font-weight: 700; 
-    background: rgba(211, 84, 0, 0.08); 
+    background: rgba(59, 130, 246, 0.1); 
     padding: 2px 6px; 
     border-radius: 4px; 
 }
+
 
 /* =========================================
    5. 左カラム (画像 & ヒント)
@@ -296,6 +284,7 @@ body {
 .hint-item { font-size: 14px; margin: 5px 0; padding-left: 10px; border-left: 2px solid #ccc; color: #444; }
 .hint-type { color: #111; font-weight: bold; margin-right: 5px; }
 
+
 /* =========================================
    6. 右カラム (入力エリア & ボタン)
 ========================================= */
@@ -314,7 +303,6 @@ body {
 #user-input.hit-flash { border-color: #10b981; background: #f0fdf4; }
 #user-input:empty:before { content: attr(placeholder); color: #94a3b8; pointer-events: none; display: block; }
 
-/* UIボタン統一 */
 button#submit-btn, button#retry-btn { 
     background-color: #111111; color: white; border: none; padding: 15px 25px; 
     font-size: 15px; border-radius: 6px; cursor: pointer; font-weight: bold; 
@@ -322,95 +310,75 @@ button#submit-btn, button#retry-btn {
 }
 button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
 
-/* ゲーミフィケーション装飾 */
+
+/* =========================================
+   7. ゲーミフィケーション装飾（白エフェクト）
+========================================= */
+/* 入力した文字もモダンブルーに変更（オレンジ/ゴールドを排除） */
 .matched-word {
     font-weight: 700;
-    color: #ea580c; 
-    background: rgba(234, 88, 12, 0.1);
+    color: #3b82f6; 
+    background: rgba(59, 130, 246, 0.1);
     border-radius: 3px;
     padding: 0 4px;
     transition: all 0.3s ease;
 }
 
-/* =========================================
-   ゲーミフィケーション装飾（正解時の白い光）
-   ※JSとの連携のためクラス名は gold-overlay のままにしています
-========================================= */
+/* 正解した時にフワッと光るエフェクト（クリアな白） */
 .gold-overlay {
     position: absolute;
-    /* ゴールドからクリアな白に変更 */
     background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 70%);
     border-radius: 50%;
     pointer-events: none;
-    mix-blend-mode: normal; /* 背景に溶け込ませず、白を際立たせるためにnormalに変更 */
+    mix-blend-mode: normal;
     animation: whitePulse 2s infinite alternate;
     z-index: 10;
 }
-
 @keyframes whitePulse {
     0% { transform: scale(0.9); opacity: 0.6; }
     100% { transform: scale(1.1); opacity: 1; }
 }
 
-
-/* =========================================
-   ナビゲーション用 ターゲット蛍光ハイライト（薄い白の点滅）
-========================================= */
+/* 指示連動の蛍光ガイド（うっすらとした白の点滅） */
 .hint-glow-overlay {
     position: absolute;
-    /* 背景色に溶け込まない薄い白の透過色 */
-    background-color: rgba(255, 255, 255, 0.15); 
+    background-color: rgba(255, 255, 255, 0.2); 
     border: 2px dashed rgba(255, 255, 255, 0.9);
     border-radius: 8px;
     pointer-events: none; 
     animation: targetBreathing 1.5s infinite alternate ease-in-out;
     z-index: 5;
 }
-
-/* ホタルのようにうっすらと白く呼吸するアニメーション */
 @keyframes targetBreathing {
-    0% { 
-        opacity: 0.3; 
-        box-shadow: 0 0 0px rgba(255, 255, 255, 0); 
-    }
-    100% { 
-        opacity: 1; 
-        box-shadow: 0 0 15px rgba(255, 255, 255, 0.8); 
-    }
+    0% { opacity: 0.3; box-shadow: 0 0 0px rgba(255, 255, 255, 0); }
+    100% { opacity: 1; box-shadow: 0 0 15px rgba(255, 255, 255, 0.8); }
 }
+
+.floating-text { 
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+    font-size: 36px; font-weight: bold; color: #111; text-shadow: 0px 4px 15px rgba(255,255,255,0.8); 
+    pointer-events: none; animation: floatUp 1s ease-out forwards; z-index: 100; font-family: 'Playfair Display', serif;
+}
+@keyframes floatUp { 
+    0% { opacity: 1; transform: translate(-50%, -10%); scale: 0.5; } 
+    50% { opacity: 1; scale: 1.2; } 
+    100% { opacity: 0; transform: translate(-50%, -100%); } 
+}
+
 
 /* =========================================
-   7. 辞書機能 (ウィジェット & モーダル)
+   8. 辞書機能 (ウィジェット & モーダル)
 ========================================= */
 #dictionary-widget {
-    position: relative;
-    display: flex;
-    align-items: center;
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 5px 15px;
-    margin-bottom: 20px;
+    position: relative; display: flex; align-items: center; background: #fff;
+    border: 1px solid #e0e0e0; border-radius: 8px; padding: 5px 15px; margin-bottom: 20px;
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
 }
-
 .search-icon { font-size: 16px; margin-right: 10px; opacity: 0.6; }
-
 #dict-search-input { flex-grow: 1; border: none; outline: none; padding: 10px 0; font-size: 14px; font-family: inherit; color: #111; }
-
 #dict-suggestions {
-    position: absolute;
-    top: 100%; left: 0; right: 0;
-    background: #fff;
-    border: 1px solid #111;
-    border-radius: 6px;
-    margin-top: 5px;
-    padding: 0;
-    list-style: none;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    z-index: 100;
-    max-height: 200px;
-    overflow-y: auto;
+    position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #111;
+    border-radius: 6px; margin-top: 5px; padding: 0; list-style: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 100; max-height: 200px; overflow-y: auto;
 }
 #dict-suggestions li { padding: 10px 15px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 14px; display: flex; justify-content: space-between; }
 #dict-suggestions li:hover { background: #f4f4f4; }
@@ -425,29 +393,22 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
     z-index: 9999; opacity: 1; transition: opacity 0.2s;
 }
 #dict-modal.hidden { display: none !important; opacity: 0; }
-
 .dict-modal-content {
     background: #fff; border: 2px solid #111; border-radius: 12px;
-    width: 90%; max-width: 500px; padding: 30px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.15); position: relative;
+    width: 90%; max-width: 500px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); position: relative;
 }
-
 #close-dict-btn {
-    position: absolute; top: 15px; right: 20px;
-    background: none; border: none; font-size: 28px; color: #999;
+    position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 28px; color: #999;
     cursor: pointer; padding: 0; line-height: 1; box-shadow: none;
 }
 #close-dict-btn:hover { color: #111; background: none; transform: none;}
-
 .dict-header { border-bottom: 2px solid #111; padding-bottom: 15px; margin-bottom: 20px; }
 #dict-word-title { font-family: 'Playfair Display', serif; font-size: 32px; margin: 0 0 5px 0; color: #111; }
 #dict-word-meaning { font-size: 16px; color: #555; font-weight: bold; }
-
 .dict-section { margin-bottom: 20px; }
 .dict-section h4 { margin: 0 0 8px 0; font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
 #dict-explanation { margin: 0; font-size: 15px; color: #333; line-height: 1.6; }
 #dict-corpus { margin: 0; font-size: 14px; font-weight: bold; color: #0984e3; background: #f0f8ff; padding: 8px 12px; border-radius: 6px; display: inline-block;}
-
 #dict-synonyms { list-style: none; padding: 0; margin: 0; }
 #dict-synonyms li { 
     margin-bottom: 12px; font-size: 14px; line-height: 1.5; color: #555; 
@@ -457,7 +418,7 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
 #dict-synonyms strong { color: #0984e3; font-size: 15px; margin-bottom: 2px; }
 
 /* =========================================
-   8. 汎用クラス & メディアクエリ
+   9. 汎用クラス & メディアクエリ
 ========================================= */
 .hidden { display: none !important; }
 .model-answers { text-align: left; background: #f9f9f9; padding: 15px; border-radius: 4px; margin: 20px 0; line-height: 1.6; border: 1px solid #ddd; border-left: 4px solid #111;}
@@ -469,30 +430,4 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
     .dashboard-layout { flex-direction: column; gap: 10px; }
     .modern-stepper { flex-direction: column; align-items: flex-start; gap: 15px; }
     .stepper-divider { width: 2px; height: 15px; margin: 0 0 0 15px; }
-}
-
-/* =========================================
-   ナビゲーション用 ターゲット蛍光ハイライト
-========================================= */
-.hint-glow-overlay {
-    position: absolute;
-    /* テキストの強調色と同じオレンジを極端に薄く透過 */
-    background-color: rgba(234, 88, 12, 0.15); 
-    border: 2px dashed rgba(234, 88, 12, 0.6);
-    border-radius: 8px;
-    pointer-events: none; /* 生徒のクリック操作を邪魔しない */
-    animation: targetBreathing 1.5s infinite alternate ease-in-out;
-    z-index: 5;
-}
-
-/* ホタルのようにうっすらと呼吸するアニメーション */
-@keyframes targetBreathing {
-    0% { 
-        opacity: 0.3; 
-        box-shadow: 0 0 0px rgba(234, 88, 12, 0); 
-    }
-    100% { 
-        opacity: 1; 
-        box-shadow: 0 0 15px rgba(234, 88, 12, 0.4); 
-    }
 }
