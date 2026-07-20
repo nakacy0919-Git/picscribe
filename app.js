@@ -378,7 +378,7 @@ submitBtn.addEventListener('click', () => {
 document.getElementById('retry-btn').addEventListener('click', initGame);
 window.addEventListener('DOMContentLoaded', initGame);
 // ==========================================
-// 5. スマート辞書＆サジェスト機能（リッチUI・アルゴリズム搭載版）
+// 5. スマート辞書＆サジェスト機能（Vercel API通信・爆速版）
 // ==========================================
 
 const dictInput = document.getElementById('dict-search-input');
@@ -386,141 +386,11 @@ const dictSuggestions = document.getElementById('dict-suggestions');
 const dictModal = document.getElementById('dict-modal');
 const closeDictBtn = document.getElementById('close-dict-btn');
 
-let hugeDictionaryData = null;
-let searchIndex = [];
-
-// 【工夫②】JMdictを読み込み、スタイリッシュなデータに整形する
-async function loadDictionaryData() {
-    try {
-        const response = await fetch('data/jmdict.json');
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
-        const rawDictData = await response.json();
-        hugeDictionaryData = {};
-        searchIndex = []; 
-
-        rawDictData.words.forEach((item, index) => {
-            const japaneseWord = (item.kanji && item.kanji.length > 0) ? item.kanji[0].text : item.kana[0].text;
-            
-            let englishWords = [];
-            item.sense.forEach(s => {
-                s.gloss.forEach(g => { englishWords.push(g.text.toLowerCase()); });
-            });
-
-            if (englishWords.length > 0) {
-                const primaryEnglishWord = englishWords[0];
-                const uniqueId = `word_${index}`;
-
-                hugeDictionaryData[uniqueId] = {
-                    word: primaryEnglishWord,
-                    meaning: japaneseWord,
-                    // ★修正: 不要な発音ガイドを削除し、シンプルに
-                    explanation: `【意味】 ${japaneseWord}\n(※オープンソース辞書データより抽出)`, 
-                    synonyms: [], 
-                    corpus: "auto"
-                };
-
-                englishWords.forEach(eng => { searchIndex.push({ queryKey: eng, ref: uniqueId }); });
-                searchIndex.push({ queryKey: japaneseWord, ref: uniqueId });
-            }
-        });
-
-        // カスタム単語の登録（ここはそのまま）
-        const customOverrides = {
-            "custom_woman": {
-                word: "woman", meaning: "女性",
-                explanation: "大人の女性を指す最も一般的でニュートラルな単語です。複数形は women。",
-                synonyms: [
-                    { word: "lady", nuance: "上品な女性、淑女（少しフォーマルな響き）" },
-                    { word: "female", nuance: "メス、女性（生物学的・客観的な分類）" }
-                ],
-                corpus: "頻度: ★★★★★ (最頻出・基本語彙)"
-            }
-        };
-
-        for (const [key, customData] of Object.entries(customOverrides)) {
-            hugeDictionaryData[key] = customData;
-            searchIndex.push({ queryKey: customData.word.toLowerCase(), ref: key });
-            searchIndex.push({ queryKey: customData.meaning, ref: key });
-        }
-    } catch (error) {
-        console.error("辞書の読み込みに失敗しました:", error);
-    }
-}
-
-// ==========================================
-// 💡 リッチUIを生み出すモーダル表示関数
-// ==========================================
-function openDictModal(data) {
-    document.getElementById('dict-word-title').textContent = data.word;
-    document.getElementById('dict-word-meaning').textContent = data.meaning;
-    document.getElementById('dict-explanation').innerHTML = data.explanation.replace(/\n/g, '<br>');
-    
-    let dynamicSynonyms = data.synonyms ? [...data.synonyms] : [];
-    
-    // ★修正: 類義語の自動抽出フィルターを強化（生徒が混乱するノイズを弾く）
-    if (dynamicSynonyms.length === 0 && hugeDictionaryData) {
-        for (const key in hugeDictionaryData) {
-            const otherData = hugeDictionaryData[key];
-            
-            // フィルター条件: 「空白が含まれない（1単語である）」「15文字以内」「カッコ()が含まれない」
-            const isCleanWord = !otherData.word.includes(' ') && 
-                                !otherData.word.includes('(') && 
-                                otherData.word.length <= 15;
-
-            if (otherData.word !== data.word && otherData.meaning === data.meaning && isCleanWord) {
-                dynamicSynonyms.push({ word: otherData.word, nuance: "似た意味を持つ単語・関連語" });
-            }
-            if (dynamicSynonyms.length >= 3) break;
-        }
-    }
-
-    const synSection = document.getElementById('dict-synonyms').parentElement;
-    const synList = document.getElementById('dict-synonyms');
-    synList.innerHTML = '';
-
-    if (dynamicSynonyms.length > 0) {
-        dynamicSynonyms.forEach(syn => {
-            const li = document.createElement('li');
-            li.innerHTML = `<strong>${syn.word}</strong>${syn.nuance}`;
-            synList.appendChild(li);
-        });
-        synSection.style.display = 'block'; 
-    } else {
-        synSection.style.display = 'none'; 
-    }
-
-    // ★修正: コーパス計算時に記号やカッコを無視して純粋な文字数をカウントする
-    let corpusText = data.corpus;
-    if (corpusText === "auto") {
-        const cleanWordForCount = data.word.replace(/[^a-zA-Z]/g, ''); // アルファベット以外を除外
-        const wordLen = cleanWordForCount.length;
-        
-        let stars = "★★★☆☆";
-        let freqLevel = "標準的な語彙";
-        let desc = "日常から幅広く使われます";
-        
-        if (wordLen <= 5) { 
-            stars = "★★★★★"; freqLevel = "最頻出・基本語彙"; desc = "日常会話で非常によく使われる重要な単語です";
-        } else if (wordLen <= 8) { 
-            stars = "★★★★☆"; freqLevel = "高頻度語彙"; desc = "ネイティブの会話や文章で頻繁に登場します";
-        } else if (wordLen >= 11) { 
-            stars = "★★☆☆☆"; freqLevel = "専門的・フォーマル"; desc = "学術的な文章やフォーマルな場面で使われます";
-        }
-        
-        corpusText = `${stars} (${freqLevel}) : ${desc}`;
-    }
-    document.getElementById('dict-corpus').textContent = corpusText;
-
-    dictModal.classList.remove('hidden');
-}
-
-loadDictionaryData();
-
 let searchTimeout;
+
 dictInput.addEventListener('input', (e) => {
     clearTimeout(searchTimeout);
-    const query = e.target.value.toLowerCase().trim();
+    const query = e.target.value.trim();
     dictSuggestions.innerHTML = '';
     
     if (query.length === 0) {
@@ -528,100 +398,71 @@ dictInput.addEventListener('input', (e) => {
         return;
     }
 
-    searchTimeout = setTimeout(() => {
-        if (!hugeDictionaryData) return;
-        const matchedRefs = new Set();
-        
-        searchIndex.forEach(item => {
-            if (item.queryKey.includes(query)) matchedRefs.add(item.ref);
-        });
+    // 0.3秒タイピングが止まったら、Vercelの裏側サーバー(API)に通信を送る！
+    searchTimeout = setTimeout(async () => {
+        try {
+            // ★ここが進化ポイント：100MBのデータを読み込まず、APIに聞くだけ！
+            const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+            if (!response.ok) throw new Error('API request failed');
+            
+            const results = await response.json();
 
-        if (matchedRefs.size > 0) {
-            const results = Array.from(matchedRefs).slice(0, 10);
-            results.forEach(ref => {
-                const data = hugeDictionaryData[ref];
-                const li = document.createElement('li');
-                li.innerHTML = `<span class="sugg-en">${data.word}</span> <span class="sugg-ja">${data.meaning}</span>`;
-                
-                li.addEventListener('click', () => {
-                    openDictModal(data);
-                    dictSuggestions.classList.add('hidden');
-                    dictInput.value = ''; 
+            if (results.length > 0) {
+                results.forEach(data => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span class="sugg-en">${data.word}</span> <span class="sugg-ja">${data.meaning}</span>`;
+                    
+                    li.addEventListener('click', () => {
+                        openDictModal(data);
+                        dictSuggestions.classList.add('hidden');
+                        dictInput.value = ''; 
+                    });
+                    dictSuggestions.appendChild(li);
                 });
-                dictSuggestions.appendChild(li);
-            });
-            dictSuggestions.classList.remove('hidden');
-        } else {
-            dictSuggestions.classList.add('hidden');
+                dictSuggestions.classList.remove('hidden');
+            } else {
+                dictSuggestions.classList.add('hidden');
+            }
+        } catch (error) {
+            console.error("辞書APIとの通信エラー:", error);
         }
     }, 300); 
 });
 
+// 入力欄外をクリックしたらサジェストを閉じる
 document.addEventListener('click', (e) => {
     if (!dictInput.contains(e.target) && !dictSuggestions.contains(e.target)) {
         dictSuggestions.classList.add('hidden');
     }
 });
 
-// ==========================================
-// 💡 リッチUIを生み出すモーダル表示関数
-// ==========================================
+// リッチUIモーダル表示関数
 function openDictModal(data) {
     document.getElementById('dict-word-title').textContent = data.word;
     document.getElementById('dict-word-meaning').textContent = data.meaning;
-    
-    // 【魔法1】解説テキストの改行を反映させる
     document.getElementById('dict-explanation').innerHTML = data.explanation.replace(/\n/g, '<br>');
     
-    // 【魔法2】巨大データを逆引きして、自動で類義語（シソーラス）を生成する
-    let dynamicSynonyms = data.synonyms ? [...data.synonyms] : [];
-    if (dynamicSynonyms.length === 0 && hugeDictionaryData) {
-        for (const key in hugeDictionaryData) {
-            const otherData = hugeDictionaryData[key];
-            // 同じ日本語訳を持つ別の英単語を探し出す（最大3つまで）
-            if (otherData.word !== data.word && otherData.meaning === data.meaning) {
-                dynamicSynonyms.push({ word: otherData.word, nuance: "同義・関連表現（自動抽出）" });
-            }
-            if (dynamicSynonyms.length >= 3) break;
-        }
-    }
-
+    // (※類義語抽出はAPI側に切り離したため、一旦非表示またはカスタムのロジックを入れます)
     const synSection = document.getElementById('dict-synonyms').parentElement;
-    const synList = document.getElementById('dict-synonyms');
-    synList.innerHTML = '';
+    synSection.style.display = 'none'; // プロトタイプとして一旦非表示
 
-    // 【魔法3】類義語が見つからなかった場合はセクション自体を隠してスタイリッシュに保つ
-    if (dynamicSynonyms.length > 0) {
-        dynamicSynonyms.forEach(syn => {
-            const li = document.createElement('li');
-            li.innerHTML = `<strong>${syn.word}</strong>: ${syn.nuance}`;
-            synList.appendChild(li);
-        });
-        synSection.style.display = 'block'; 
-    } else {
-        synSection.style.display = 'none'; 
+    // Zipfの法則に基づく擬似コーパス算出
+    const cleanWordForCount = data.word.replace(/[^a-zA-Z]/g, ''); 
+    const wordLen = cleanWordForCount.length;
+    
+    let stars = "★★★☆☆";
+    let freqLevel = "標準的な語彙";
+    let desc = "日常から幅広く使われます";
+    
+    if (wordLen <= 5) { 
+        stars = "★★★★★"; freqLevel = "最頻出・基本語彙"; desc = "日常会話で非常によく使われる重要な単語です";
+    } else if (wordLen <= 8) { 
+        stars = "★★★★☆"; freqLevel = "高頻度語彙"; desc = "ネイティブの会話や文章で頻繁に登場します";
+    } else if (wordLen >= 11) { 
+        stars = "★★☆☆☆"; freqLevel = "専門的・フォーマル"; desc = "学術的な文章やフォーマルな場面で使われます";
     }
-
-    // 【魔法4】単語の長さからZipfの法則に基づく擬似コーパス（使用頻度）を算出
-    let corpusText = data.corpus;
-    if (corpusText === "auto") {
-        const wordLen = data.word.length;
-        let stars = "★★★☆☆";
-        let freqLevel = "標準的な語彙";
-        let desc = "日常からビジネスまで幅広く使われます";
-        
-        if (wordLen <= 4) { 
-            stars = "★★★★★"; freqLevel = "最頻出・基本語彙"; desc = "日常会話で非常によく使われる重要な単語です";
-        } else if (wordLen <= 7) { 
-            stars = "★★★★☆"; freqLevel = "高頻度語彙"; desc = "ネイティブの会話や文章で頻繁に登場します";
-        } else if (wordLen >= 11) { 
-            stars = "★★☆☆☆"; freqLevel = "専門的・フォーマル"; desc = "学術的な文章やフォーマルな場面で好まれます";
-        }
-        
-        corpusText = `${stars} (${freqLevel}) : ${desc}`;
-    }
-    document.getElementById('dict-corpus').textContent = corpusText;
-
+    
+    document.getElementById('dict-corpus').textContent = `${stars} (${freqLevel}) : ${desc}`;
     dictModal.classList.remove('hidden');
 }
 
