@@ -18,15 +18,13 @@
             </div>
         </header>
         
-        <!-- ★修正：game-containerを確実に縦並びに固定 -->
-        <div id="game-container" style="display: flex; flex-direction: column;">
+        <!-- ★新レイアウト：サイドバーとメイン画面の分割 -->
+        <div id="game-container" class="app-body-layout">
             
-            <!-- ==============================================
-                 上部ブロック：トップダッシュボード（進行状況＋アシスト）
-                 ============================================== -->
-            <div id="top-dashboard" class="dashboard-layout">
+            <!-- 🔽 左サイドバー（常に画面に表示される情報） 🔽 -->
+            <div class="left-sidebar">
                 
-                <!-- 洗練された半円グラフ (Coverage Rate) -->
+                <!-- カバレッジ（半円グラフ） -->
                 <div id="live-status" class="dashboard-panel score-panel">
                     <div class="status-header">COVERAGE RATE</div>
                     <div class="gauge-container">
@@ -38,7 +36,34 @@
                     </div>
                 </div>
 
-                <!-- ステップアップ型アシストパネル（プロフェッショナル版） -->
+                <!-- サポートモードのスイッチ -->
+                <div class="dashboard-panel support-toggle-panel">
+                    <label class="switch-label">
+                        <input type="checkbox" id="support-switch"> Support Mode (Hint)
+                    </label>
+                    <select id="hint-level-select" class="hidden">
+                        <option value="primary">Gist (要点のみ)</option>
+                        <option value="all">All Details (詳細も含む)</option>
+                    </select>
+                </div>
+
+                <!-- ★ヒントパネル（左側に固定表示） -->
+                <div id="hint-panel" class="dashboard-panel hint-sidebar-panel">
+                    <div class="hint-header">
+                        <h3 id="hint-title">💡 Hint Area</h3>
+                    </div>
+                    <div id="hint-content">
+                        <!-- 初期状態のプレースホルダー -->
+                        <p class="hint-placeholder">Support ModeをONにして画像の枠をクリックすると、ここに単語や文法のヒントが表示されます。</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 🔽 右メイン画面（指示 ＋ 作業エリア） 🔽 -->
+            <div class="main-content">
+                
+                <!-- 司令塔（ステップアシスト） -->
                 <div id="step-assistant-panel" class="dashboard-panel assistant-panel">
                     <div class="assistant-header">
                         <h2 id="current-step-title" class="modern-step-title">Step 1: Main Gist</h2>
@@ -48,7 +73,6 @@
                         </div>
                     </div>
                     
-                    <!-- SVO スロットエリア -->
                     <div id="svo-slots-container" class="modern-stepper">
                         <div class="stepper-item" id="slot-subject">
                             <div class="stepper-icon" id="icon-subject">1</div>
@@ -57,9 +81,7 @@
                                 <span class="stepper-subtitle">主語</span>
                             </div>
                         </div>
-                        
                         <div class="stepper-divider"></div>
-                        
                         <div class="stepper-item" id="slot-verb">
                             <div class="stepper-icon" id="icon-verb">2</div>
                             <div class="stepper-text">
@@ -67,9 +89,7 @@
                                 <span class="stepper-subtitle">動作</span>
                             </div>
                         </div>
-                        
                         <div class="stepper-divider"></div>
-                        
                         <div class="stepper-item" id="slot-object">
                             <div class="stepper-icon" id="icon-object">3</div>
                             <div class="stepper-text">
@@ -79,57 +99,28 @@
                         </div>
                     </div>
 
-                    <!-- ヒントメッセージ -->
                     <div class="modern-message" id="assistant-message">
                         まずは描写の中に主語を入れてみましょう。
                     </div>
                 </div>
-            </div> <!-- 上部ブロック ここまで -->
 
-
-            <!-- ==============================================
-                 下部ブロック：メインプレイエリア（画像 ＋ 入力欄）
-                 ============================================== -->
-            <div class="two-column-layout">
-                
-                <!-- 左カラム：画像とサポート機能 -->
-                <div id="left-column">
-                    <div id="support-controls">
-                        <label class="switch-label">
-                            <input type="checkbox" id="support-switch"> Support Mode (Hint)
-                        </label>
-                        <select id="hint-level-select" class="hidden">
-                            <option value="primary">Gist (要点のみ)</option>
-                            <option value="all">All Details (詳細も含む)</option>
-                        </select>
-                    </div>
-
-                    <div id="image-area">
-                        <img id="target-image" src="" alt="Target Image">
-                        <div id="effect-container"></div>
-                        <div id="overlays-container"></div>
-                    </div>
-
-                    <div id="hint-panel" class="hidden">
-                        <div class="hint-header">
-                            <h3 id="hint-title">Hint</h3>
-                            <button id="close-hint-btn">×</button>
+                <!-- 画像 ＆ タイピングエリア -->
+                <div class="play-area">
+                    <div id="image-area-wrapper">
+                        <div id="image-area">
+                            <img id="target-image" src="" alt="Target Image">
+                            <div id="effect-container"></div>
+                            <div id="overlays-container"></div>
                         </div>
-                        <div id="hint-content"></div>
-                    </div>
-                </div>
-
-                <!-- 右カラム：入力エリア -->
-                <div id="right-column">
-                    <!-- 辞書検索ウィジェット -->
-                    <div id="dictionary-widget">
-                        <div class="search-icon">🔍</div>
-                        <input type="text" id="dict-search-input" placeholder="Search dictionary (En/Ja)..." autocomplete="off">
-                        <ul id="dict-suggestions" class="hidden"></ul>
                     </div>
 
-                    <!-- 入力エリア本体 -->
-                    <div id="input-area">
+                    <div id="input-area-wrapper">
+                        <div id="dictionary-widget">
+                            <div class="search-icon">🔍</div>
+                            <input type="text" id="dict-search-input" placeholder="Search dictionary (En/Ja)..." autocomplete="off">
+                            <ul id="dict-suggestions" class="hidden"></ul>
+                        </div>
+
                         <div id="user-input" 
                              contenteditable="true" 
                              spellcheck="true" 
@@ -137,21 +128,20 @@
                              placeholder="Type your description here... (e.g. A young woman is drinking coffee...)"></div>
                         
                         <button id="submit-btn">Finish & Check</button>
-                    </div>
 
-                    <!-- 結果表示エリア -->
-                    <div id="result-area" class="hidden">
-                        <h2 id="feedback-msg"></h2>
-                        <div class="model-answers">
-                            <h3>Model Answers:</h3>
-                            <ul id="model-answers-list"></ul>
+                        <div id="result-area" class="hidden">
+                            <h2 id="feedback-msg"></h2>
+                            <div class="model-answers">
+                                <h3>Model Answers:</h3>
+                                <ul id="model-answers-list"></ul>
+                            </div>
+                            <button id="retry-btn">Try Another</button>
                         </div>
-                        <button id="retry-btn">Try Another</button>
                     </div>
                 </div>
-            </div> <!-- 下部ブロック ここまで -->
 
-        </div> <!-- game-container ここまで -->
+            </div>
+        </div>
         
         <!-- 辞書詳細ポップアップ -->
         <div id="dict-modal" class="hidden">

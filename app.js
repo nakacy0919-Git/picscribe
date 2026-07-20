@@ -1,43 +1,30 @@
 // ==========================================
-// PicScribe - Main Application Logic (Step-by-Step SVO)
+// PicScribe - Main Application Logic
 // ==========================================
 
 let scoringTargets = [];
 let maxScore = 0;
 let categoryHits = { gist: 0, setting: 0, details: 0 };
 let alreadyHitWords = []; 
-
 const LIGHT_THRESHOLD = 3;
 
-// DOM Elements
 const targetImage = document.getElementById('target-image');
 const userInput = document.getElementById('user-input');
 const submitBtn = document.getElementById('submit-btn');
 const resultArea = document.getElementById('result-area');
 const liveScoreDisplay = document.getElementById('live-score');
-const coverageBar = document.getElementById('coverage-bar');
 
 const overlaysContainer = document.getElementById('overlays-container');
-const imageArea = document.getElementById('image-area'); // ★光の追加先として指定
+const imageArea = document.getElementById('image-area'); 
 const supportSwitch = document.getElementById('support-switch');
 const hintLevelSelect = document.getElementById('hint-level-select');
-const hintPanel = document.getElementById('hint-panel');
-const hintTitle = document.getElementById('hint-title');
 const hintContent = document.getElementById('hint-content');
-const closeHintBtn = document.getElementById('close-hint-btn');
-const effectContainer = document.getElementById('effect-container');
-
+const hintTitle = document.getElementById('hint-title');
 let currentEarnedScore = 0;
 
-// Audio Setup
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioCtx;
-const successSound = new Audio('https://actions.google.com/sounds/v1/water/glass_ping.ogg');
-successSound.volume = 0.5;
-
-function initAudio() { 
-    if (!audioCtx) audioCtx = new AudioContext(); 
-}
+function initAudio() { if (!audioCtx) audioCtx = new AudioContext(); }
 
 function playHitSound(isActivation = false) {
     if (!audioCtx) return;
@@ -63,38 +50,22 @@ function playHitSound(isActivation = false) {
     gainNode.connect(audioCtx.destination);
 }
 
-// ==========================================
-// Game Logic & Initialization
-// ==========================================
-
 function setupGameData() {
-    scoringTargets = [];
-    maxScore = 0;
-    categoryHits = { gist: 0, setting: 0, details: 0 };
+    scoringTargets = []; maxScore = 0; categoryHits = { gist: 0, setting: 0, details: 0 };
 
     cafeData.elements.forEach(el => {
-        let bucket = 'details';
-        let svoRole = null; 
+        let bucket = 'details', svoRole = null; 
         const isPrimary = el.importance === 'primary';
         const weight = isPrimary ? 10 : 3;
 
-        if (el.category === 'person') {
-            bucket = 'gist';
-            svoRole = 'subject';
-        } else if (isPrimary && el.category === 'food_and_drink') {
-            bucket = 'gist';
-            svoRole = 'object';
-        } else if (['architecture', 'place', 'furniture', 'equipment'].includes(el.category)) {
-            bucket = 'setting';
-        } else if (['nature', 'decoration', 'lighting', 'environment', 'sign'].includes(el.category) || (!isPrimary && el.category === 'object')) {
-            bucket = 'details';
-        }
+        if (el.category === 'person') { bucket = 'gist'; svoRole = 'subject'; } 
+        else if (isPrimary && el.category === 'food_and_drink') { bucket = 'gist'; svoRole = 'object'; } 
+        else if (['architecture', 'place', 'furniture', 'equipment'].includes(el.category)) { bucket = 'setting'; } 
+        else if (['nature', 'decoration', 'lighting', 'environment', 'sign'].includes(el.category) || (!isPrimary && el.category === 'object')) { bucket = 'details'; }
 
         scoringTargets.push({
-            id: el.id, label: el.label, 
-            label_ja: el.label_ja, 
-            bucket: bucket, svoRole: svoRole,
-            words: el.synonyms_and_related_words.map(w => w.toLowerCase()),
+            id: el.id, label: el.label, label_ja: el.label_ja, 
+            bucket: bucket, svoRole: svoRole, words: el.synonyms_and_related_words.map(w => w.toLowerCase()),
             weight: weight, hit: false
         });
         maxScore += weight;
@@ -102,10 +73,8 @@ function setupGameData() {
 
     cafeData.actions_analysis.forEach(action => {
         scoringTargets.push({
-            id: action.id, label: 'Action', 
-            label_ja: action.description_ja, 
-            bucket: 'gist', svoRole: 'verb', 
-            words: action.synonyms.map(p => p.toLowerCase()),
+            id: action.id, label: 'Action', label_ja: action.description_ja, 
+            bucket: 'gist', svoRole: 'verb', words: action.synonyms.map(p => p.toLowerCase()),
             weight: 10, hit: false
         });
         maxScore += 10;
@@ -113,10 +82,8 @@ function setupGameData() {
     
     cafeData.overall_mood.forEach(mood => {
         scoringTargets.push({
-            id: 'mood_' + mood, label: 'Mood', 
-            label_ja: '雰囲気 (' + mood + ')', 
-            bucket: 'details', svoRole: null,
-            words: [mood.toLowerCase()],
+            id: 'mood_' + mood, label: 'Mood', label_ja: '雰囲気 (' + mood + ')', 
+            bucket: 'details', svoRole: null, words: [mood.toLowerCase()],
             weight: 2, hit: false
         });
         maxScore += 2;
@@ -127,15 +94,11 @@ function updateCoverageDisplay() {
     const targetScore = maxScore * 0.6; 
     const coveragePercent = Math.min(100, Math.floor((currentEarnedScore / targetScore) * 100));
     liveScoreDisplay.innerHTML = `${coveragePercent}<span class="pts">%</span>`;
-    
     const offset = 125.6 - (125.6 * (coveragePercent / 100));
     const gaugePath = document.getElementById('gauge-fill-path');
     if(gaugePath) gaugePath.style.strokeDashoffset = offset;
 }
 
-// ==========================================
-// モダンUI対応 ＆ 蛍光ガイド枠の連動ロジック
-// ==========================================
 function updateAssistantUI(justHitRole = null) {
     const titleEl = document.getElementById('current-step-title');
     const badgeEl = document.getElementById('step-progress-badge');
@@ -150,9 +113,7 @@ function updateAssistantUI(justHitRole = null) {
         const el = document.getElementById(`slot-${type}`);
         const icon = document.getElementById(`icon-${type}`);
         if (!el || !icon) return;
-        
         el.className = `stepper-item ${state}-slot`;
-        
         if (state === 'completed') icon.textContent = '✓';
         else if (type === 'subject') icon.textContent = '1';
         else if (type === 'verb') icon.textContent = '2';
@@ -171,18 +132,14 @@ function updateAssistantUI(justHitRole = null) {
     else if (svoHits.object === 0) activeTarget = 'object';
 
     if (activeTarget) setSlot(activeTarget, 'active');
-
-    if (activeTarget || categoryHits.setting < LIGHT_THRESHOLD || categoryHits.details < LIGHT_THRESHOLD) {
-        skipBtn.classList.remove('hidden');
-    } else {
-        skipBtn.classList.add('hidden');
-    }
+    
+    if (activeTarget || categoryHits.setting < LIGHT_THRESHOLD || categoryHits.details < LIGHT_THRESHOLD) skipBtn.classList.remove('hidden');
+    else skipBtn.classList.add('hidden');
 
     if (activeTarget) {
         svoContainer.style.display = 'flex';
         titleEl.textContent = "Step 1: Main Gist";
         badgeEl.textContent = "1 / 3 挑戦中";
-
         if (activeTarget === 'subject') msgEl.innerHTML = "描写の中に「<strong>女性 (woman)</strong>」などの主語を入れてみましょう。";
         else if (activeTarget === 'verb') msgEl.innerHTML = "主語クリア！次は「<strong>飲んでいる (drink)</strong>」などの動作(動詞)を続けましょう。（※スペルミスにも注意！）";
         else if (activeTarget === 'object') msgEl.innerHTML = "いい調子です！「<strong>コーヒー (coffee)</strong>」などの目的語を繋げて文を完成させましょう。";
@@ -207,21 +164,14 @@ function updateAssistantUI(justHitRole = null) {
         }
     }
 
-    // 💡 ★修正：サポートモードOFFでも確実に光るように #image-area に直接追加する
     document.querySelectorAll('.hint-glow-overlay').forEach(el => el.remove());
 
     let currentFocusTarget = null;
-    if (activeTarget === 'subject') {
-        currentFocusTarget = scoringTargets.find(t => t.svoRole === 'subject' && !t.hit);
-    } else if (activeTarget === 'verb') {
-        currentFocusTarget = scoringTargets.find(t => t.svoRole === 'subject'); 
-    } else if (activeTarget === 'object') {
-        currentFocusTarget = scoringTargets.find(t => t.svoRole === 'object' && !t.hit);
-    } else if (categoryHits.setting < LIGHT_THRESHOLD) {
-        currentFocusTarget = scoringTargets.find(t => t.bucket === 'setting' && !t.hit);
-    } else if (categoryHits.details < LIGHT_THRESHOLD) {
-        currentFocusTarget = scoringTargets.find(t => t.bucket === 'details' && !t.hit);
-    }
+    if (activeTarget === 'subject') currentFocusTarget = scoringTargets.find(t => t.svoRole === 'subject' && !t.hit);
+    else if (activeTarget === 'verb') currentFocusTarget = scoringTargets.find(t => t.svoRole === 'subject'); 
+    else if (activeTarget === 'object') currentFocusTarget = scoringTargets.find(t => t.svoRole === 'object' && !t.hit);
+    else if (categoryHits.setting < LIGHT_THRESHOLD) currentFocusTarget = scoringTargets.find(t => t.bucket === 'setting' && !t.hit);
+    else if (categoryHits.details < LIGHT_THRESHOLD) currentFocusTarget = scoringTargets.find(t => t.bucket === 'details' && !t.hit);
 
     if (currentFocusTarget) {
         const elData = cafeData.elements.find(e => e.id === currentFocusTarget.id);
@@ -229,43 +179,33 @@ function updateAssistantUI(justHitRole = null) {
             const [top, left, height, width] = elData.bounding_box_conceptual;
             const overlay = document.createElement('div');
             overlay.className = 'hint-glow-overlay';
-            overlay.style.top = `${top}%`; 
-            overlay.style.left = `${left}%`;
-            overlay.style.height = `${height}%`; 
-            overlay.style.width = `${width}%`;
-            // ★ overlaysContainerではなく、常に表示されているimageAreaに追加
+            overlay.style.top = `${top}%`; overlay.style.left = `${left}%`; overlay.style.height = `${height}%`; overlay.style.width = `${width}%`;
             imageArea.appendChild(overlay);
         }
     }
 }
 
-// スキップボタン（模範解答表示）のロジック
+// ★改修2：「スキップ」しても入力欄の英文を破壊しない
 document.getElementById('skip-step-btn').addEventListener('click', () => {
     let targetBucket = 'gist';
     if (categoryHits.gist >= LIGHT_THRESHOLD) targetBucket = 'setting';
     if (categoryHits.setting >= LIGHT_THRESHOLD && categoryHits.gist >= LIGHT_THRESHOLD) targetBucket = 'details';
 
+    // まだクリアされていないターゲットを1つだけ取得
     const unhitTargets = scoringTargets.filter(t => t.bucket === targetBucket && !t.hit);
     if (unhitTargets.length === 0) return;
 
-    let skippedWords = [];
-    unhitTargets.forEach(target => {
-        target.hit = true;
-        categoryHits[target.bucket]++;
-        currentEarnedScore += target.weight;
-        skippedWords.push(target.words[0]); 
-        createGoldOverlayFromTarget(target); 
-    });
+    // テキストボックスには何も書き込まず、システム上だけ「クリア扱い」にして次へ進める
+    const target = unhitTargets[0];
+    target.hit = true;
+    categoryHits[target.bucket]++;
+    currentEarnedScore += target.weight;
+    createGoldOverlayFromTarget(target); 
 
-    const currentText = userInput.innerHTML;
-    const textToAdd = skippedWords.map(w => `<span style="color:#3b82f6; font-weight:bold; text-decoration:underline;">${w}</span>`).join(" ");
-    
-    userInput.innerHTML = currentText + (currentText.endsWith(' ') ? '' : ' ') + textToAdd + ' ';
-    
     playHitSound(true); 
     updateCoverageDisplay();
     updateAssistantUI();
-    placeCaretAtEnd(userInput);
+    userInput.focus();
 });
 
 function renderOverlays() {
@@ -303,7 +243,6 @@ function showHints(element) {
             hintContent.appendChild(groupDiv);
         }
     });
-    hintPanel.classList.remove('hidden');
 }
 
 function createGoldOverlayFromTarget(target) {
@@ -313,12 +252,7 @@ function createGoldOverlayFromTarget(target) {
     const [top, left, height, width] = elData.bounding_box_conceptual;
     const overlay = document.createElement('div');
     overlay.className = 'gold-overlay';
-    overlay.style.top = `${top}%`; 
-    overlay.style.left = `${left}%`;
-    overlay.style.height = `${height}%`; 
-    overlay.style.width = `${width}%`;
-    
-    // ★ ここも修正：正解した時のゴールドエフェクトも確実に表示させる
+    overlay.style.top = `${top}%`; overlay.style.left = `${left}%`; overlay.style.height = `${height}%`; overlay.style.width = `${width}%`;
     imageArea.appendChild(overlay);
 }
 
@@ -344,10 +278,6 @@ function placeCaretAtEnd(el) {
     }
 }
 
-// ==========================================
-// Event Listeners (Main Input & Controls)
-// ==========================================
-
 let isFormatting = false;
 
 userInput.addEventListener('input', () => {
@@ -363,30 +293,33 @@ userInput.addEventListener('input', () => {
         if (!target.hit) {
             let matchedString = null;
 
+            // ★改修1：「drink coffee」など複数単語のフレーズも、間に文字が入っても柔軟に判定
             const hasMatch = target.words.some(targetWord => {
                 if (targetWord.includes(' ')) {
-                    if (text.includes(targetWord)) {
-                        matchedString = targetWord;
-                        return true;
-                    }
+                    const phraseParts = targetWord.split(' ');
+                    // フレーズを構成する単語が、ユーザーの入力内にすべて含まれていればOKとする
+                    return phraseParts.every(part => {
+                        return words.some(w => {
+                            if (w === part) return true;
+                            if (part.length >= 3 && w.startsWith(part)) return true;
+                            if (w.length >= 3 && part.startsWith(w)) return true;
+                            return false;
+                        });
+                    });
                 } else {
                     return words.some(w => {
-                        if (w === targetWord) {
-                            matchedString = w;
-                            return true;
-                        }
-                        if (targetWord.length >= 3 && w.startsWith(targetWord)) {
-                            matchedString = w;
-                            return true;
-                        }
-                        if (w.length >= 3 && targetWord.startsWith(w)) {
-                            matchedString = w;
-                            return true;
-                        }
+                        if (w === targetWord) return true;
+                        if (targetWord.length >= 3 && w.startsWith(targetWord)) return true;
+                        if (w.length >= 3 && targetWord.startsWith(w)) return true;
                         return false;
                     });
                 }
             });
+
+            if (hasMatch && !matchedString) {
+                // ハイライト用に、マッチした単語の最初のものを取得
+                matchedString = target.words[0].split(' ')[0]; 
+            }
 
             if (hasMatch && matchedString) {
                 target.hit = true;
@@ -395,10 +328,7 @@ userInput.addEventListener('input', () => {
                 categoryHits[target.bucket]++;
                 
                 if (target.svoRole) justHitRole = target.svoRole;
-
-                if (!alreadyHitWords.includes(matchedString)) {
-                    alreadyHitWords.push(matchedString);
-                }
+                if (!alreadyHitWords.includes(matchedString)) alreadyHitWords.push(matchedString);
                 
                 updateCoverageDisplay();
                 createGoldOverlayFromTarget(target);
@@ -424,11 +354,12 @@ supportSwitch.addEventListener('change', (e) => {
         hintLevelSelect.classList.remove('hidden'); renderOverlays();
     } else {
         imageArea.classList.remove('support-active');
-        hintLevelSelect.classList.add('hidden'); hintPanel.classList.add('hidden');
+        hintLevelSelect.classList.add('hidden');
+        document.getElementById('hint-content').innerHTML = '<p class="hint-placeholder">Support ModeをONにして画像の枠をクリックすると、ここに単語や文法のヒントが表示されます。</p>';
+        document.getElementById('hint-title').textContent = "💡 Hint Area";
     }
 });
 hintLevelSelect.addEventListener('change', renderOverlays);
-closeHintBtn.addEventListener('click', () => hintPanel.classList.add('hidden'));
 
 submitBtn.addEventListener('click', () => {
     userInput.contentEditable = "false"; 
@@ -455,13 +386,15 @@ function initGame() {
     userInput.innerText = ''; 
     alreadyHitWords = []; 
     overlaysContainer.innerHTML = ''; 
-    // ★ゲームリセット時に光も確実に消去
     document.querySelectorAll('.gold-overlay, .hint-glow-overlay').forEach(el => el.remove());
     currentEarnedScore = 0;
     
     updateCoverageDisplay();
     
-    resultArea.classList.add('hidden'); hintPanel.classList.add('hidden');
+    resultArea.classList.add('hidden'); 
+    document.getElementById('hint-content').innerHTML = '<p class="hint-placeholder">Support ModeをONにして画像の枠をクリックすると、ここに単語や文法のヒントが表示されます。</p>';
+    document.getElementById('hint-title').textContent = "💡 Hint Area";
+
     imageArea.classList.remove('support-active');
     supportSwitch.checked = false; hintLevelSelect.classList.add('hidden');
     
@@ -474,39 +407,28 @@ function initGame() {
 
 window.addEventListener('DOMContentLoaded', initGame);
 
-// ==========================================
-// 5. スマート辞書＆サジェスト機能（API連携）
-// ==========================================
-
 const dictInput = document.getElementById('dict-search-input');
 const dictSuggestions = document.getElementById('dict-suggestions');
 const dictModal = document.getElementById('dict-modal');
 const closeDictBtn = document.getElementById('close-dict-btn');
-
 let searchTimeout;
 
 dictInput.addEventListener('input', (e) => {
     clearTimeout(searchTimeout);
     const query = e.target.value.trim();
     dictSuggestions.innerHTML = '';
-    
-    if (query.length === 0) {
-        dictSuggestions.classList.add('hidden');
-        return;
-    }
+    if (query.length === 0) { dictSuggestions.classList.add('hidden'); return; }
 
     searchTimeout = setTimeout(async () => {
         try {
             const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
             if (!response.ok) throw new Error('API request failed');
-            
             const results = await response.json();
 
             if (results.length > 0) {
                 results.forEach(data => {
                     const li = document.createElement('li');
                     li.innerHTML = `<span class="sugg-en">${data.word}</span> <span class="sugg-ja">${data.meaning}</span>`;
-                    
                     li.addEventListener('click', () => {
                         openDictModal(data);
                         dictSuggestions.classList.add('hidden');
@@ -518,53 +440,29 @@ dictInput.addEventListener('input', (e) => {
             } else {
                 dictSuggestions.classList.add('hidden');
             }
-        } catch (error) {
-            console.error("辞書APIとの通信エラー:", error);
-        }
+        } catch (error) { console.error("辞書APIとの通信エラー:", error); }
     }, 300); 
 });
 
 document.addEventListener('click', (e) => {
-    if (!dictInput.contains(e.target) && !dictSuggestions.contains(e.target)) {
-        dictSuggestions.classList.add('hidden');
-    }
+    if (!dictInput.contains(e.target) && !dictSuggestions.contains(e.target)) dictSuggestions.classList.add('hidden');
 });
 
 function openDictModal(data) {
     document.getElementById('dict-word-title').textContent = data.word;
     document.getElementById('dict-word-meaning').textContent = data.meaning;
     document.getElementById('dict-explanation').innerHTML = data.explanation.replace(/\n/g, '<br>');
-    
-    const synSection = document.getElementById('dict-synonyms').parentElement;
-    synSection.style.display = 'none';
+    document.getElementById('dict-synonyms').parentElement.style.display = 'none';
 
-    const cleanWordForCount = data.word.replace(/[^a-zA-Z]/g, ''); 
-    const wordLen = cleanWordForCount.length;
-    
-    let stars = "★★★☆☆";
-    let freqLevel = "標準的な語彙";
-    let desc = "日常から幅広く使われます";
-    
-    if (wordLen <= 5) { 
-        stars = "★★★★★"; freqLevel = "最頻出・基本語彙"; desc = "日常会話で非常によく使われる重要な単語です";
-    } else if (wordLen <= 8) { 
-        stars = "★★★★☆"; freqLevel = "高頻度語彙"; desc = "ネイティブの会話や文章で頻繁に登場します";
-    } else if (wordLen >= 11) { 
-        stars = "★★☆☆☆"; freqLevel = "専門的・フォーマル"; desc = "学術的な文章やフォーマルな場面で使われます";
-    }
+    const wordLen = data.word.replace(/[^a-zA-Z]/g, '').length;
+    let stars = "★★★☆☆", freqLevel = "標準的な語彙", desc = "日常から幅広く使われます";
+    if (wordLen <= 5) { stars = "★★★★★"; freqLevel = "最頻出・基本語彙"; desc = "日常会話で非常によく使われる重要な単語です"; } 
+    else if (wordLen <= 8) { stars = "★★★★☆"; freqLevel = "高頻度語彙"; desc = "ネイティブの会話や文章で頻繁に登場します"; } 
+    else if (wordLen >= 11) { stars = "★★☆☆☆"; freqLevel = "専門的・フォーマル"; desc = "学術的な文章やフォーマルな場面で使われます"; }
     
     document.getElementById('dict-corpus').textContent = `${stars} (${freqLevel}) : ${desc}`;
     dictModal.classList.remove('hidden');
 }
 
-closeDictBtn.addEventListener('click', () => {
-    dictModal.classList.add('hidden');
-    document.getElementById('user-input').focus();
-});
-
-dictModal.addEventListener('click', (e) => {
-    if (e.target === dictModal) {
-        dictModal.classList.add('hidden');
-        document.getElementById('user-input').focus();
-    }
-});
+closeDictBtn.addEventListener('click', () => { dictModal.classList.add('hidden'); document.getElementById('user-input').focus(); });
+dictModal.addEventListener('click', (e) => { if (e.target === dictModal) { dictModal.classList.add('hidden'); document.getElementById('user-input').focus(); } });
