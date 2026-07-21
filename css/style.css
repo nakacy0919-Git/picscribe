@@ -365,28 +365,77 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
     align-items: center;
     transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
 }
-.splash-content { text-align: center; }
-.splash-logo {
-    width: 130px; opacity: 0; border-radius: 50%; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    animation: splashFadeIn 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.3s;
-}
-.splash-title {
-    font-family: 'Playfair Display', serif; font-size: 64px; margin: 20px 0 5px 0; opacity: 0;
-    display: flex; align-items: center; justify-content: center; animation: splashSlideUp 0.8s ease forwards 0.8s;
-}
-.splash-title .title-pic { color: #111111; font-weight: 700; }
-.splash-title .title-scribe { color: #444444; font-style: italic; }
-.splash-cursor { font-weight: 300; color: #3b82f6; margin-left: 6px; font-size: 56px; animation: splashBlink 0.8s infinite; }
-.splash-subtitle-wrapper { display: inline-block; overflow: hidden; }
-.splash-subtitle {
-    font-weight: 700; color: #555; letter-spacing: 4px; font-size: 14px; white-space: nowrap; opacity: 0; width: 0;
-    animation: splashTypewrite 1s steps(30, end) forwards 1.4s;
+
+.splash-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-@keyframes splashFadeIn { 0% { opacity: 0; transform: scale(0.8) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
-@keyframes splashSlideUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
-@keyframes splashBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-@keyframes splashTypewrite { 0% { width: 0; opacity: 1; } 100% { width: 100%; opacity: 1; } }
+/* ★ロゴを大幅に拡大してインパクトを出す */
+.splash-logo {
+    width: 240px; 
+    height: auto;
+    margin-bottom: 25px;
+    opacity: 0;
+    border-radius: 50%; 
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    animation: fadeInLogo 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* ★タイトルを大きくし、筆で書くようなアニメーションに変更 */
+.splash-title {
+    font-family: 'Playfair Display', serif; 
+    font-size: 5.5rem; 
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 15px 0;
+    white-space: nowrap;
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    clip-path: inset(0 100% 0 0);
+    animation: brushWrite 1.2s cubic-bezier(0.6, 0.05, 0.15, 1) 0.4s forwards;
+}
+
+.splash-title .title-pic { color: #111111; font-weight: 700; font-style: normal; }
+.splash-title .title-scribe { color: #444444; font-style: italic; }
+
+/* 筆文字風には合わないため、点滅カーソルは非表示にする */
+.splash-cursor { display: none; }
+
+.splash-subtitle-wrapper { display: inline-block; overflow: hidden; }
+
+/* サブタイトルもバランスに合わせて調整 */
+.splash-subtitle {
+    font-weight: 500; 
+    color: #666; 
+    letter-spacing: 0.4em; 
+    font-size: 1.1rem; 
+    white-space: nowrap; 
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeUpSubtitle 0.8s ease forwards 1.2s;
+}
+
+/* --- アニメーションの定義 --- */
+@keyframes fadeInLogo { 
+    0% { opacity: 0; transform: scale(0.9) translateY(10px); } 
+    100% { opacity: 1; transform: scale(1) translateY(0); } 
+}
+
+/* 筆でサッと書いたような滑らかな出現 */
+@keyframes brushWrite { 
+    0% { clip-path: inset(0 100% 0 0); } 
+    100% { clip-path: inset(0 0 0 0); } 
+}
+
+@keyframes fadeUpSubtitle { 
+    0% { opacity: 0; transform: translateY(10px); } 
+    100% { opacity: 1; transform: translateY(0); } 
+}
+
 .splash-hidden { opacity: 0 !important; visibility: hidden !important; }
 
 /* =========================================

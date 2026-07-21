@@ -16,7 +16,7 @@ setTimeout(() => {
             splash.remove(); // 完全にDOMから削除して操作の邪魔をしない
         }, 800); 
     }
-}, 2000); 
+}, 3000); 
 
 // アプリ起動時の初期画面表示
 showSelectionScreen();
