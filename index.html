@@ -307,7 +307,90 @@
                 </div>
             </div>
         </div>
+        <!-- 🔽 フィニッシュ後の学習モーダル (Review & Practice) 🔽 -->
+        <div id="finish-modal" class="hidden">
+            <div class="finish-modal-overlay"></div>
+            <div class="finish-modal-content">
+                <button id="close-finish-modal-btn">×</button>
+                <div class="modal-header">
+                    <h2 id="modal-main-title">Review & Practice</h2>
+                    <p id="modal-sub-title">CEFRレベル別のモデル解答から、音読練習したい英文を選択してください。</p>
+                </div>
+                
+                <div class="finish-modal-body">
+                    <div class="modal-left-pane">
+                        <img id="modal-review-image" src="" alt="Review Image">
+                        <div class="your-answer-box" id="modal-your-answer-box">
+                            <h3>Your Answer:</h3>
+                            <p id="modal-user-answer"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-right-pane">
+                        
+                        <!-- 🌟 状態1：英文の選択画面 -->
+                        <div id="modal-state-selection">
+                            <div class="cefr-tabs" id="cefr-tabs-container">
+                                <button class="cefr-tab active" data-level="A1">A1</button>
+                                <button class="cefr-tab" data-level="A2">A2</button>
+                                <button class="cefr-tab" data-level="B1">B1</button>
+                                <button class="cefr-tab" data-level="B2">B2</button>
+                            </div>
+                            
+                            <div id="cefr-content-area" class="cefr-content">
+                                <!-- JSでチェックボックス付きの英文が挿入されます -->
+                            </div>
 
+                            <div class="practice-controls">
+                                <label class="switch-label">
+                                    <input type="checkbox" id="blank-reading-switch"> 脳に負荷をかける (Blank Reading)
+                                </label>
+                                <button id="speech-practice-btn" class="speech-btn">
+                                    🎤 選択した英文を音読する
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 🌟 状態2：音読練習・判定画面 -->
+                        <div id="modal-state-practice" class="hidden">
+                            <button id="back-to-selection-btn" class="back-btn" style="margin-bottom: 15px;">← 選択画面に戻る</button>
+                            
+                            <div id="practice-target-text" class="practice-text">
+                                <!-- 選択された英文（日本語なし）がここに表示されます -->
+                            </div>
+                            
+                            <div class="transcription-box">
+                                <h4 style="margin-bottom: 5px; color:#666;">🎙 Your Speech:</h4>
+                                <p id="live-transcription">...</p>
+                            </div>
+                            
+                            <div class="practice-actions">
+                                <button id="finish-reading-btn" class="speech-btn recording">
+                                    ⏹ 音読 Finish
+                                </button>
+                                <button id="retry-reading-btn" class="speech-btn hidden" style="background:#3b82f6;">
+                                    🔄 もう一度音読する
+                                </button>
+                            </div>
+
+                            <!-- Accuracy判定結果（半円ゲージ） -->
+                            <div id="speech-result-area" class="hidden">
+                                <div class="gauge-container" style="margin: 0 auto; transform: scale(0.9);">
+                                    <svg viewBox="0 0 100 50" class="half-donut">
+                                        <path d="M 10 50 A 40 40 0 0 1 90 50" class="gauge-bg"/>
+                                        <path d="M 10 50 A 40 40 0 0 1 90 50" class="gauge-fill" id="modal-gauge-fill" style="stroke:#10b981;"/>
+                                    </svg>
+                                    <div id="accuracy-number-display" class="gauge-text">0<span class="pts">%</span></div>
+                                </div>
+                                <div style="text-align:center; font-weight:bold; color:#111;">Accuracy (正確さ)</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 🔼 フィニッシュ後の学習モーダルここまで 🔼 -->
     </div>
 
     <!-- 分割したJSファイルの読み込み -->

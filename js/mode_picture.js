@@ -19,7 +19,11 @@ const supportSwitch = document.getElementById('support-switch');
 const hintLevelSelect = document.getElementById('hint-level-select');
 const hintContent = document.getElementById('hint-content');
 const hintTitle = document.getElementById('hint-title');
+const assistantMessage = document.getElementById('assistant-message'); 
+
 let currentEarnedScore = 0;
+let currentStep = 1; 
+let totalSteps = 3;  
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioCtx;
@@ -51,6 +55,7 @@ function playHitSound(isActivation = false) {
 
 function setupGameData() {
     scoringTargets = []; maxScore = 0; categoryHits = { gist: 0, setting: 0, details: 0 };
+    if (cafeData.core_svo_targets) totalSteps = cafeData.core_svo_targets.length;
 
     cafeData.elements.forEach(el => {
         let bucket = 'details', svoRole = null; 
@@ -62,31 +67,36 @@ function setupGameData() {
         else if (['architecture', 'place', 'furniture', 'equipment'].includes(el.category)) { bucket = 'setting'; } 
         else if (['nature', 'decoration', 'lighting', 'environment', 'sign'].includes(el.category) || (!isPrimary && el.category === 'object')) { bucket = 'details'; }
 
+        const wordsArray = el.accepted_words || el.synonyms_and_related_words || [];
+
         scoringTargets.push({
             id: el.id, label: el.label, label_ja: el.label_ja, 
-            bucket: bucket, svoRole: svoRole, words: el.synonyms_and_related_words.map(w => w.toLowerCase()),
+            bucket: bucket, svoRole: svoRole, words: wordsArray.map(w => w.toLowerCase()),
             weight: weight, hit: false
         });
         maxScore += weight;
     });
 
     cafeData.actions_analysis.forEach(action => {
+        const wordsArray = action.accepted_words || action.synonyms || [];
         scoringTargets.push({
-            id: action.id, label: 'Action', label_ja: action.description_ja, 
-            bucket: 'gist', svoRole: 'verb', words: action.synonyms.map(p => p.toLowerCase()),
+            id: action.id, label: 'Action', label_ja: action.description_ja || action.description, 
+            bucket: 'gist', svoRole: 'verb', words: wordsArray.map(p => p.toLowerCase()),
             weight: 10, hit: false
         });
         maxScore += 10;
     });
     
-    cafeData.overall_mood.forEach(mood => {
-        scoringTargets.push({
-            id: 'mood_' + mood, label: 'Mood', label_ja: '雰囲気 (' + mood + ')', 
-            bucket: 'details', svoRole: null, words: [mood.toLowerCase()],
-            weight: 2, hit: false
+    if (cafeData.overall_mood) {
+        cafeData.overall_mood.forEach(mood => {
+            scoringTargets.push({
+                id: 'mood_' + mood, label: 'Mood', label_ja: '雰囲気 (' + mood + ')', 
+                bucket: 'details', svoRole: null, words: [mood.toLowerCase()],
+                weight: 2, hit: false
+            });
+            maxScore += 2;
         });
-        maxScore += 2;
-    });
+    }
 }
 
 function updateCoverageDisplay() {
@@ -98,79 +108,24 @@ function updateCoverageDisplay() {
     if(gaugePath) gaugePath.style.strokeDashoffset = offset;
 }
 
-function updateAssistantUI(justHitRole = null) {
-    const titleEl = document.getElementById('current-step-title');
-    const badgeEl = document.getElementById('step-progress-badge');
-    const msgEl = document.getElementById('assistant-message');
-    const svoContainer = document.getElementById('svo-slots-container');
+function updateGlowAndButtons() {
     const skipBtn = document.getElementById('skip-step-btn');
-
-    const svoHits = { subject: 0, verb: 0, object: 0 };
-    scoringTargets.forEach(t => { if (t.hit && t.svoRole) svoHits[t.svoRole]++; });
-
-    const setSlot = (type, state) => {
-        const el = document.getElementById(`slot-${type}`);
-        const icon = document.getElementById(`icon-${type}`);
-        if (!el || !icon) return;
-        el.className = `stepper-item ${state}-slot`;
-        if (state === 'completed') icon.textContent = '✓';
-        else if (type === 'subject') icon.textContent = '1';
-        else if (type === 'verb') icon.textContent = '2';
-        else if (type === 'object') icon.textContent = '3';
-    };
-
-    setSlot('subject', 'locked'); setSlot('verb', 'locked'); setSlot('object', 'locked');
-
-    if (svoHits.subject > 0) setSlot('subject', 'completed');
-    if (svoHits.verb > 0) setSlot('verb', 'completed');
-    if (svoHits.object > 0) setSlot('object', 'completed');
-
-    let activeTarget = null;
-    if (svoHits.subject === 0) activeTarget = 'subject';
-    else if (svoHits.verb === 0) activeTarget = 'verb';
-    else if (svoHits.object === 0) activeTarget = 'object';
-
-    if (activeTarget) setSlot(activeTarget, 'active');
     
-    if (activeTarget || categoryHits.setting < LIGHT_THRESHOLD || categoryHits.details < LIGHT_THRESHOLD) skipBtn.classList.remove('hidden');
-    else skipBtn.classList.add('hidden');
-
-    if (activeTarget) {
-        svoContainer.style.display = 'flex';
-        titleEl.textContent = "Step 1: Main Gist";
-        badgeEl.textContent = "1 / 3 挑戦中";
-        if (activeTarget === 'subject') msgEl.innerHTML = "描写の中に「<strong>女性 (woman)</strong>」などの主語を入れてみましょう。";
-        else if (activeTarget === 'verb') msgEl.innerHTML = "主語クリア！次は「<strong>飲んでいる (drink)</strong>」などの動作(動詞)を続けましょう。（※スペルミスにも注意！）";
-        else if (activeTarget === 'object') msgEl.innerHTML = "いい調子です！「<strong>コーヒー (coffee)</strong>」などの目的語を繋げて文を完成させましょう。";
+    if (currentStep <= totalSteps || categoryHits.setting < LIGHT_THRESHOLD || categoryHits.details < LIGHT_THRESHOLD) {
+        skipBtn.classList.remove('hidden');
     } else {
-        svoContainer.style.display = 'none'; 
-        if (categoryHits.setting < LIGHT_THRESHOLD) {
-            titleEl.textContent = "Step 2: 場所や背景 (Setting)";
-            badgeEl.textContent = "2 / 3 挑戦中";
-            const target = scoringTargets.find(t => t.bucket === 'setting' && !t.hit);
-            msgEl.innerHTML = target ? `SVO完成！次は「<strong>${target.label_ja} (${target.words[0]})</strong>」など、場所の情報を付け足しましょう。` : "場所や背景の情報を描写してみましょう。";
-        } 
-        else if (categoryHits.details < LIGHT_THRESHOLD) {
-            titleEl.textContent = "Step 3: 詳しい様子 (Details)";
-            badgeEl.textContent = "3 / 3 挑戦中";
-            const target = scoringTargets.find(t => t.bucket === 'details' && !t.hit);
-            msgEl.innerHTML = target ? `背景もOK！最後に「<strong>${target.label_ja} (${target.words[0]})</strong>」など、小物を描写してみましょう。` : "光や感情など、詳しい様子を描写してみましょう。";
-        } 
-        else {
-            titleEl.textContent = "Mission Complete! 🌟";
-            badgeEl.textContent = "ALL CLEAR!";
-            msgEl.innerHTML = "<strong>Perfect!</strong> すべての要素を完璧に描写しました！このままFinishを押して結果を確認しましょう。";
-        }
+        skipBtn.classList.add('hidden');
     }
 
     document.querySelectorAll('.hint-glow-overlay').forEach(el => el.remove());
-
     let currentFocusTarget = null;
-    if (activeTarget === 'subject') currentFocusTarget = scoringTargets.find(t => t.svoRole === 'subject' && !t.hit);
-    else if (activeTarget === 'verb') currentFocusTarget = scoringTargets.find(t => t.svoRole === 'subject'); 
-    else if (activeTarget === 'object') currentFocusTarget = scoringTargets.find(t => t.svoRole === 'object' && !t.hit);
-    else if (categoryHits.setting < LIGHT_THRESHOLD) currentFocusTarget = scoringTargets.find(t => t.bucket === 'setting' && !t.hit);
-    else if (categoryHits.details < LIGHT_THRESHOLD) currentFocusTarget = scoringTargets.find(t => t.bucket === 'details' && !t.hit);
+    
+    if (currentStep <= totalSteps) {
+        const targetData = cafeData.core_svo_targets.find(t => t.step === currentStep);
+        if (targetData) currentFocusTarget = scoringTargets.find(t => t.svoRole === targetData.slot && !t.hit);
+    }
+    if (!currentFocusTarget && categoryHits.setting < LIGHT_THRESHOLD) currentFocusTarget = scoringTargets.find(t => t.bucket === 'setting' && !t.hit);
+    if (!currentFocusTarget && categoryHits.details < LIGHT_THRESHOLD) currentFocusTarget = scoringTargets.find(t => t.bucket === 'details' && !t.hit);
 
     if (currentFocusTarget) {
         const elData = cafeData.elements.find(e => e.id === currentFocusTarget.id);
@@ -200,7 +155,7 @@ document.getElementById('skip-step-btn').addEventListener('click', () => {
 
     playHitSound(true); 
     updateCoverageDisplay();
-    updateAssistantUI();
+    updateGlowAndButtons();
     userInput.focus();
 });
 
@@ -225,8 +180,11 @@ function renderOverlays() {
 function showHints(element) {
     hintTitle.textContent = `${element.label_ja} (${element.label})`;
     hintContent.innerHTML = '';
-    ['beginner', 'intermediate', 'advanced'].forEach(level => {
-        const levelHints = element.hints.filter(h => h.level === level);
+    
+    const levels = ['A1', 'A2', 'B1', 'B2', 'beginner', 'intermediate', 'advanced'];
+    
+    levels.forEach(level => {
+        const levelHints = element.hints ? element.hints.filter(h => h.level === level) : [];
         if (levelHints.length > 0) {
             const groupDiv = document.createElement('div');
             groupDiv.className = 'hint-level-group';
@@ -274,16 +232,110 @@ function placeCaretAtEnd(el) {
     }
 }
 
+// ==========================================
+// 🌟 次世代スマート判定システム統合
+// ==========================================
+function checkAndSuggestTypos(inputText) {
+    let typoFound = null;
+    let correctWord = null;
+
+    const allItems = [...(cafeData.elements || []), ...(cafeData.actions_analysis || [])];
+
+    for (const item of allItems) {
+        if (item.common_typos) {
+            for (const typo of item.common_typos) {
+                const regex = new RegExp(`\\b${typo}\\b`, 'i');
+                if (regex.test(inputText)) {
+                    typoFound = typo;
+                    correctWord = item.accepted_words[0]; 
+                    break;
+                }
+            }
+        }
+        if (typoFound) break;
+    }
+
+    if (typoFound) {
+        assistantMessage.innerHTML = `⚠️ 惜しい！もしかして <strong>${correctWord}</strong> のスペルミス（${typoFound}）ですか？`;
+        assistantMessage.style.backgroundColor = "#fffbeb";
+        assistantMessage.style.borderColor = "#f59e0b";
+        assistantMessage.style.color = "#b45309";
+    } else {
+        assistantMessage.style.backgroundColor = "transparent";
+        assistantMessage.style.borderColor = "#e0e0e0";
+        assistantMessage.style.color = "#111111";
+        if (currentStep <= totalSteps) {
+            const currentTargetData = cafeData.core_svo_targets.find(t => t.step === currentStep);
+            if (currentTargetData) assistantMessage.innerHTML = currentTargetData.hint_msg;
+        }
+    }
+}
+
+function checkSvoProgress(inputText) {
+    if (currentStep > totalSteps) return;
+
+    const currentTargetData = cafeData.core_svo_targets.find(t => t.step === currentStep);
+    let isStepCleared = false;
+
+    for (const targetWord of currentTargetData.targets) {
+        const regex = new RegExp(`\\b${targetWord}\\b`, 'i');
+        if (regex.test(inputText)) {
+            isStepCleared = true;
+            break;
+        }
+    }
+
+    if (isStepCleared) {
+        const activeSlot = document.getElementById(`slot-${currentTargetData.slot}`);
+        if (activeSlot) {
+            activeSlot.classList.remove('active-slot');
+            activeSlot.classList.add('completed-slot');
+            document.getElementById(`icon-${currentTargetData.slot}`).textContent = '✓';
+        }
+
+        assistantMessage.innerHTML = `✨ <strong>${currentTargetData.success_msg}</strong>`;
+        assistantMessage.style.backgroundColor = "#f0fdf4"; 
+        assistantMessage.style.borderColor = "#10b981";
+        assistantMessage.style.color = "#047857";
+
+        currentStep++;
+        
+        if (currentStep <= totalSteps) {
+            const nextTargetData = cafeData.core_svo_targets.find(t => t.step === currentStep);
+            const nextSlot = document.getElementById(`slot-${nextTargetData.slot}`);
+            if (nextSlot) nextSlot.classList.add('active-slot');
+            
+            document.getElementById('step-progress-badge').innerText = `${currentStep} / ${totalSteps} 挑戦中`;
+            
+            setTimeout(() => {
+                if(assistantMessage.innerHTML.includes('✨')) {
+                    assistantMessage.innerHTML = nextTargetData.hint_msg;
+                    assistantMessage.style.backgroundColor = "transparent";
+                    assistantMessage.style.borderColor = "#e0e0e0";
+                    assistantMessage.style.color = "#111111";
+                }
+            }, 3000);
+        } else {
+            document.getElementById('current-step-title').textContent = "Mission Complete! 🌟";
+            document.getElementById('step-progress-badge').innerText = "ALL CLEAR!";
+            document.getElementById('step-progress-badge').style.backgroundColor = "#10b981";
+        }
+    }
+}
+
 let isFormatting = false;
 
 userInput.addEventListener('input', () => {
     if (isFormatting) return; 
     initAudio();
     
-    const text = userInput.innerText.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+    const rawText = userInput.innerText.toLowerCase();
+    const text = rawText.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
     const words = text.split(/\s+/);
     let newHitFound = false;
-    let justHitRole = null;
+
+    checkAndSuggestTypos(rawText);
+    checkSvoProgress(rawText);
 
     scoringTargets.forEach(target => {
         if (!target.hit) {
@@ -317,7 +369,6 @@ userInput.addEventListener('input', () => {
                 currentEarnedScore += target.weight;
                 categoryHits[target.bucket]++;
                 
-                if (target.svoRole) justHitRole = target.svoRole;
                 if (!alreadyHitWords.includes(matchedString)) alreadyHitWords.push(matchedString);
                 
                 updateCoverageDisplay();
@@ -330,8 +381,8 @@ userInput.addEventListener('input', () => {
     });
 
     if (newHitFound) {
-        updateAssistantUI(justHitRole);
-        if (!justHitRole) playHitSound(false); 
+        updateGlowAndButtons();
+        playHitSound(false); 
         isFormatting = true;
         boldMatchedWords();
         isFormatting = false;
@@ -351,27 +402,225 @@ supportSwitch.addEventListener('change', (e) => {
 });
 hintLevelSelect.addEventListener('change', renderOverlays);
 
+
+// ==========================================
+// 🌟 Review & Practice モーダルシステム (音読・文字起こし・Accuracy判定)
+// ==========================================
+const finishModal = document.getElementById('finish-modal');
+const closeFinishModalBtn = document.getElementById('close-finish-modal-btn');
+const cefrTabs = document.querySelectorAll('.cefr-tab');
+const cefrContentArea = document.getElementById('cefr-content-area');
+const blankReadingSwitch = document.getElementById('blank-reading-switch');
+const speechPracticeBtn = document.getElementById('speech-practice-btn');
+
+const stateSelection = document.getElementById('modal-state-selection');
+const statePractice = document.getElementById('modal-state-practice');
+const backToSelectionBtn = document.getElementById('back-to-selection-btn');
+const practiceTargetText = document.getElementById('practice-target-text');
+const liveTranscription = document.getElementById('live-transcription');
+const finishReadingBtn = document.getElementById('finish-reading-btn');
+const retryReadingBtn = document.getElementById('retry-reading-btn');
+const speechResultArea = document.getElementById('speech-result-area');
+const modalGaugeFill = document.getElementById('modal-gauge-fill');
+const accuracyNumberDisplay = document.getElementById('accuracy-number-display');
+
+let currentCefrLevel = 'A1';
+let currentTargetSentences = []; 
+let finalTranscript = ''; 
+
+// Web Speech API の初期化
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = null;
+if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = true; 
+    recognition.continuous = true;     
+}
+
+// Finish & Check ボタンを押した時
 submitBtn.addEventListener('click', () => {
     userInput.contentEditable = "false"; 
     submitBtn.disabled = true;
-    const finalCoverage = Math.min(100, Math.floor((currentEarnedScore / (maxScore * 0.6)) * 100));
-    document.getElementById('feedback-msg').textContent = finalCoverage >= 80 ? "Outstanding!" : "Good try!";
     
-    const modelAnswersList = document.getElementById('model-answers-list');
-    modelAnswersList.innerHTML = '';
-    const sampleAnswers = [...cafeData.sample_answers.beginner, ...cafeData.sample_answers.intermediate, ...cafeData.sample_answers.advanced];
-    sampleAnswers.forEach(answer => {
-        const li = document.createElement('li'); li.textContent = answer;
-        modelAnswersList.appendChild(li);
-    });
-    resultArea.classList.remove('hidden');
+    document.getElementById('modal-user-answer').innerText = userInput.innerText || "(No answer)";
+    document.getElementById('modal-review-image').src = targetImage.src;
+    
+    resetToSelectionState();
+    renderCefrContent('A1');
+    finishModal.classList.remove('hidden');
 });
 
-document.getElementById('retry-btn').addEventListener('click', () => initGame());
+closeFinishModalBtn.addEventListener('click', () => {
+    finishModal.classList.add('hidden');
+    if(recognition) recognition.stop();
+    userInput.contentEditable = "true"; 
+    submitBtn.disabled = false;
+});
 
-// 外部から呼ばれる初期化関数（sceneIdを受け取って切り替え可能にする）
+backToSelectionBtn.addEventListener('click', () => {
+    if(recognition) recognition.stop();
+    resetToSelectionState();
+});
+
+function resetToSelectionState() {
+    stateSelection.classList.remove('hidden');
+    statePractice.classList.add('hidden');
+    document.getElementById('modal-main-title').innerText = "Review & Practice";
+    document.getElementById('modal-sub-title').innerText = "CEFRレベル別のモデル解答から、音読練習したい英文を選択してください。";
+    document.getElementById('modal-your-answer-box').style.display = "block";
+}
+
+cefrTabs.forEach(tab => {
+    tab.addEventListener('click', (e) => {
+        cefrTabs.forEach(t => t.classList.remove('active'));
+        e.target.classList.add('active');
+        currentCefrLevel = e.target.getAttribute('data-level');
+        blankReadingSwitch.checked = false; 
+        renderCefrContent(currentCefrLevel);
+    });
+});
+
+function renderCefrContent(level) {
+    cefrContentArea.innerHTML = '';
+    const isBlank = blankReadingSwitch.checked;
+    
+    if (cafeData.cefr_model_answers && cafeData.cefr_model_answers[level]) {
+        cafeData.cefr_model_answers[level].forEach((answer, index) => {
+            
+            let displayText = answer.en;
+            if (isBlank) {
+                displayText = displayText.replace(/\b[a-zA-Z]{5,}\b/g, (match) => {
+                    return Math.random() > 0.4 ? '<span class="blanked-word"></span>' : match;
+                });
+            }
+            
+            const label = document.createElement('label');
+            label.className = 'cefr-sentence-item';
+            label.innerHTML = `
+                <input type="checkbox" class="sentence-checkbox" value="${answer.en}">
+                <div>
+                    <strong>[${level}]</strong> <span style="font-size:1.1em; color:#111;">${displayText}</span><br>
+                    <span style="font-size: 0.85em; color: #666;">${answer.ja}</span>
+                </div>
+            `;
+            cefrContentArea.appendChild(label);
+        });
+    }
+}
+
+blankReadingSwitch.addEventListener('change', () => {
+    renderCefrContent(currentCefrLevel);
+});
+
+speechPracticeBtn.addEventListener('click', () => {
+    if (!recognition) {
+        alert("お使いのブラウザは音声認識に対応していません。Chromeをご利用ください。");
+        return;
+    }
+
+    const checkboxes = document.querySelectorAll('.sentence-checkbox:checked');
+    if (checkboxes.length === 0) {
+        alert("音読練習したい英文にチェックを入れてください。");
+        return;
+    }
+
+    currentTargetSentences = Array.from(checkboxes).map(cb => cb.value);
+    const isBlank = blankReadingSwitch.checked;
+    
+    let practiceHtml = '';
+    currentTargetSentences.forEach(sentence => {
+        let text = sentence;
+        if (isBlank) {
+            text = text.replace(/\b[a-zA-Z]{5,}\b/g, match => Math.random() > 0.4 ? '<span class="blanked-word"></span>' : match);
+        }
+        practiceHtml += `<p>${text}</p>`;
+    });
+
+    practiceTargetText.innerHTML = practiceHtml;
+    stateSelection.classList.add('hidden');
+    statePractice.classList.remove('hidden');
+    document.getElementById('modal-your-answer-box').style.display = "none";
+    document.getElementById('modal-main-title').innerText = "Reading Practice";
+    document.getElementById('modal-sub-title').innerText = "マイクに向かって、表示されている英文を音読してください。";
+    
+    startRecording();
+});
+
+retryReadingBtn.addEventListener('click', () => {
+    startRecording();
+});
+
+function startRecording() {
+    finalTranscript = '';
+    liveTranscription.innerHTML = '<span style="color:#999;">Waiting for your voice... (話し始めてください)</span>';
+    speechResultArea.classList.add('hidden');
+    finishReadingBtn.classList.remove('hidden');
+    retryReadingBtn.classList.add('hidden');
+    
+    try { recognition.start(); } catch(e) {}
+}
+
+if (recognition) {
+    recognition.onresult = (event) => {
+        let interimTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+                finalTranscript += event.results[i][0].transcript + ' ';
+            } else {
+                interimTranscript += event.results[i][0].transcript;
+            }
+        }
+        liveTranscription.innerHTML = finalTranscript + '<span style="color: #999;">' + interimTranscript + '</span>';
+    };
+
+    recognition.onerror = (event) => {
+        liveTranscription.innerHTML = `<span style="color:red;">Error: ${event.error}</span>`;
+    };
+}
+
+finishReadingBtn.addEventListener('click', () => {
+    if(recognition) recognition.stop();
+    
+    finishReadingBtn.classList.add('hidden');
+    retryReadingBtn.classList.remove('hidden');
+    
+    const targetWords = currentTargetSentences.join(' ').toLowerCase().replace(/[.,!?]/g, '').split(/\s+/).filter(w => w.length > 0);
+    const spokenWords = finalTranscript.toLowerCase().replace(/[.,!?]/g, '').split(/\s+/).filter(w => w.length > 0);
+    
+    let matchCount = 0;
+    spokenWords.forEach(word => {
+        if (targetWords.includes(word)) matchCount++;
+    });
+    
+    let accuracy = 0;
+    if (targetWords.length > 0) {
+        accuracy = Math.min(100, Math.round((matchCount / targetWords.length) * 100));
+    }
+    if (accuracy > 95) accuracy = 100; 
+    
+    accuracyNumberDisplay.innerHTML = `${accuracy}<span class="pts">%</span>`;
+    const offset = 125.6 - (125.6 * (accuracy / 100));
+    modalGaugeFill.style.strokeDashoffset = offset;
+    
+    if (accuracy >= 80) {
+        modalGaugeFill.style.stroke = "#10b981"; 
+        accuracyNumberDisplay.style.color = "#047857";
+    } else if (accuracy >= 50) {
+        modalGaugeFill.style.stroke = "#f59e0b"; 
+        accuracyNumberDisplay.style.color = "#b45309";
+    } else {
+        modalGaugeFill.style.stroke = "#ef4444"; 
+        accuracyNumberDisplay.style.color = "#b91c1c";
+    }
+    
+    speechResultArea.classList.remove('hidden');
+});
+
+// ==========================================
+// 初期化関数
+// ==========================================
 function initGame(sceneId = 'cafe') {
-    // ※ゆくゆくはsceneIdに応じてデータを切り替えます。現在はcafeDataを読み込みます。
     setupGameData();
     targetImage.src = cafeData.imageUrl ? cafeData.imageUrl : ("images/" + cafeData.image_id);
     
@@ -381,9 +630,33 @@ function initGame(sceneId = 'cafe') {
     document.querySelectorAll('.gold-overlay, .hint-glow-overlay').forEach(el => el.remove());
     currentEarnedScore = 0;
     
+    currentStep = 1;
+    ['subject', 'verb', 'object'].forEach((id, index) => {
+        const el = document.getElementById(`slot-${id}`);
+        const icon = document.getElementById(`icon-${id}`);
+        if (el) el.className = `stepper-item ${index === 0 ? 'active-slot' : 'locked-slot'}`;
+        if (icon) icon.textContent = (index + 1).toString();
+    });
+    
+    document.getElementById('current-step-title').textContent = "Step 1: Main Gist";
+    document.getElementById('step-progress-badge').textContent = `1 / ${totalSteps} 挑戦中`;
+    document.getElementById('step-progress-badge').style.backgroundColor = "#111111"; 
+    
+    if (assistantMessage && cafeData.core_svo_targets) {
+        assistantMessage.innerHTML = cafeData.core_svo_targets[0].hint_msg;
+        assistantMessage.style.backgroundColor = "transparent";
+        assistantMessage.style.borderColor = "#e0e0e0";
+        assistantMessage.style.color = "#111111";
+    }
+
     updateCoverageDisplay();
     
     resultArea.classList.add('hidden'); 
+    
+    // モーダルが開いたままリセットされた場合は閉じる
+    const modalEl = document.getElementById('finish-modal');
+    if (modalEl) modalEl.classList.add('hidden');
+
     document.getElementById('hint-content').innerHTML = '<p class="hint-placeholder">Support ModeをONにして画像の枠をクリックすると、ここに単語や文法のヒントが表示されます。</p>';
     document.getElementById('hint-title').textContent = "💡 Hint Area";
 
@@ -393,56 +666,47 @@ function initGame(sceneId = 'cafe') {
     userInput.contentEditable = "true"; 
     submitBtn.disabled = false;
     
-    updateAssistantUI(); 
+    updateGlowAndButtons(); 
     userInput.focus();
 }
+
 // ==========================================
 // 手書き読み込み (OCR) ロジック
 // ==========================================
 const ocrFileInput = document.getElementById('ocr-file-input');
 const ocrLoading = document.getElementById('ocr-loading');
 const ocrProgress = document.getElementById('ocr-progress');
-// userInput 変数はすでにある想定でそのまま利用します
-
-// ★ボタンクリック処理（ocrTriggerBtn.addEventListener...）はHTMLの<label>機能に任せるため削除しました。
 
 if (ocrFileInput) {
-    // 写真が撮影/選択されたら解析スタート
     ocrFileInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
-        // ローディング画面を表示
         ocrLoading.classList.remove('hidden');
         ocrProgress.textContent = "0";
 
         try {
-            // Tesseract.jsで画像から英語を抽出
             const result = await Tesseract.recognize(
                 file,
-                'eng', // 英語として認識
+                'eng',
                 {
                     logger: m => {
                         if (m.status === 'recognizing text') {
-                            // 進捗状況（%）を画面に表示
                             ocrProgress.textContent = Math.floor(m.progress * 100);
                         }
                     }
                 }
             );
 
-            // 解析結果から改行を消して整形
             const cleanText = result.data.text.replace(/\n/g, ' ').trim();
             
             if (cleanText) {
-                // 現在の入力欄に文字を追加
                 if (userInput.innerText.trim().length > 0) {
                     userInput.innerText += " " + cleanText;
                 } else {
                     userInput.innerText = cleanText;
                 }
                 
-                // 入力があったことをアプリに伝え、単語判定などを動かす
                 const event = new Event('input', { bubbles: true });
                 userInput.dispatchEvent(event);
                 
@@ -455,9 +719,8 @@ if (ocrFileInput) {
             console.error("OCR Error:", error);
             alert("解析中にエラーが発生しました。");
         } finally {
-            // 処理が終わったらローディングを消して元に戻す
             ocrLoading.classList.add('hidden');
-            ocrFileInput.value = ''; // 連続で撮影できるようにリセット
+            ocrFileInput.value = '';
         }
     });
 }
