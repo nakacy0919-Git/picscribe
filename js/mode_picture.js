@@ -469,6 +469,9 @@ function resetToSelectionState() {
     document.getElementById('modal-main-title').innerText = "Review & Practice";
     document.getElementById('modal-sub-title').innerText = "CEFRレベル別のモデル解答から、音読練習したい英文を選択してください。";
     document.getElementById('modal-your-answer-box').style.display = "block";
+    
+    // ★追加：選択画面に戻る時にAccuracyメーターを隠す
+    speechResultArea.classList.add('hidden');
 }
 
 cefrTabs.forEach(tab => {
@@ -561,6 +564,51 @@ function startRecording() {
     try { recognition.start(); } catch(e) {}
 }
 
+// 🌟 判定処理を共通の関数として切り出し
+function processSpeechResult() {
+    if(recognition) recognition.stop();
+    
+    finishReadingBtn.classList.add('hidden');
+    retryReadingBtn.classList.remove('hidden');
+    
+    // 画面に表示されているテキスト（文字起こし結果）をそのまま取得
+    const fullText = liveTranscription.innerText.replace('Waiting for your voice... (話し始めてください)', '');
+    if (!fullText.trim()) return; // 空の場合は処理しない
+
+    const targetWords = currentTargetSentences.join(' ').toLowerCase().replace(/[.,!?]/g, '').split(/\s+/).filter(w => w.length > 0);
+    const spokenWords = fullText.toLowerCase().replace(/[.,!?]/g, '').split(/\s+/).filter(w => w.length > 0);
+    
+    let matchCount = 0;
+    spokenWords.forEach(word => {
+        if (targetWords.includes(word)) matchCount++;
+    });
+    
+    let accuracy = 0;
+    if (targetWords.length > 0) {
+        accuracy = (matchCount / targetWords.length) * 100;
+    }
+    if (accuracy > 95 && accuracy < 100) accuracy = 100; // 僅かな揺れを許容
+    
+    // 小数点第1位まで表示（整数ならそのまま表示）
+    let displayAcc = accuracy % 1 === 0 ? accuracy : accuracy.toFixed(1);
+    document.getElementById('accuracy-number-value').innerText = displayAcc;
+    
+    const offset = 125.6 - (125.6 * (accuracy / 100));
+    const gaugeFill = document.getElementById('modal-gauge-fill');
+    gaugeFill.style.strokeDashoffset = offset;
+    
+    // スコアに応じた色の変更
+    if (accuracy >= 80) {
+        gaugeFill.style.stroke = "#f59e0b"; // オレンジ（高得点）
+    } else if (accuracy >= 50) {
+        gaugeFill.style.stroke = "#fbbf24"; // 薄いオレンジ
+    } else {
+        gaugeFill.style.stroke = "#ef4444"; // 赤（要再挑戦）
+    }
+    
+    speechResultArea.classList.remove('hidden');
+}
+
 if (recognition) {
     recognition.onresult = (event) => {
         let interimTranscript = '';
@@ -574,47 +622,23 @@ if (recognition) {
         liveTranscription.innerHTML = finalTranscript + '<span style="color: #999;">' + interimTranscript + '</span>';
     };
 
+    // ★ ユーザーが話すのをやめてAPIが自動停止した時にも判定を走らせる
+    recognition.onend = () => {
+        if (speechResultArea.classList.contains('hidden')) {
+            processSpeechResult();
+        }
+    };
+
     recognition.onerror = (event) => {
         liveTranscription.innerHTML = `<span style="color:red;">Error: ${event.error}</span>`;
+        finishReadingBtn.classList.add('hidden');
+        retryReadingBtn.classList.remove('hidden');
     };
 }
 
+// 手動でFinishボタンを押した時
 finishReadingBtn.addEventListener('click', () => {
-    if(recognition) recognition.stop();
-    
-    finishReadingBtn.classList.add('hidden');
-    retryReadingBtn.classList.remove('hidden');
-    
-    const targetWords = currentTargetSentences.join(' ').toLowerCase().replace(/[.,!?]/g, '').split(/\s+/).filter(w => w.length > 0);
-    const spokenWords = finalTranscript.toLowerCase().replace(/[.,!?]/g, '').split(/\s+/).filter(w => w.length > 0);
-    
-    let matchCount = 0;
-    spokenWords.forEach(word => {
-        if (targetWords.includes(word)) matchCount++;
-    });
-    
-    let accuracy = 0;
-    if (targetWords.length > 0) {
-        accuracy = Math.min(100, Math.round((matchCount / targetWords.length) * 100));
-    }
-    if (accuracy > 95) accuracy = 100; 
-    
-    accuracyNumberDisplay.innerHTML = `${accuracy}<span class="pts">%</span>`;
-    const offset = 125.6 - (125.6 * (accuracy / 100));
-    modalGaugeFill.style.strokeDashoffset = offset;
-    
-    if (accuracy >= 80) {
-        modalGaugeFill.style.stroke = "#10b981"; 
-        accuracyNumberDisplay.style.color = "#047857";
-    } else if (accuracy >= 50) {
-        modalGaugeFill.style.stroke = "#f59e0b"; 
-        accuracyNumberDisplay.style.color = "#b45309";
-    } else {
-        modalGaugeFill.style.stroke = "#ef4444"; 
-        accuracyNumberDisplay.style.color = "#b91c1c";
-    }
-    
-    speechResultArea.classList.remove('hidden');
+    processSpeechResult();
 });
 
 // ==========================================

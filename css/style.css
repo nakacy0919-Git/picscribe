@@ -34,8 +34,6 @@ body {
     box-shadow: 0 4px 20px rgba(0,0,0,0.03);
     border: 1px solid #e0e0e0;
     gap: 35px;
-    /* ★ヘッダーの幅を絞って両サイドにキャンバス背景を見せる */
-   
 }
 
 #app-logo { width: 110px; height: 110px; object-fit: contain; border-radius: 50%; box-shadow: 0 8px 16px rgba(0,0,0,0.15); }
@@ -213,7 +211,6 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
 #dict-synonyms li { margin-bottom: 12px; font-size: 14px; line-height: 1.5; color: #555; display: flex; flex-direction: column; background: #fcfcfc; padding: 8px 12px; border-radius: 6px; border-left: 3px solid #0984e3; }
 #dict-synonyms strong { color: #0984e3; font-size: 15px; margin-bottom: 2px; }
 
-
 /* =========================================
    10. ホーム画面（学習トラック ＆ 画像選択）
 ========================================= */
@@ -224,8 +221,6 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
     box-shadow: 0 10px 40px rgba(0,0,0,0.05);
     border: 1px solid #e0e0e0;
     overflow: hidden;
-    /* ★パネル全体の幅を絞って両サイドにキャンバス背景を見せる */
-    
 }
 
 .macro-section {
@@ -293,15 +288,12 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
 .macro-card.active .macro-content { transform: translateY(-5px); }
 .macro-card.active .macro-content h3 { color: #fff; text-shadow: 0 2px 10px rgba(255,255,255,0.5); }
 
-/* ★小分類エリア */
 .sub-categories-wrapper {
-    /* ここで白枠の内側にしっかりと60pxの美しい余白を作ります */
     padding: 60px !important; 
     background: #fff;
     min-height: 400px;
 }
 
-/* （※突き破る原因だった max-width や margin の指定を完全に削除しました） */
 .macro-panel {
     display: none;
     animation: fadeInPanel 0.4s ease;
@@ -347,7 +339,6 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
 .back-btn { width: 100%; background: transparent; color: #1a1a1a; border: 1px solid #1a1a1a; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; margin-bottom: 10px; transition: all 0.2s; }
 .back-btn:hover { background: #1a1a1a; color: #fff; }
 
-
 /* =========================================
    11. スプラッシュ画面（オープニングアニメーション）
 ========================================= */
@@ -373,7 +364,6 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
     align-items: center;
 }
 
-/* ★ロゴを大幅に拡大してインパクトを出す */
 .splash-logo {
     width: 240px; 
     height: auto;
@@ -384,7 +374,6 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
     animation: fadeInLogo 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-/* ★タイトルを大きくし、筆で書くようなアニメーションに変更 */
 .splash-title {
     font-family: 'Playfair Display', serif; 
     font-size: 5.5rem; 
@@ -402,12 +391,9 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
 .splash-title .title-pic { color: #111111; font-weight: 700; font-style: normal; }
 .splash-title .title-scribe { color: #444444; font-style: italic; }
 
-/* 筆文字風には合わないため、点滅カーソルは非表示にする */
 .splash-cursor { display: none; }
-
 .splash-subtitle-wrapper { display: inline-block; overflow: hidden; }
 
-/* サブタイトルもバランスに合わせて調整 */
 .splash-subtitle {
     font-weight: 500; 
     color: #666; 
@@ -419,36 +405,29 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
     animation: fadeUpSubtitle 0.8s ease forwards 1.2s;
 }
 
-/* --- アニメーションの定義 --- */
 @keyframes fadeInLogo { 
     0% { opacity: 0; transform: scale(0.9) translateY(10px); } 
     100% { opacity: 1; transform: scale(1) translateY(0); } 
 }
-
-/* 筆でサッと書いたような滑らかな出現 */
 @keyframes brushWrite { 
     0% { clip-path: inset(0 100% 0 0); } 
     100% { clip-path: inset(0 0 0 0); } 
 }
-
 @keyframes fadeUpSubtitle { 
     0% { opacity: 0; transform: translateY(10px); } 
     100% { opacity: 1; transform: translateY(0); } 
 }
-
 .splash-hidden { opacity: 0 !important; visibility: hidden !important; }
 
 /* =========================================
    12. 初期案内のプレースホルダー
 ========================================= */
 .initial-prompt-panel { text-align: center; padding: 100px 20px; color: #666; }
-
 .initial-prompt-panel.active-panel {
     display: flex !important;
     flex-direction: column;
     align-items: center;
 }
-
 .prompt-icon { margin-bottom: 25px; animation: elegantFloat 2.5s infinite ease-in-out; }
 .initial-prompt-panel h3 { font-family: 'Playfair Display', serif; font-size: 26px; color: #1a1a1a; margin-bottom: 12px; letter-spacing: 1px; }
 .initial-prompt-panel p { font-size: 14px; letter-spacing: 0.5px; }
@@ -462,15 +441,14 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
     .app-body-layout { flex-direction: column; }
     .left-sidebar { flex: auto; width: 100%; }
     .play-area { flex-direction: column; }
-    
     .macro-grid { grid-template-columns: repeat(2, 1fr); }
     .macro-section { padding: 40px 30px; }
     .sub-categories-wrapper { padding: 40px 30px; }
 }
+
 /* =========================================
    13. 手書き読み込み (OCR) 機能のスタイル
 ========================================= */
-/* ★ボタンを横に並べて高さをピッタリ揃える */
 .action-buttons-wrapper {
     display: flex;
     gap: 15px;
@@ -478,18 +456,16 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
     margin-bottom: 15px;
 }
 
-/* ★Finishボタンが残りの幅をすべて使うように調整 */
 button#submit-btn {
     flex-grow: 1;
     margin-bottom: 0;
 }
 
-/* ★上品なカメラアイコンボタン */
 .icon-only-btn {
     background: #ffffff;
     border: 2px solid #111111;
     color: #111111;
-    width: 54px; /* 美しい正方形の比率 */
+    width: 54px; 
     border-radius: 6px;
     cursor: pointer;
     display: flex;
@@ -498,14 +474,12 @@ button#submit-btn {
     transition: all 0.2s;
     padding: 0;
 }
-
 .icon-only-btn:hover {
     background: #111111;
     color: #ffffff;
     box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
-/* 解析中のローディング表示 */
 #ocr-loading {
     background: rgba(255, 255, 255, 0.9);
     border: 2px solid #111111;
@@ -516,7 +490,6 @@ button#submit-btn {
     color: #111111;
     font-weight: bold;
 }
-
 .spinner {
     width: 24px;
     height: 24px;
@@ -526,10 +499,10 @@ button#submit-btn {
     animation: ocr-spin 0.8s linear infinite;
     margin: 0 auto 10px;
 }
-
 @keyframes ocr-spin {
     to { transform: rotate(360deg); }
 }
+
 /* =========================================
    14. Finish & Practice モーダル
 ========================================= */
@@ -541,10 +514,7 @@ button#submit-btn {
     justify-content: center;
     align-items: center;
 }
-
-#finish-modal.hidden {
-    display: none;
-}
+#finish-modal.hidden { display: none; }
 
 .finish-modal-overlay {
     position: absolute;
@@ -554,15 +524,17 @@ button#submit-btn {
     -webkit-backdrop-filter: blur(8px);
 }
 
+/* ★ モーダル全体をiPad/PCサイズに拡大 ★ */
 .finish-modal-content {
     position: relative;
     background: #ffffff;
-    width: 90%;
-    max-width: 1000px;
+    width: 95%; 
+    max-width: 1400px; 
+    height: 90vh; 
     border-radius: 12px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
     border: 1px solid #e0e0e0;
-    padding: 30px;
+    padding: 50px; 
     z-index: 10001;
     display: flex;
     flex-direction: column;
@@ -570,24 +542,44 @@ button#submit-btn {
 
 #close-finish-modal-btn {
     position: absolute;
-    top: 20px; right: 20px;
+    top: 25px; right: 25px;
     background: none; border: none;
-    font-size: 24px; cursor: pointer; color: #111;
+    font-size: 28px; cursor: pointer; color: #111;
 }
 
+/* ★ 左右のバランスを美しく分割 ★ */
 .finish-modal-body {
     display: flex;
-    gap: 30px;
+    flex-direction: row; 
+    gap: 50px; 
     margin-top: 20px;
+    height: 100%;
+    overflow: hidden;
 }
 
-.modal-left-pane { flex: 1; display: flex; flex-direction: column; gap: 15px; }
-.modal-right-pane { flex: 1.2; display: flex; flex-direction: column; gap: 20px; }
+.modal-left-pane { 
+    flex: 0 0 40%; 
+    max-width: 450px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 20px; 
+}
+
+.modal-right-pane { 
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 20px; 
+    overflow-y: auto; 
+    padding-right: 15px;
+}
 
 #modal-review-image {
     width: 100%;
+    max-height: 320px; 
     border-radius: 8px;
-    object-fit: cover;
+    object-fit: cover; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
 }
 
 .your-answer-box {
@@ -615,24 +607,23 @@ button#submit-btn {
 }
 
 .speech-btn {
-    background: #111; color: #fff; border: none; padding: 12px; border-radius: 6px;
-    font-weight: bold; cursor: pointer; transition: 0.2s;
+    background: #111; color: #fff; border: none; padding: 15px; border-radius: 8px;
+    font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s;
 }
 .speech-btn:hover { background: #333; }
 .speech-btn.recording { background: #ef4444; animation: pulse 1.5s infinite; }
 
-#speech-result-area { text-align: center; padding: 15px; border-radius: 8px; background: #f0fdf4; border: 1px solid #10b981; }
-.accuracy-score { font-size: 1.2em; font-weight: bold; color: #047857; margin-bottom: 5px; }
+#speech-result-area { padding: 15px; border-radius: 8px; background: transparent; border: none; }
 
 @keyframes pulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.02); }
     100% { transform: scale(1); }
 }
+
 /* =========================================
    15. モーダル内の音読練習用スタイル
 ========================================= */
-/* チェックボックス付きのリスト */
 .cefr-sentence-item {
     display: flex;
     align-items: flex-start;
@@ -644,46 +635,73 @@ button#submit-btn {
     transition: background 0.2s;
 }
 .cefr-sentence-item:hover { background: #f8f9fa; }
-.cefr-sentence-item input[type="checkbox"] {
-    margin-top: 6px;
-    transform: scale(1.3);
-    cursor: pointer;
-}
+.cefr-sentence-item input[type="checkbox"] { margin-top: 6px; transform: scale(1.3); cursor: pointer; }
 
-/* 練習画面の英文表示 */
+/* ★黒線を完全に削除し、文字を大きく */
 .practice-text {
-    font-size: 1.4em;
+    font-size: 1.8em; 
     font-weight: 700;
     line-height: 1.6;
-    padding: 20px;
+    padding: 30px; 
     background: #f8f9fa;
-    border-radius: 8px;
-    border-left: 5px solid #111;
-    margin-bottom: 20px;
+    border-radius: 12px; 
+    margin-bottom: 25px;
     color: #111;
+    border: none; /* 黒線（border-left）を完全に排除 */
 }
 .practice-text p { margin-bottom: 10px; }
 .practice-text p:last-child { margin-bottom: 0; }
 
-/* ライブ文字起こしボックス */
 .transcription-box {
-    padding: 15px;
+    padding: 20px;
     border: 2px dashed #ccc;
     border-radius: 8px;
-    min-height: 100px;
-    margin-bottom: 20px;
+    min-height: 120px;
+    margin-bottom: 25px;
     background: #ffffff;
 }
-#live-transcription {
-    font-size: 1.2em;
-    color: #111;
-    line-height: 1.5;
-}
+#live-transcription { font-size: 1.4em; color: #111; line-height: 1.5; }
 
-/* アクションボタン領域 */
 .practice-actions {
     display: flex;
     gap: 15px;
     margin-bottom: 20px;
 }
 .practice-actions button { flex: 1; }
+
+/* =========================================
+   16. Accuracy ゲージ専用デザイン
+========================================= */
+.accuracy-gauge-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 260px;
+    margin: 30px auto 0;
+    text-align: center;
+}
+
+.accuracy-half-donut { width: 100%; height: auto; display: block; overflow: visible; }
+.acc-gauge-bg { fill: none; stroke: #f0f0f0; stroke-width: 8; stroke-linecap: round; }
+.acc-gauge-fill {
+    fill: none; stroke: #f59e0b; stroke-width: 8; stroke-linecap: round;
+    stroke-dasharray: 125.6; stroke-dashoffset: 125.6;
+    transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.3s;
+}
+
+.accuracy-content {
+    position: absolute;
+    bottom: -15px; 
+    left: 0; width: 100%;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+}
+.accuracy-label {
+    font-size: 15px; font-weight: 700; color: #444; margin-bottom: -2px; 
+    font-family: 'Noto Sans JP', sans-serif;
+}
+.accuracy-number {
+    font-size: 58px; font-weight: 900; color: #111; line-height: 1; 
+    font-family: 'Arial', sans-serif; letter-spacing: -2px;
+}
+.acc-percent {
+    font-size: 22px; font-weight: 700; color: #555; margin-left: 4px; letter-spacing: 0;
+}

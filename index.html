@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PicScribe - English Writing Platform</title>
-    <!-- ★追加：手書き文字認識用ライブラリ -->
+    <!-- ★手書き文字認識用ライブラリ -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
@@ -89,13 +89,12 @@
                 </div>
             </div>
 
-            <!-- ★ ここが消えていました！小分類エリアを包むラッパーを復活 ★ -->
+            <!-- ★ 小分類エリアを包むラッパー ★ -->
             <div class="sub-categories-wrapper">
 
                 <!-- 初期案内画面 -->
                 <div id="initial-prompt" class="macro-panel active-panel initial-prompt-panel">
                     <div class="prompt-icon">
-                        <!-- スタイリッシュな極細ラインの矢印SVG -->
                         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 19V5"></path>
                             <polyline points="5 12 12 5 19 12"></polyline>
@@ -165,7 +164,6 @@
                     </div>
                 </div>
 
-            <!-- ★ ラッパーの閉じタグを忘れずに追加 ★ -->
             </div>
             
         </div>
@@ -268,16 +266,14 @@
                             <p>手書き文字を解析中... <span id="ocr-progress">0</span>%</p>
                         </div>
 
-                        <!-- ★ここを変更：ボタンを横に美しく並べるラッパー -->
+                        <!-- アクションボタン領域 -->
                         <div class="action-buttons-wrapper">
-                            <!-- ★変更：buttonをlabelに変え、for属性で直接inputと紐付けることでiOSの制限を完全回避 -->
                             <label for="ocr-file-input" class="icon-only-btn" title="手書きを読み込む（カメラ起動）" style="cursor: pointer;">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
                                     <circle cx="12" cy="13" r="4"></circle>
                                 </svg>
                             </label>
-                            <!-- ★変更：class="hidden" だとiOSが反応しないことがあるため、style="display: none;"に変更 -->
                             <input type="file" id="ocr-file-input" accept="image/*" capture="environment" style="display: none;">
                             
                             <button id="submit-btn">Finish & Check</button>
@@ -307,6 +303,7 @@
                 </div>
             </div>
         </div>
+
         <!-- 🔽 フィニッシュ後の学習モーダル (Review & Practice) 🔽 -->
         <div id="finish-modal" class="hidden">
             <div class="finish-modal-overlay"></div>
@@ -318,17 +315,33 @@
                 </div>
                 
                 <div class="finish-modal-body">
+                    <!-- 🌟 左ペイン：画像 ＋ Your Answer ＋ Accuracyメーター -->
                     <div class="modal-left-pane">
                         <img id="modal-review-image" src="" alt="Review Image">
                         <div class="your-answer-box" id="modal-your-answer-box">
                             <h3>Your Answer:</h3>
                             <p id="modal-user-answer"></p>
                         </div>
+                        
+                        <!-- ★ここにAccuracyメーターが正しく配置されます ★ -->
+                        <div id="speech-result-area" class="hidden" style="background: transparent; border: none;">
+                            <div class="accuracy-gauge-wrapper">
+                                <svg viewBox="0 0 100 50" class="accuracy-half-donut">
+                                    <path d="M 10 50 A 40 40 0 0 1 90 50" class="acc-gauge-bg"/>
+                                    <path d="M 10 50 A 40 40 0 0 1 90 50" class="acc-gauge-fill" id="modal-gauge-fill"/>
+                                </svg>
+                                <div class="accuracy-content">
+                                    <div class="accuracy-label">Accuracy</div>
+                                    <div class="accuracy-number"><span id="accuracy-number-value">0</span><span class="acc-percent">%</span></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
+                    <!-- 🌟 右ペイン：英文選択 ＆ 音読エリア -->
                     <div class="modal-right-pane">
                         
-                        <!-- 🌟 状態1：英文の選択画面 -->
+                        <!-- 状態1：英文の選択画面 -->
                         <div id="modal-state-selection">
                             <div class="cefr-tabs" id="cefr-tabs-container">
                                 <button class="cefr-tab active" data-level="A1">A1</button>
@@ -351,7 +364,7 @@
                             </div>
                         </div>
 
-                        <!-- 🌟 状態2：音読練習・判定画面 -->
+                        <!-- 状態2：音読練習・判定画面 -->
                         <div id="modal-state-practice" class="hidden">
                             <button id="back-to-selection-btn" class="back-btn" style="margin-bottom: 15px;">← 選択画面に戻る</button>
                             
@@ -372,18 +385,6 @@
                                     🔄 もう一度音読する
                                 </button>
                             </div>
-
-                            <!-- Accuracy判定結果（半円ゲージ） -->
-                            <div id="speech-result-area" class="hidden">
-                                <div class="gauge-container" style="margin: 0 auto; transform: scale(0.9);">
-                                    <svg viewBox="0 0 100 50" class="half-donut">
-                                        <path d="M 10 50 A 40 40 0 0 1 90 50" class="gauge-bg"/>
-                                        <path d="M 10 50 A 40 40 0 0 1 90 50" class="gauge-fill" id="modal-gauge-fill" style="stroke:#10b981;"/>
-                                    </svg>
-                                    <div id="accuracy-number-display" class="gauge-text">0<span class="pts">%</span></div>
-                                </div>
-                                <div style="text-align:center; font-weight:bold; color:#111;">Accuracy (正確さ)</div>
-                            </div>
                         </div>
 
                     </div>
@@ -391,6 +392,7 @@
             </div>
         </div>
         <!-- 🔼 フィニッシュ後の学習モーダルここまで 🔼 -->
+
     </div>
 
     <!-- 分割したJSファイルの読み込み -->
