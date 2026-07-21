@@ -564,16 +564,15 @@ function startRecording() {
     try { recognition.start(); } catch(e) {}
 }
 
-// 🌟 判定処理を共通の関数として切り出し
+// 🌟 判定処理と演出（ローカルストレージ・紙吹雪・SLAアドバイス）
 function processSpeechResult() {
     if(recognition) recognition.stop();
     
     finishReadingBtn.classList.add('hidden');
     retryReadingBtn.classList.remove('hidden');
     
-    // 画面に表示されているテキスト（文字起こし結果）をそのまま取得
     const fullText = liveTranscription.innerText.replace('Waiting for your voice... (話し始めてください)', '');
-    if (!fullText.trim()) return; // 空の場合は処理しない
+    if (!fullText.trim()) return; 
 
     const targetWords = currentTargetSentences.join(' ').toLowerCase().replace(/[.,!?]/g, '').split(/\s+/).filter(w => w.length > 0);
     const spokenWords = fullText.toLowerCase().replace(/[.,!?]/g, '').split(/\s+/).filter(w => w.length > 0);
@@ -589,26 +588,127 @@ function processSpeechResult() {
     }
     if (accuracy > 95 && accuracy < 100) accuracy = 100; // 僅かな揺れを許容
     
-    // 小数点第1位まで表示（整数ならそのまま表示）
     let displayAcc = accuracy % 1 === 0 ? accuracy : accuracy.toFixed(1);
     document.getElementById('accuracy-number-value').innerText = displayAcc;
     
+    // 1. ローカルストレージに記録を保存し、回数を取得
+    const playCount = saveReadingRecord(accuracy);
+    updateReadingRecordUI(playCount, accuracy);
+
+    // 2. SLA・認知言語学に基づくアドバイスを生成
+    updateSLAAdvice(accuracy);
+
+    // 3. ゲージのアニメーション
     const offset = 125.6 - (125.6 * (accuracy / 100));
     const gaugeFill = document.getElementById('modal-gauge-fill');
     gaugeFill.style.strokeDashoffset = offset;
     
-    // スコアに応じた色の変更
     if (accuracy >= 80) {
-        gaugeFill.style.stroke = "#f59e0b"; // オレンジ（高得点）
+        gaugeFill.style.stroke = "#f59e0b";
     } else if (accuracy >= 50) {
-        gaugeFill.style.stroke = "#fbbf24"; // 薄いオレンジ
+        gaugeFill.style.stroke = "#fbbf24";
     } else {
-        gaugeFill.style.stroke = "#ef4444"; // 赤（要再挑戦）
+        gaugeFill.style.stroke = "#ef4444";
     }
     
     speechResultArea.classList.remove('hidden');
+
+    // 4. スコアに応じた紙吹雪・花火アニメーション
+    triggerCelebration(accuracy);
 }
 
+// ----------------------------------------------------
+// 学習記録（LocalStorage）の保存とUI更新
+// ----------------------------------------------------
+function saveReadingRecord(accuracy) {
+    let stats = JSON.parse(localStorage.getItem('picscribe_reading_stats')) || { count: 0, history: [] };
+    stats.count += 1;
+    stats.history.push({ score: accuracy, date: new Date().toISOString() });
+    localStorage.setItem('picscribe_reading_stats', JSON.stringify(stats));
+    return stats.count;
+}
+
+function updateReadingRecordUI(count, accuracy) {
+    document.getElementById('reading-count-badge').innerText = `🔥 音読トレーニング ${count}回目`;
+    
+    let comment = "";
+    if (count === 1) {
+        comment = "初めての音読ですね！まずは声に出すことに慣れましょう。";
+    } else if (count >= 5 && accuracy >= 90) {
+        comment = "素晴らしい反復練習です！口周りの筋肉が英語に適応（運動記憶）しています。";
+    } else if (count >= 5 && accuracy < 90) {
+        comment = "諦めずに何度も挑戦していて素晴らしいです！少しずつ定着しています。";
+    } else {
+        comment = "継続は力なり。反復することで脳の回路が自動化されていきます。";
+    }
+    document.getElementById('reading-dynamic-comment').innerText = comment;
+}
+
+// ----------------------------------------------------
+// SLA（第二言語習得論）・認知言語学に基づくフィードバック
+// ----------------------------------------------------
+function updateSLAAdvice(accuracy) {
+    const adviceText = document.getElementById('sla-advice-text');
+    
+    if (accuracy === 100) {
+        adviceText.innerHTML = "<strong>【概念への直接アクセス完成】</strong><br>Perfect! 英語を日本語に訳さず、英語のままイメージ（状況モデル）として捉え、直接音声化できています。最高の言語処理状態です！";
+    } else if (accuracy >= 90) {
+        adviceText.innerHTML = "<strong>【プロソディと状況モデル】</strong><br>ほぼ完璧です！脳内で「文法」ではなく「情景そのもの」をイメージできています。次は文全体のイントネーション（プロソディ）や感情を意識してみましょう。";
+    } else if (accuracy >= 80) {
+        adviceText.innerHTML = "<strong>【発話の自動化の兆し】</strong><br>素晴らしい！文字から音への変換（デコーディング）がスムーズに自動化されてきています。この調子で反復し、脳の負担をさらに減らしましょう。";
+    } else if (accuracy >= 50) {
+        adviceText.innerHTML = "<strong>【ワーキングメモリの負担軽減】</strong><br>単語の区切り（チャンク）を意識しましょう。意味のまとまりで発音することで、脳のワーキングメモリの負担が減り、流暢さが向上します。";
+    } else {
+        adviceText.innerHTML = "<strong>【音韻ループの活性化】</strong><br>まずはボトムアップ処理を意識し、一つ一つの単語の音を正確に捉えましょう。文字と音の結びつきを意識して、もう一度ゆっくり読んでみてください。";
+    }
+}
+
+// ----------------------------------------------------
+// スコアに応じた紙吹雪アニメーション
+// ----------------------------------------------------
+function triggerCelebration(accuracy) {
+    // confettiが読み込まれていない場合はスキップ
+    if (typeof confetti === 'undefined') return;
+
+    if (accuracy === 100) {
+        // ★ 100% : 画面両端から打ち上がるド派手な花火（3秒間）
+        var duration = 3 * 1000;
+        var animationEnd = Date.now() + duration;
+        var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10005 };
+
+        function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+
+        var interval = setInterval(function() {
+            var timeLeft = animationEnd - Date.now();
+            if (timeLeft <= 0) return clearInterval(interval);
+            var particleCount = 50 * (timeLeft / duration);
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+        }, 250);
+
+    } else if (accuracy >= 90) {
+        // ★ 90-99% : 中央から多めの紙吹雪
+        confetti({
+            particleCount: 150,
+            spread: 100,
+            origin: { y: 0.6 },
+            zIndex: 10005,
+            colors: ['#3b82f6', '#10b981', '#f59e0b', '#ffffff']
+        });
+    } else if (accuracy >= 80) {
+        // ★ 80-89% : 中央から控えめな紙吹雪
+        confetti({
+            particleCount: 60,
+            spread: 70,
+            origin: { y: 0.6 },
+            zIndex: 10005
+        });
+    }
+}
+
+// ----------------------------------------------------
+// イベントリスナー
+// ----------------------------------------------------
 if (recognition) {
     recognition.onresult = (event) => {
         let interimTranscript = '';
@@ -622,7 +722,6 @@ if (recognition) {
         liveTranscription.innerHTML = finalTranscript + '<span style="color: #999;">' + interimTranscript + '</span>';
     };
 
-    // ★ ユーザーが話すのをやめてAPIが自動停止した時にも判定を走らせる
     recognition.onend = () => {
         if (speechResultArea.classList.contains('hidden')) {
             processSpeechResult();
@@ -636,7 +735,6 @@ if (recognition) {
     };
 }
 
-// 手動でFinishボタンを押した時
 finishReadingBtn.addEventListener('click', () => {
     processSpeechResult();
 });

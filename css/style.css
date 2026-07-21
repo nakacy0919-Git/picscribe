@@ -514,7 +514,10 @@ button#submit-btn {
     justify-content: center;
     align-items: center;
 }
-#finish-modal.hidden { display: none; }
+
+#finish-modal.hidden {
+    display: none;
+}
 
 .finish-modal-overlay {
     position: absolute;
@@ -528,9 +531,9 @@ button#submit-btn {
 .finish-modal-content {
     position: relative;
     background: #ffffff;
-    width: 95%; 
-    max-width: 1400px; 
-    height: 90vh; 
+    width: 95%; /* 画面幅の95%を贅沢に使用 */
+    max-width: 1400px; /* 大画面PCでも対応できるよう最大幅を広げる */
+    height: 90vh; /* 縦幅もしっかり確保 */
     border-radius: 12px;
     box-shadow: 0 20px 50px rgba(0,0,0,0.15);
     border: 1px solid #e0e0e0;
@@ -547,26 +550,30 @@ button#submit-btn {
     font-size: 28px; cursor: pointer; color: #111;
 }
 
-/* ★ 左右のバランスを美しく分割 ★ */
+/* ★ 左右のバランスを美しく分割（ここで横並びを強制） ★ */
 .finish-modal-body {
     display: flex;
-    flex-direction: row; 
-    gap: 50px; 
+    flex-direction: row; /* 横並び！ */
+    gap: 50px; /* 左右の余白を広めにとる */
     margin-top: 20px;
     height: 100%;
+    width: 100%; /* 横幅いっぱいを使う */
     overflow: hidden;
 }
 
+/* ★ 左ペイン（画像・メーター） */
 .modal-left-pane { 
-    flex: 0 0 40%; 
-    max-width: 450px; 
+    flex: 0 0 35%; /* 全体の35%を占める（固定） */
+    max-width: 450px; /* 広がりすぎないように上限を設ける */
     display: flex; 
     flex-direction: column; 
     gap: 20px; 
 }
 
+/* ★ 右ペイン（英文・文字起こし） */
 .modal-right-pane { 
-    flex: 1; 
+    flex: 1; /* 残りの65%の広大なスペースをすべて使う */
+    min-width: 0; /* 子要素がはみ出すのを防ぐ魔法のコード */
     display: flex; 
     flex-direction: column; 
     gap: 20px; 
@@ -613,7 +620,7 @@ button#submit-btn {
 .speech-btn:hover { background: #333; }
 .speech-btn.recording { background: #ef4444; animation: pulse 1.5s infinite; }
 
-#speech-result-area { padding: 15px; border-radius: 8px; background: transparent; border: none; }
+#speech-result-area { padding: 0; background: transparent; border: none; }
 
 @keyframes pulse {
     0% { transform: scale(1); }
@@ -704,4 +711,58 @@ button#submit-btn {
 }
 .acc-percent {
     font-size: 22px; font-weight: 700; color: #555; margin-left: 4px; letter-spacing: 0;
+}
+
+/* =========================================
+   17. 学習記録 & SLAアドバイスのスタイル
+========================================= */
+.reading-record-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed #ddd;
+}
+
+#reading-count-badge {
+    background: #111;
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+#reading-dynamic-comment {
+    font-size: 13px;
+    color: #555;
+    text-align: center;
+    font-weight: bold;
+    line-height: 1.4;
+}
+
+.sla-advice-box {
+    background: #f0f4f8; /* 知的な薄いブルーグレー */
+    border-left: 4px solid #3b82f6;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 25px;
+}
+
+.sla-advice-title {
+    margin: 0 0 8px 0;
+    font-size: 13px;
+    color: #1e3a8a; /* 濃いブルー */
+    font-weight: 800;
+}
+
+#sla-advice-text {
+    margin: 0;
+    font-size: 13.5px;
+    color: #333;
+    line-height: 1.6;
+    font-weight: 500;
 }

@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PicScribe - English Writing Platform</title>
-    <!-- ★手書き文字認識用ライブラリ -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- 🔽 オープニングアニメーション（スプラッシュ画面） 🔽 -->
     <div id="splash-screen">
         <div class="splash-content">
             <img src="images/logo.webp" alt="PicScribe Logo" class="splash-logo" onerror="this.src='https://via.placeholder.com/120x120?text=Logo'">
@@ -25,8 +24,6 @@
     </div>
 
     <div id="app-wrapper">
-        
-        <!-- 🔽 ヘッダー（ホーム画面でのみ表示されます） 🔽 -->
         <header id="app-header">
             <img src="images/logo.webp" alt="PicScribe Logo" id="app-logo" onerror="this.src='https://via.placeholder.com/120x120?text=Logo'">
             <div class="header-content">
@@ -36,10 +33,7 @@
             </div>
         </header>
 
-        <!-- 🔽 ホーム画面（学習トラック ＆ 画像選択） 🔽 -->
         <div id="selection-screen">
-            
-            <!-- 4つの大分類（Macro Categories） -->
             <div class="macro-section">
                 <div class="macro-header">
                     <h2>Choose Your Writing Journey</h2>
@@ -47,7 +41,6 @@
                 </div>
                 
                 <div class="macro-grid">
-                    <!-- 1. Picture Description -->
                     <div class="macro-card" onclick="switchMacroCategory('macro-picture', this)">
                         <div class="macro-bg" style="background-image: url('https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&w=800&q=80');"></div>
                         <div class="macro-overlay"></div>
@@ -57,7 +50,6 @@
                         </div>
                     </div>
 
-                    <!-- 2. Academic & Exam -->
                     <div class="macro-card" onclick="switchMacroCategory('macro-academic', this)">
                         <div class="macro-bg" style="background-image: url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80');"></div>
                         <div class="macro-overlay"></div>
@@ -67,7 +59,6 @@
                         </div>
                     </div>
 
-                    <!-- 3. Storytelling & Creative -->
                     <div class="macro-card" onclick="switchMacroCategory('macro-story', this)">
                         <div class="macro-bg" style="background-image: url('https://images.unsplash.com/photo-1455390582262-044cdead2708?auto=format&fit=crop&w=800&q=80');"></div>
                         <div class="macro-overlay"></div>
@@ -77,7 +68,6 @@
                         </div>
                     </div>
 
-                    <!-- 4. Dynamic Media -->
                     <div class="macro-card" onclick="switchMacroCategory('macro-dynamic', this)">
                         <div class="macro-bg" style="background-image: url('https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=800&q=80');"></div>
                         <div class="macro-overlay"></div>
@@ -89,10 +79,7 @@
                 </div>
             </div>
 
-            <!-- ★ 小分類エリアを包むラッパー ★ -->
             <div class="sub-categories-wrapper">
-
-                <!-- 初期案内画面 -->
                 <div id="initial-prompt" class="macro-panel active-panel initial-prompt-panel">
                     <div class="prompt-icon">
                         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
@@ -104,7 +91,6 @@
                     <p>上の4つのパネルから、今日の学習目的を選んでスタートしましょう。</p>
                 </div>
 
-                <!-- 1. Picture Description の小分類 -->
                 <div id="macro-picture" class="macro-panel">
                     <div class="category-section">
                         <h2 class="category-title">Daily Life <span>(日常生活)</span></h2>
@@ -140,7 +126,6 @@
                     </div>
                 </div>
 
-                <!-- 2. Academic & Exam の小分類 (準備中) -->
                 <div id="macro-academic" class="macro-panel">
                     <div class="coming-soon">
                         <h3>コンテンツ準備中</h3>
@@ -148,7 +133,6 @@
                     </div>
                 </div>
 
-                <!-- 3. Storytelling の小分類 (準備中) -->
                 <div id="macro-story" class="macro-panel">
                     <div class="coming-soon">
                         <h3>コンテンツ準備中</h3>
@@ -156,23 +140,17 @@
                     </div>
                 </div>
 
-                <!-- 4. Dynamic Media の小分類 (準備中) -->
                 <div id="macro-dynamic" class="macro-panel">
                     <div class="coming-soon">
                         <h3>コンテンツ準備中</h3>
                         <p>動画や動作のプロセスを描写するトレーニングがここに追加されます。</p>
                     </div>
                 </div>
-
             </div>
-            
         </div>
         
-        <!-- 🔽 プレイ画面（初期状態では非表示・ゲーム開始時に全画面で表示） 🔽 -->
         <div id="game-container" class="app-body-layout hidden">
-            
             <div class="left-sidebar">
-                
                 <button id="back-to-home-btn" class="back-btn">← カテゴリ選択に戻る</button>
 
                 <div id="live-status" class="dashboard-panel score-panel">
@@ -206,11 +184,9 @@
                         </div>
                     </div>
                 </div>
-
             </div>
 
             <div class="main-content">
-                
                 <div id="step-assistant-panel" class="dashboard-panel assistant-panel">
                     <div class="assistant-header">
                         <h2 id="current-step-title" class="modern-step-title">Step 1: Main Gist</h2>
@@ -260,13 +236,11 @@
 
                         <div id="user-input" contenteditable="true" spellcheck="true" lang="en" placeholder="Type your description here... (e.g. A young woman is drinking coffee...)"></div>
                         
-                        <!-- 解析中のローディング画面 -->
                         <div id="ocr-loading" class="hidden">
                             <div class="spinner"></div>
                             <p>手書き文字を解析中... <span id="ocr-progress">0</span>%</p>
                         </div>
 
-                        <!-- アクションボタン領域 -->
                         <div class="action-buttons-wrapper">
                             <label for="ocr-file-input" class="icon-only-btn" title="手書きを読み込む（カメラ起動）" style="cursor: pointer;">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -275,7 +249,6 @@
                                 </svg>
                             </label>
                             <input type="file" id="ocr-file-input" accept="image/*" capture="environment" style="display: none;">
-                            
                             <button id="submit-btn">Finish & Check</button>
                         </div>
                         
@@ -292,7 +265,6 @@
             </div>
         </div>
         
-        <!-- 辞書詳細ポップアップ -->
         <div id="dict-modal" class="hidden">
             <div class="dict-modal-content">
                 <button id="close-dict-btn">×</button>
@@ -304,7 +276,6 @@
             </div>
         </div>
 
-        <!-- 🔽 フィニッシュ後の学習モーダル (Review & Practice) 🔽 -->
         <div id="finish-modal" class="hidden">
             <div class="finish-modal-overlay"></div>
             <div class="finish-modal-content">
@@ -315,7 +286,7 @@
                 </div>
                 
                 <div class="finish-modal-body">
-                    <!-- 🌟 左ペイン：画像 ＋ Your Answer ＋ Accuracyメーター -->
+                    <!-- 🌟 左ペイン -->
                     <div class="modal-left-pane">
                         <img id="modal-review-image" src="" alt="Review Image">
                         <div class="your-answer-box" id="modal-your-answer-box">
@@ -323,8 +294,12 @@
                             <p id="modal-user-answer"></p>
                         </div>
                         
-                        <!-- ★ここにAccuracyメーターが正しく配置されます ★ -->
-                        <div id="speech-result-area" class="hidden" style="background: transparent; border: none;">
+                        <div id="speech-result-area" class="hidden" style="background: transparent; border: none; padding: 0;">
+                            <div class="reading-record-box">
+                                <div id="reading-count-badge"></div>
+                                <div id="reading-dynamic-comment"></div>
+                            </div>
+
                             <div class="accuracy-gauge-wrapper">
                                 <svg viewBox="0 0 100 50" class="accuracy-half-donut">
                                     <path d="M 10 50 A 40 40 0 0 1 90 50" class="acc-gauge-bg"/>
@@ -335,13 +310,16 @@
                                     <div class="accuracy-number"><span id="accuracy-number-value">0</span><span class="acc-percent">%</span></div>
                                 </div>
                             </div>
+
+                            <div class="sla-advice-box">
+                                <h4 class="sla-advice-title">💡 認知・学習フィードバック</h4>
+                                <p id="sla-advice-text"></p>
+                            </div>
                         </div>
-                    </div>
+                    </div> <!-- ★ココが抜けていた「左エリアを閉じる」魔法のタグです！★ -->
                     
-                    <!-- 🌟 右ペイン：英文選択 ＆ 音読エリア -->
+                    <!-- 🌟 右ペイン -->
                     <div class="modal-right-pane">
-                        
-                        <!-- 状態1：英文の選択画面 -->
                         <div id="modal-state-selection">
                             <div class="cefr-tabs" id="cefr-tabs-container">
                                 <button class="cefr-tab active" data-level="A1">A1</button>
@@ -350,9 +328,7 @@
                                 <button class="cefr-tab" data-level="B2">B2</button>
                             </div>
                             
-                            <div id="cefr-content-area" class="cefr-content">
-                                <!-- JSでチェックボックス付きの英文が挿入されます -->
-                            </div>
+                            <div id="cefr-content-area" class="cefr-content"></div>
 
                             <div class="practice-controls">
                                 <label class="switch-label">
@@ -364,13 +340,10 @@
                             </div>
                         </div>
 
-                        <!-- 状態2：音読練習・判定画面 -->
                         <div id="modal-state-practice" class="hidden">
                             <button id="back-to-selection-btn" class="back-btn" style="margin-bottom: 15px;">← 選択画面に戻る</button>
                             
-                            <div id="practice-target-text" class="practice-text">
-                                <!-- 選択された英文（日本語なし）がここに表示されます -->
-                            </div>
+                            <div id="practice-target-text" class="practice-text"></div>
                             
                             <div class="transcription-box">
                                 <h4 style="margin-bottom: 5px; color:#666;">🎙 Your Speech:</h4>
@@ -378,24 +351,16 @@
                             </div>
                             
                             <div class="practice-actions">
-                                <button id="finish-reading-btn" class="speech-btn recording">
-                                    ⏹ 音読 Finish
-                                </button>
-                                <button id="retry-reading-btn" class="speech-btn hidden" style="background:#3b82f6;">
-                                    🔄 もう一度音読する
-                                </button>
+                                <button id="finish-reading-btn" class="speech-btn recording">⏹ 音読 Finish</button>
+                                <button id="retry-reading-btn" class="speech-btn hidden" style="background:#3b82f6;">🔄 もう一度音読する</button>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
-        <!-- 🔼 フィニッシュ後の学習モーダルここまで 🔼 -->
-
     </div>
 
-    <!-- 分割したJSファイルの読み込み -->
     <script src="data/data_picture.js"></script>
     <script src="js/main.js"></script>
     <script src="js/mode_picture.js"></script>
