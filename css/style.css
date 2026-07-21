@@ -104,57 +104,80 @@ body {
 .gauge-text { position: absolute; bottom: -10px; left: 0; width: 100%; font-size: 32px; font-weight: 700; color: #1a1a1a; font-family: 'Playfair Display', serif; }
 .gauge-text .pts { font-size: 14px; color: #888; margin-left: 2px; }
 
-.support-toggle-panel { padding: 15px 20px; display: flex; flex-direction: column; gap: 10px; }
+/* ★ 合体したヒントパネル全体 */
+.combined-hint-panel {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0; /* 外側の余白を消して内側で制御 */
+    overflow: hidden;
+}
+
+/* サポートトグル部分 */
+.support-toggle-section {
+    padding: 12px 20px;
+    background: #fff;
+    border-bottom: 1px solid #eee; /* 上下を区切るさりげない線 */
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
 .switch-label { cursor: pointer; font-weight: bold; color: #111; display: inline-flex; align-items: center; gap: 10px; font-size: 14px;}
 #hint-level-select { padding: 6px 10px; border-radius: 4px; background: #f9f9f9; color: #111; border: 1px solid #ccc; outline: none; font-size: 13px;}
 
-/* 常に表示されるヒントパネル */
-.hint-sidebar-panel { 
+/* ヒントコンテンツ部分（スリム化） */
+.hint-sidebar-section { 
     flex-grow: 1; 
     display: flex; 
     flex-direction: column; 
-    padding: 20px; 
+    padding: 15px 20px; /* 余白を詰めてスリムに */
     background: #fafafa;
 }
-.hint-header { border-bottom: 2px solid #1a1a1a; padding-bottom: 10px; margin-bottom: 15px; }
-.hint-header h3 { margin: 0; color: #1a1a1a; font-size: 16px;}
-.hint-placeholder { color: #888; font-size: 13px; line-height: 1.6; text-align: center; margin-top: 20px; }
-.hint-level-group { margin-bottom: 15px; }
-.hint-level-title { color: #666; font-size: 11px; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
-.hint-item { font-size: 13px; margin: 5px 0; padding-left: 8px; border-left: 2px solid #ccc; color: #444; line-height: 1.5;}
+.hint-header { border-bottom: 2px solid #1a1a1a; padding-bottom: 8px; margin-bottom: 12px; }
+.hint-header h3 { margin: 0; color: #1a1a1a; font-size: 15px;} 
+.hint-placeholder { color: #888; font-size: 13px; line-height: 1.5; text-align: center; margin-top: 10px; margin-bottom: 10px; }
+.hint-level-group { margin-bottom: 12px; }
+.hint-level-title { color: #666; font-size: 11px; font-weight: bold; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;}
+.hint-item { font-size: 13px; margin: 4px 0; padding-left: 8px; border-left: 2px solid #ccc; color: #444; line-height: 1.4;}
 .hint-type { color: #1a1a1a; font-weight: bold; margin-right: 5px; }
 
 /* =========================================
    4. 右メイン内：司令塔（アシスタント）
 ========================================= */
-.assistant-panel { padding: 25px 30px; }
-.assistant-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.modern-step-title { font-size: 18px; font-weight: 800; color: #1a1a1a; margin: 0; font-family: 'Playfair Display', serif; }
-.assistant-actions { display: flex; align-items: center; gap: 12px; }
-.modern-badge { background: #1a1a1a; color: #fff; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: 700; letter-spacing: 1px; }
+/* パネル全体の内側の余白を圧縮 */
+.assistant-panel { padding: 15px 25px; } 
 
-.skip-btn { background: #fff; border: 1px solid #1a1a1a; color: #1a1a1a; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; transition: all 0.2s; font-weight: bold; }
+/* ヘッダー下部の余白を圧縮 */
+.assistant-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; } 
+.modern-step-title { font-size: 17px; font-weight: 800; color: #1a1a1a; margin: 0; font-family: 'Playfair Display', serif; }
+.assistant-actions { display: flex; align-items: center; gap: 12px; }
+.modern-badge { background: #1a1a1a; color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; letter-spacing: 1px; }
+
+.skip-btn { background: #fff; border: 1px solid #1a1a1a; color: #1a1a1a; padding: 4px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; transition: all 0.2s; font-weight: bold; }
 .skip-btn:hover { background: #1a1a1a; color: #fff; }
 .skip-btn.hidden { display: none; }
 
-.modern-stepper { display: flex; align-items: center; justify-content: space-between; margin: 25px 0; padding: 0; }
-.stepper-item { display: flex; align-items: center; gap: 12px; opacity: 0.3; filter: grayscale(100%); transition: all 0.3s ease; }
+/* ステッパー（1, 2, 3の丸）の上下の余白を大幅に圧縮 */
+.modern-stepper { display: flex; align-items: center; justify-content: space-between; margin: 12px 0; padding: 0; } 
+.stepper-item { display: flex; align-items: center; gap: 10px; opacity: 0.3; filter: grayscale(100%); transition: all 0.3s ease; }
 .stepper-divider { flex: 1; height: 1px; background-color: #1a1a1a; margin: 0 15px; opacity: 0.2; }
-.stepper-icon { width: 32px; height: 32px; border-radius: 50%; background: #fff; border: 2px solid #1a1a1a; color: #1a1a1a; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; transition: all 0.3s; }
+
+/* アイコンとテキストもほんの少しだけスリム化してバランスを調整 */
+.stepper-icon { width: 30px; height: 30px; border-radius: 50%; background: #fff; border: 2px solid #1a1a1a; color: #1a1a1a; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; transition: all 0.3s; }
 .stepper-text { display: flex; flex-direction: column; }
-.stepper-title { font-size: 14px; font-weight: 700; color: #1a1a1a; }
-.stepper-subtitle { font-size: 11px; color: #666; font-weight: bold; }
+.stepper-title { font-size: 13px; font-weight: 700; color: #1a1a1a; }
+.stepper-subtitle { font-size: 10px; color: #666; font-weight: bold; }
 
 .stepper-item.active-slot { opacity: 1; filter: none; }
-.stepper-item.active-slot .stepper-icon { background: #1a1a1a; color: #fff; box-shadow: 4px 4px 0px rgba(0,0,0,0.1); }
+.stepper-item.active-slot .stepper-icon { background: #1a1a1a; color: #fff; box-shadow: 3px 3px 0px rgba(0,0,0,0.1); }
 .stepper-item.completed-slot { opacity: 1; filter: none; }
 .stepper-item.completed-slot .stepper-icon { background: #fff; border-color: #27ae60; color: #27ae60; }
 .stepper-item.completed-slot .stepper-title { color: #27ae60; }
 
-.modern-message { background: #f7f7f7; padding: 16px 20px; border-radius: 6px; font-size: 15px; color: #1a1a1a; line-height: 1.6; display: block; border: 1px solid #e0e0e0; }
-.modern-message::before { content: "NEXT ACTION"; display: block; font-size: 11px; font-weight: 800; color: #888; letter-spacing: 1px; margin-bottom: 6px; }
+/* 指示メッセージ（NEXT ACTION）の上下の余白を圧縮 */
+.modern-message { background: #f7f7f7; padding: 12px 16px; border-radius: 6px; font-size: 14px; color: #1a1a1a; line-height: 1.5; display: block; border: 1px solid #e0e0e0; }
+.modern-message::before { content: "NEXT ACTION"; display: block; font-size: 11px; font-weight: 800; color: #888; letter-spacing: 1px; margin-bottom: 4px; }
 .modern-message strong { color: #3b82f6; font-weight: 700; background: rgba(59, 130, 246, 0.1); padding: 2px 6px; border-radius: 4px; }
-
 /* =========================================
    5. 右メイン内：画像エリア
 ========================================= */
@@ -225,4 +248,139 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
     .app-body-layout { flex-direction: column; }
     .left-sidebar { flex: auto; width: 100%; }
     .play-area { flex-direction: column; }
+}
+/* =========================================
+   10. ホーム画面（学習トラック ＆ 画像選択）
+========================================= */
+#selection-screen {
+    background: #ffffff;
+    padding: 0;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+    border: 1px solid #e0e0e0;
+    overflow: hidden;
+}
+
+/* 4つの大分類エリア */
+.macro-section {
+    background: #111;
+    color: #fff;
+    padding: 50px 40px;
+}
+.macro-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.macro-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    margin: 0 0 10px 0;
+    letter-spacing: 1px;
+}
+.macro-header p {
+    color: #aaa;
+    font-size: 14px;
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+.macro-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+/* 美しいイメージボタン */
+.macro-card {
+    position: relative;
+    height: 160px;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.macro-bg {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.6s ease;
+}
+.macro-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%);
+    transition: background 0.4s ease;
+}
+.macro-content {
+    position: absolute;
+    bottom: 20px; left: 20px; right: 20px;
+    z-index: 2;
+    transition: transform 0.3s ease;
+}
+.macro-content h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    margin: 0 0 5px 0;
+    color: #fff;
+}
+.macro-content p {
+    font-size: 11px;
+    color: #ccc;
+    margin: 0;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* カードのアニメーション（ホバー＆アクティブ状態） */
+.macro-card:hover .macro-bg { transform: scale(1.1); }
+.macro-card:hover .macro-overlay { background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%); }
+.macro-card.active { border-color: #fff; box-shadow: 0 0 20px rgba(255,255,255,0.2); transform: translateY(-5px); }
+.macro-card.active .macro-content { transform: translateY(-5px); }
+.macro-card.active .macro-content h3 { color: #fff; text-shadow: 0 2px 10px rgba(255,255,255,0.5); }
+
+/* 小分類（切り替わる下部エリア） */
+.sub-categories-wrapper {
+    padding: 40px;
+    background: #fff;
+    min-height: 400px;
+}
+.macro-panel {
+    display: none;
+    animation: fadeInPanel 0.4s ease;
+}
+.macro-panel.active-panel {
+    display: block;
+}
+@keyframes fadeInPanel {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.category-section { margin-bottom: 40px; }
+.category-title { font-size: 22px; font-weight: 800; color: #1a1a1a; border-bottom: 2px solid #1a1a1a; padding-bottom: 10px; margin-bottom: 25px; display: flex; align-items: baseline; gap: 10px; }
+.category-title span { font-size: 13px; color: #888; font-weight: bold; }
+
+.image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
+.image-card { background: #fff; border: 2px solid #e0e0e0; border-radius: 10px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; }
+.image-card:hover { transform: translateY(-6px); border-color: #1a1a1a; box-shadow: 0 12px 24px rgba(0,0,0,0.1); }
+.image-card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid #e0e0e0; transition: transform 0.3s ease; }
+.image-card:hover img { transform: scale(1.05); }
+.image-card-info { padding: 16px; background: #fff; position: relative; z-index: 2; }
+.image-card-title { font-size: 16px; font-weight: 800; margin: 0 0 5px 0; color: #1a1a1a; }
+.image-card-desc { font-size: 12px; color: #666; margin: 0; }
+
+.coming-soon { text-align: center; padding: 60px 20px; color: #888; }
+.coming-soon h3 { font-family: 'Playfair Display', serif; font-size: 28px; color: #1a1a1a; margin-bottom: 10px; }
+.coming-soon p { font-size: 14px; }
+
+/* 戻るボタン（プレイ画面のサイドバー上部） */
+.back-btn { width: 100%; background: transparent; color: #1a1a1a; border: 1px solid #1a1a1a; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; margin-bottom: 10px; transition: all 0.2s; }
+.back-btn:hover { background: #1a1a1a; color: #fff; }
+
+@media (max-width: 900px) {
+    .macro-grid { grid-template-columns: repeat(2, 1fr); }
+    .macro-section { padding: 30px 20px; }
+    .sub-categories-wrapper { padding: 30px 20px; }
 }

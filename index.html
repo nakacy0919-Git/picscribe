@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PicScribe - English Writing Platform</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="app-wrapper">
+        
+        <!-- 🔽 ヘッダー（ホーム画面でのみ表示されます） 🔽 -->
         <header id="app-header">
             <img src="images/logo.webp" alt="PicScribe Logo" id="app-logo" onerror="this.src='https://via.placeholder.com/120x120?text=Logo'">
             <div class="header-content">
@@ -17,14 +19,134 @@
                 <div class="app-desc">写真や画像を英語でタイピングして描写しよう！</div>
             </div>
         </header>
-        
-        <!-- ★新レイアウト：サイドバーとメイン画面の分割 -->
-        <div id="game-container" class="app-body-layout">
+
+        <!-- 🔽 ホーム画面（学習トラック ＆ 画像選択） 🔽 -->
+        <div id="selection-screen">
             
-            <!-- 🔽 左サイドバー（常に画面に表示される情報） 🔽 -->
+            <!-- 4つの大分類（Macro Categories） -->
+            <div class="macro-section">
+                <div class="macro-header">
+                    <h2>Choose Your Writing Journey</h2>
+                    <p>目的に合わせたライティング・トラックを選択してください</p>
+                </div>
+                
+                <div class="macro-grid">
+                    <!-- 1. Picture Description -->
+                    <div class="macro-card active" onclick="switchMacroCategory('macro-picture', this)">
+                        <div class="macro-bg" style="background-image: url('https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&w=800&q=80');"></div>
+                        <div class="macro-overlay"></div>
+                        <div class="macro-content">
+                            <h3>Picture Description</h3>
+                            <p>情景描写・基礎固め</p>
+                        </div>
+                    </div>
+
+                    <!-- 2. Academic & Exam -->
+                    <div class="macro-card" onclick="switchMacroCategory('macro-academic', this)">
+                        <div class="macro-bg" style="background-image: url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80');"></div>
+                        <div class="macro-overlay"></div>
+                        <div class="macro-content">
+                            <h3>Academic & Exam</h3>
+                            <p>資格対策・論理的記述</p>
+                        </div>
+                    </div>
+
+                    <!-- 3. Storytelling & Creative -->
+                    <div class="macro-card" onclick="switchMacroCategory('macro-story', this)">
+                        <div class="macro-bg" style="background-image: url('https://images.unsplash.com/photo-1455390582262-044cdead2708?auto=format&fit=crop&w=800&q=80');"></div>
+                        <div class="macro-overlay"></div>
+                        <div class="macro-content">
+                            <h3>Storytelling</h3>
+                            <p>物語創作・応用表現</p>
+                        </div>
+                    </div>
+
+                    <!-- 4. Dynamic Media -->
+                    <div class="macro-card" onclick="switchMacroCategory('macro-dynamic', this)">
+                        <div class="macro-bg" style="background-image: url('https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=800&q=80');"></div>
+                        <div class="macro-overlay"></div>
+                        <div class="macro-content">
+                            <h3>Dynamic Media</h3>
+                            <p>動画・プロセス描写</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 小分類エリア（切り替わる部分） -->
+            <div class="sub-categories-wrapper">
+                
+                <!-- 1. Picture Description の小分類 -->
+                <div id="macro-picture" class="macro-panel active-panel">
+                    <div class="category-section">
+                        <h2 class="category-title">Daily Life <span>(日常生活)</span></h2>
+                        <div class="image-grid">
+                            <div class="image-card" onclick="launchGame('cafe')">
+                                <img src="images/cafe.jpg" alt="At a Cafe" onerror="this.src='https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=500&q=80'">
+                                <div class="image-card-info">
+                                    <h3 class="image-card-title">At a Cafe</h3>
+                                    <p class="image-card-desc">カフェでくつろぐ女性を描写しよう</p>
+                                </div>
+                            </div>
+                            <div class="image-card" onclick="launchGame('park')">
+                                <img src="images/park.jpg" alt="In the Park" onerror="this.src='https://images.unsplash.com/photo-1519331379826-f10be5486c6f?auto=format&fit=crop&w=500&q=80'">
+                                <div class="image-card-info">
+                                    <h3 class="image-card-title">In the Park</h3>
+                                    <p class="image-card-desc">公園を散歩する風景を描写しよう</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="category-section">
+                        <h2 class="category-title">School & Study <span>(学校と勉強)</span></h2>
+                        <div class="image-grid">
+                            <div class="image-card" onclick="launchGame('library')">
+                                <img src="images/library.jpg" alt="Library" onerror="this.src='https://images.unsplash.com/photo-1568667256549-094345857637?auto=format&fit=crop&w=500&q=80'">
+                                <div class="image-card-info">
+                                    <h3 class="image-card-title">Library</h3>
+                                    <p class="image-card-desc">図書館で勉強する学生を描写しよう</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Academic & Exam の小分類 (準備中) -->
+                <div id="macro-academic" class="macro-panel">
+                    <div class="coming-soon">
+                        <h3>コンテンツ準備中</h3>
+                        <p>英検やIELTSに向けた論理的ライティングのトレーニングがここに追加されます。</p>
+                    </div>
+                </div>
+
+                <!-- 3. Storytelling の小分類 (準備中) -->
+                <div id="macro-story" class="macro-panel">
+                    <div class="coming-soon">
+                        <h3>コンテンツ準備中</h3>
+                        <p>連続したイラストや場面から物語を紡ぐトレーニングがここに追加されます。</p>
+                    </div>
+                </div>
+
+                <!-- 4. Dynamic Media の小分類 (準備中) -->
+                <div id="macro-dynamic" class="macro-panel">
+                    <div class="coming-soon">
+                        <h3>コンテンツ準備中</h3>
+                        <p>動画や動作のプロセスを描写するトレーニングがここに追加されます。</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+        <!-- 🔽 プレイ画面（初期状態では非表示・ゲーム開始時に全画面で表示） 🔽 -->
+        <div id="game-container" class="app-body-layout hidden">
+            
             <div class="left-sidebar">
                 
-                <!-- カバレッジ（半円グラフ） -->
+                <!-- 新設：ホームに戻るボタン -->
+                <button id="back-to-home-btn" class="back-btn">← カテゴリ選択に戻る</button>
+
                 <div id="live-status" class="dashboard-panel score-panel">
                     <div class="status-header">COVERAGE RATE</div>
                     <div class="gauge-container">
@@ -36,34 +158,31 @@
                     </div>
                 </div>
 
-                <!-- サポートモードのスイッチ -->
-                <div class="dashboard-panel support-toggle-panel">
-                    <label class="switch-label">
-                        <input type="checkbox" id="support-switch"> Support Mode (Hint)
-                    </label>
-                    <select id="hint-level-select" class="hidden">
-                        <option value="primary">Gist (要点のみ)</option>
-                        <option value="all">All Details (詳細も含む)</option>
-                    </select>
-                </div>
-
-                <!-- ★ヒントパネル（左側に固定表示） -->
-                <div id="hint-panel" class="dashboard-panel hint-sidebar-panel">
-                    <div class="hint-header">
-                        <h3 id="hint-title">💡 Hint Area</h3>
+                <div class="dashboard-panel combined-hint-panel">
+                    <div class="support-toggle-section">
+                        <label class="switch-label">
+                            <input type="checkbox" id="support-switch"> Support Mode (Hint)
+                        </label>
+                        <select id="hint-level-select" class="hidden">
+                            <option value="primary">Gist (要点のみ)</option>
+                            <option value="all">All Details (詳細も含む)</option>
+                        </select>
                     </div>
-                    <div id="hint-content">
-                        <!-- 初期状態のプレースホルダー -->
-                        <p class="hint-placeholder">Support ModeをONにして画像の枠をクリックすると、ここに単語や文法のヒントが表示されます。</p>
+
+                    <div id="hint-panel" class="hint-sidebar-section">
+                        <div class="hint-header">
+                            <h3 id="hint-title">💡 Hint Area</h3>
+                        </div>
+                        <div id="hint-content">
+                            <p class="hint-placeholder">Support ModeをONにして画像の枠をクリックすると、ここに単語や文法のヒントが表示されます。</p>
+                        </div>
                     </div>
                 </div>
 
             </div>
 
-            <!-- 🔽 右メイン画面（指示 ＋ 作業エリア） 🔽 -->
             <div class="main-content">
                 
-                <!-- 司令塔（ステップアシスト） -->
                 <div id="step-assistant-panel" class="dashboard-panel assistant-panel">
                     <div class="assistant-header">
                         <h2 id="current-step-title" class="modern-step-title">Step 1: Main Gist</h2>
@@ -76,26 +195,17 @@
                     <div id="svo-slots-container" class="modern-stepper">
                         <div class="stepper-item" id="slot-subject">
                             <div class="stepper-icon" id="icon-subject">1</div>
-                            <div class="stepper-text">
-                                <span class="stepper-title">Subject</span>
-                                <span class="stepper-subtitle">主語</span>
-                            </div>
+                            <div class="stepper-text"><span class="stepper-title">Subject</span><span class="stepper-subtitle">主語</span></div>
                         </div>
                         <div class="stepper-divider"></div>
                         <div class="stepper-item" id="slot-verb">
                             <div class="stepper-icon" id="icon-verb">2</div>
-                            <div class="stepper-text">
-                                <span class="stepper-title">Action</span>
-                                <span class="stepper-subtitle">動作</span>
-                            </div>
+                            <div class="stepper-text"><span class="stepper-title">Action</span><span class="stepper-subtitle">動作</span></div>
                         </div>
                         <div class="stepper-divider"></div>
                         <div class="stepper-item" id="slot-object">
                             <div class="stepper-icon" id="icon-object">3</div>
-                            <div class="stepper-text">
-                                <span class="stepper-title">Object</span>
-                                <span class="stepper-subtitle">目的語</span>
-                            </div>
+                            <div class="stepper-text"><span class="stepper-title">Object</span><span class="stepper-subtitle">目的語</span></div>
                         </div>
                     </div>
 
@@ -104,7 +214,6 @@
                     </div>
                 </div>
 
-                <!-- 画像 ＆ タイピングエリア -->
                 <div class="play-area">
                     <div id="image-area-wrapper">
                         <div id="image-area">
@@ -121,12 +230,7 @@
                             <ul id="dict-suggestions" class="hidden"></ul>
                         </div>
 
-                        <div id="user-input" 
-                             contenteditable="true" 
-                             spellcheck="true" 
-                             lang="en" 
-                             placeholder="Type your description here... (e.g. A young woman is drinking coffee...)"></div>
-                        
+                        <div id="user-input" contenteditable="true" spellcheck="true" lang="en" placeholder="Type your description here... (e.g. A young woman is drinking coffee...)"></div>
                         <button id="submit-btn">Finish & Check</button>
 
                         <div id="result-area" class="hidden">
@@ -139,7 +243,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
         
@@ -147,26 +250,18 @@
         <div id="dict-modal" class="hidden">
             <div class="dict-modal-content">
                 <button id="close-dict-btn">×</button>
-                <div class="dict-header">
-                    <h2 id="dict-word-title">Word</h2>
-                    <span id="dict-word-meaning">意味</span>
-                </div>
+                <div class="dict-header"><h2 id="dict-word-title">Word</h2><span id="dict-word-meaning">意味</span></div>
                 <div class="dict-body">
-                    <div class="dict-section">
-                        <h4>💡 Explanation (解説)</h4>
-                        <p id="dict-explanation"></p>
-                    </div>
-                    <div class="dict-section">
-                        <h4>📊 Corpus Data (使用頻度)</h4>
-                        <p id="dict-corpus"></p>
-                    </div>
+                    <div class="dict-section"><h4>💡 Explanation (解説)</h4><p id="dict-explanation"></p></div>
+                    <div class="dict-section"><h4>📊 Corpus Data (使用頻度)</h4><p id="dict-corpus"></p></div>
                 </div>
             </div>
         </div>
 
     </div>
 
-    <script src="data/cafe_data.js"></script>
-    <script src="app.js"></script>
+    <script src="data/data_picture.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/mode_picture.js"></script>
 </body>
 </html>

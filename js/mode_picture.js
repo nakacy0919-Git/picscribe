@@ -1,5 +1,5 @@
 // ==========================================
-// PicScribe - Main Application Logic
+// Picture Description Mode Logic (情景描写ロジック)
 // ==========================================
 
 let scoringTargets = [];
@@ -13,7 +13,6 @@ const userInput = document.getElementById('user-input');
 const submitBtn = document.getElementById('submit-btn');
 const resultArea = document.getElementById('result-area');
 const liveScoreDisplay = document.getElementById('live-score');
-
 const overlaysContainer = document.getElementById('overlays-container');
 const imageArea = document.getElementById('image-area'); 
 const supportSwitch = document.getElementById('support-switch');
@@ -185,17 +184,14 @@ function updateAssistantUI(justHitRole = null) {
     }
 }
 
-// ★改修2：「スキップ」しても入力欄の英文を破壊しない
 document.getElementById('skip-step-btn').addEventListener('click', () => {
     let targetBucket = 'gist';
     if (categoryHits.gist >= LIGHT_THRESHOLD) targetBucket = 'setting';
     if (categoryHits.setting >= LIGHT_THRESHOLD && categoryHits.gist >= LIGHT_THRESHOLD) targetBucket = 'details';
 
-    // まだクリアされていないターゲットを1つだけ取得
     const unhitTargets = scoringTargets.filter(t => t.bucket === targetBucket && !t.hit);
     if (unhitTargets.length === 0) return;
 
-    // テキストボックスには何も書き込まず、システム上だけ「クリア扱い」にして次へ進める
     const target = unhitTargets[0];
     target.hit = true;
     categoryHits[target.bucket]++;
@@ -292,12 +288,9 @@ userInput.addEventListener('input', () => {
     scoringTargets.forEach(target => {
         if (!target.hit) {
             let matchedString = null;
-
-            // ★改修1：「drink coffee」など複数単語のフレーズも、間に文字が入っても柔軟に判定
             const hasMatch = target.words.some(targetWord => {
                 if (targetWord.includes(' ')) {
                     const phraseParts = targetWord.split(' ');
-                    // フレーズを構成する単語が、ユーザーの入力内にすべて含まれていればOKとする
                     return phraseParts.every(part => {
                         return words.some(w => {
                             if (w === part) return true;
@@ -316,10 +309,7 @@ userInput.addEventListener('input', () => {
                 }
             });
 
-            if (hasMatch && !matchedString) {
-                // ハイライト用に、マッチした単語の最初のものを取得
-                matchedString = target.words[0].split(' ')[0]; 
-            }
+            if (hasMatch && !matchedString) matchedString = target.words[0].split(' ')[0]; 
 
             if (hasMatch && matchedString) {
                 target.hit = true;
@@ -377,9 +367,11 @@ submitBtn.addEventListener('click', () => {
     resultArea.classList.remove('hidden');
 });
 
-document.getElementById('retry-btn').addEventListener('click', initGame);
+document.getElementById('retry-btn').addEventListener('click', () => initGame());
 
-function initGame() {
+// 外部から呼ばれる初期化関数（sceneIdを受け取って切り替え可能にする）
+function initGame(sceneId = 'cafe') {
+    // ※ゆくゆくはsceneIdに応じてデータを切り替えます。現在はcafeDataを読み込みます。
     setupGameData();
     targetImage.src = cafeData.imageUrl ? cafeData.imageUrl : ("images/" + cafeData.image_id);
     
@@ -404,108 +396,3 @@ function initGame() {
     updateAssistantUI(); 
     userInput.focus();
 }
-
-window.addEventListener('DOMContentLoaded', initGame);
-
-const dictInput = document.getElementById('dict-search-input');
-const dictSuggestions = document.getElementById('dict-suggestions');
-const dictModal = document.getElementById('dict-modal');
-const closeDictBtn = document.getElementById('close-dict-btn');
-let searchTimeout;
-
-dictInput.addEventListener('input', (e) => {
-    clearTimeout(searchTimeout);
-    const query = e.target.value.trim();
-    dictSuggestions.innerHTML = '';
-    if (query.length === 0) { dictSuggestions.classList.add('hidden'); return; }
-
-    searchTimeout = setTimeout(async () => {
-        try {
-            const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-            if (!response.ok) throw new Error('API request failed');
-            const results = await response.json();
-
-            if (results.length > 0) {
-                results.forEach(data => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<span class="sugg-en">${data.word}</span> <span class="sugg-ja">${data.meaning}</span>`;
-                    li.addEventListener('click', () => {
-                        openDictModal(data);
-                        dictSuggestions.classList.add('hidden');
-                        dictInput.value = ''; 
-                    });
-                    dictSuggestions.appendChild(li);
-                });
-                dictSuggestions.classList.remove('hidden');
-            } else {
-                dictSuggestions.classList.add('hidden');
-            }
-        } catch (error) { console.error("辞書APIとの通信エラー:", error); }
-    }, 300); 
-});
-
-document.addEventListener('click', (e) => {
-    if (!dictInput.contains(e.target) && !dictSuggestions.contains(e.target)) dictSuggestions.classList.add('hidden');
-});
-
-function openDictModal(data) {
-    document.getElementById('dict-word-title').textContent = data.word;
-    document.getElementById('dict-word-meaning').textContent = data.meaning;
-    document.getElementById('dict-explanation').innerHTML = data.explanation.replace(/\n/g, '<br>');
-    document.getElementById('dict-synonyms').parentElement.style.display = 'none';
-
-    const wordLen = data.word.replace(/[^a-zA-Z]/g, '').length;
-    let stars = "★★★☆☆", freqLevel = "標準的な語彙", desc = "日常から幅広く使われます";
-    if (wordLen <= 5) { stars = "★★★★★"; freqLevel = "最頻出・基本語彙"; desc = "日常会話で非常によく使われる重要な単語です"; } 
-    else if (wordLen <= 8) { stars = "★★★★☆"; freqLevel = "高頻度語彙"; desc = "ネイティブの会話や文章で頻繁に登場します"; } 
-    else if (wordLen >= 11) { stars = "★★☆☆☆"; freqLevel = "専門的・フォーマル"; desc = "学術的な文章やフォーマルな場面で使われます"; }
-    
-    document.getElementById('dict-corpus').textContent = `${stars} (${freqLevel}) : ${desc}`;
-    dictModal.classList.remove('hidden');
-}
-
-closeDictBtn.addEventListener('click', () => { dictModal.classList.add('hidden'); document.getElementById('user-input').focus(); });
-dictModal.addEventListener('click', (e) => { if (e.target === dictModal) { dictModal.classList.add('hidden'); document.getElementById('user-input').focus(); } });
-
-// ==========================================
-// 画面切り替えロジック (SPA動作) & タブ切り替え
-// ==========================================
-
-const appHeader = document.getElementById('app-header');
-const selectionScreen = document.getElementById('selection-screen');
-const gameContainer = document.getElementById('game-container');
-const backToHomeBtn = document.getElementById('back-to-home-btn');
-
-// ホーム画面を表示する関数
-function showSelectionScreen() {
-    appHeader.classList.remove('hidden');       
-    selectionScreen.classList.remove('hidden'); 
-    gameContainer.classList.add('hidden');      
-}
-
-// ゲームを開始する関数
-function launchGame(sceneId) {
-    appHeader.classList.add('hidden');          
-    selectionScreen.classList.add('hidden');    
-    gameContainer.classList.remove('hidden');   
-    initGame();
-}
-
-// ★新設：大分類（Macro Category）のタブ切り替え
-function switchMacroCategory(targetId, element) {
-    // 1. 全てのカードから active を外す
-    document.querySelectorAll('.macro-card').forEach(card => card.classList.remove('active'));
-    // 2. クリックされたカードに active をつける
-    element.classList.add('active');
-
-    // 3. 全てのパネルを隠す
-    document.querySelectorAll('.macro-panel').forEach(panel => panel.classList.remove('active-panel'));
-    // 4. 対応するIDのパネルを表示する
-    document.getElementById(targetId).classList.add('active-panel');
-}
-
-backToHomeBtn.addEventListener('click', showSelectionScreen);
-
-window.addEventListener('DOMContentLoaded', () => {
-    showSelectionScreen();
-});
