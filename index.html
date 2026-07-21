@@ -270,14 +270,15 @@
 
                         <!-- ★ここを変更：ボタンを横に美しく並べるラッパー -->
                         <div class="action-buttons-wrapper">
-                            <!-- 上品なカメラアイコンのみのボタン -->
-                            <button id="ocr-trigger-btn" class="icon-only-btn" title="手書きを読み込む（カメラ起動）">
+                            <!-- ★変更：buttonをlabelに変え、for属性で直接inputと紐付けることでiOSの制限を完全回避 -->
+                            <label for="ocr-file-input" class="icon-only-btn" title="手書きを読み込む（カメラ起動）" style="cursor: pointer;">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
                                     <circle cx="12" cy="13" r="4"></circle>
                                 </svg>
-                            </button>
-                            <input type="file" id="ocr-file-input" accept="image/*" capture="environment" class="hidden">
+                            </label>
+                            <!-- ★変更：class="hidden" だとiOSが反応しないことがあるため、style="display: none;"に変更 -->
+                            <input type="file" id="ocr-file-input" accept="image/*" capture="environment" style="display: none;">
                             
                             <button id="submit-btn">Finish & Check</button>
                         </div>

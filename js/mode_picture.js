@@ -399,30 +399,25 @@ function initGame(sceneId = 'cafe') {
 // ==========================================
 // 手書き読み込み (OCR) ロジック
 // ==========================================
-const ocrTriggerBtn = document.getElementById('ocr-trigger-btn');
 const ocrFileInput = document.getElementById('ocr-file-input');
 const ocrLoading = document.getElementById('ocr-loading');
 const ocrProgress = document.getElementById('ocr-progress');
 // userInput 変数はすでにある想定でそのまま利用します
 
-if (ocrTriggerBtn) {
-    // 1. ボタンを押したらカメラ（ファイル選択）を起動
-    ocrTriggerBtn.addEventListener('click', () => {
-        ocrFileInput.click();
-    });
+// ★ボタンクリック処理（ocrTriggerBtn.addEventListener...）はHTMLの<label>機能に任せるため削除しました。
 
-    // 2. 写真が撮影/選択されたら解析スタート
+if (ocrFileInput) {
+    // 写真が撮影/選択されたら解析スタート
     ocrFileInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
-        // ローディング画面を表示し、ボタンを一時無効化
+        // ローディング画面を表示
         ocrLoading.classList.remove('hidden');
-        ocrTriggerBtn.disabled = true;
         ocrProgress.textContent = "0";
 
         try {
-            // 3. Tesseract.jsで画像から英語を抽出
+            // Tesseract.jsで画像から英語を抽出
             const result = await Tesseract.recognize(
                 file,
                 'eng', // 英語として認識
@@ -436,7 +431,7 @@ if (ocrTriggerBtn) {
                 }
             );
 
-            // 4. 解析結果から改行を消して整形
+            // 解析結果から改行を消して整形
             const cleanText = result.data.text.replace(/\n/g, ' ').trim();
             
             if (cleanText) {
@@ -460,9 +455,8 @@ if (ocrTriggerBtn) {
             console.error("OCR Error:", error);
             alert("解析中にエラーが発生しました。");
         } finally {
-            // 5. 処理が終わったらローディングを消して元に戻す
+            // 処理が終わったらローディングを消して元に戻す
             ocrLoading.classList.add('hidden');
-            ocrTriggerBtn.disabled = false;
             ocrFileInput.value = ''; // 連続で撮影できるようにリセット
         }
     });
