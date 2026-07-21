@@ -183,13 +183,41 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
    7. ゲーミフィケーション装飾
 ========================================= */
 .matched-word { font-weight: 700; color: #3b82f6; background: rgba(59, 130, 246, 0.1); border-radius: 3px; padding: 0 4px; transition: all 0.3s ease; }
-.gold-overlay { position: absolute; background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 70%); border-radius: 50%; pointer-events: none; mix-blend-mode: normal; animation: whitePulse 2s infinite alternate; z-index: 10; }
-@keyframes whitePulse { 0% { transform: scale(0.9); opacity: 0.6; } 100% { transform: scale(1.1); opacity: 1; } }
-.hint-glow-overlay { position: absolute; background-color: rgba(255, 255, 255, 0.2); border: 2px dashed rgba(255, 255, 255, 0.9); border-radius: 8px; pointer-events: none; animation: targetBreathing 1.5s infinite alternate ease-in-out; z-index: 5; }
-@keyframes targetBreathing { 0% { opacity: 0.3; box-shadow: 0 0 0px rgba(255, 255, 255, 0); } 100% { opacity: 1; box-shadow: 0 0 15px rgba(255, 255, 255, 0.8); } }
+
+/* ★ 修正：ぼんやり光る点滅を廃止し、スッキリとした白い薄枠に変更 */
+.gold-overlay { 
+    position: absolute; 
+    border: 2px solid rgba(255, 255, 255, 0.9); /* 白の薄い枠線 */
+    background-color: rgba(255, 255, 255, 0.15); /* ほんのわずかなハイライト */
+    border-radius: 8px; 
+    pointer-events: none; 
+    z-index: 10; 
+    animation: simplePop 0.3s ease-out forwards; /* 出現時だけ軽くふわっと表示 */
+}
+
+@keyframes simplePop {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* ★ ヒント用のオーバーレイ（点線の枠）も、点滅を控えめに調整 */
+.hint-glow-overlay { 
+    position: absolute; 
+    background-color: rgba(255, 255, 255, 0.1); 
+    border: 2px dashed rgba(255, 255, 255, 0.7); 
+    border-radius: 8px; 
+    pointer-events: none; 
+    animation: targetBreathing 2s infinite alternate ease-in-out; 
+    z-index: 5; 
+}
+
+@keyframes targetBreathing { 
+    0% { opacity: 0.3; } 
+    100% { opacity: 1; } 
+}
+
 .floating-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 36px; font-weight: bold; color: #111; text-shadow: 0px 4px 15px rgba(255,255,255,0.8); pointer-events: none; animation: floatUp 1s ease-out forwards; z-index: 100; font-family: 'Playfair Display', serif; }
 @keyframes floatUp { 0% { opacity: 1; transform: translate(-50%, -10%); scale: 0.5; } 50% { opacity: 1; scale: 1.2; } 100% { opacity: 0; transform: translate(-50%, -100%); } }
-
 /* =========================================
    8. 辞書モーダル & その他
 ========================================= */
