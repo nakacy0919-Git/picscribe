@@ -6,6 +6,22 @@ const selectionScreen = document.getElementById('selection-screen');
 const gameContainer = document.getElementById('game-container');
 const backToHomeBtn = document.getElementById('back-to-home-btn');
 
+// ★ 修正：確実にスプラッシュ画面を消すための即時実行ロジック
+// サクサク進めるように2.0秒でフェードアウトを開始します
+setTimeout(() => {
+    const splash = document.getElementById('splash-screen');
+    if (splash) {
+        splash.classList.add('splash-hidden');
+        setTimeout(() => {
+            splash.remove(); // 完全にDOMから削除して操作の邪魔をしない
+        }, 800); 
+    }
+}, 2000); 
+
+// アプリ起動時の初期画面表示
+showSelectionScreen();
+
+
 function showSelectionScreen() {
     appHeader.classList.remove('hidden');       
     selectionScreen.classList.remove('hidden'); 
@@ -17,7 +33,7 @@ function launchGame(sceneId) {
     selectionScreen.classList.add('hidden');    
     gameContainer.classList.remove('hidden');   
     if (typeof initGame === 'function') {
-        initGame(sceneId); // 各モードの初期化処理を呼び出す
+        initGame(sceneId); 
     }
 }
 
@@ -29,7 +45,7 @@ function switchMacroCategory(targetId, element) {
 }
 
 backToHomeBtn.addEventListener('click', showSelectionScreen);
-window.addEventListener('DOMContentLoaded', showSelectionScreen);
+
 
 // ==========================================
 // スマート辞書＆サジェスト機能（共通API連携）
@@ -40,40 +56,42 @@ const dictModal = document.getElementById('dict-modal');
 const closeDictBtn = document.getElementById('close-dict-btn');
 let searchTimeout;
 
-dictInput.addEventListener('input', (e) => {
-    clearTimeout(searchTimeout);
-    const query = e.target.value.trim();
-    dictSuggestions.innerHTML = '';
-    if (query.length === 0) { dictSuggestions.classList.add('hidden'); return; }
+if (dictInput) {
+    dictInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        const query = e.target.value.trim();
+        dictSuggestions.innerHTML = '';
+        if (query.length === 0) { dictSuggestions.classList.add('hidden'); return; }
 
-    searchTimeout = setTimeout(async () => {
-        try {
-            const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-            if (!response.ok) throw new Error('API request failed');
-            const results = await response.json();
+        searchTimeout = setTimeout(async () => {
+            try {
+                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+                if (!response.ok) throw new Error('API request failed');
+                const results = await response.json();
 
-            if (results.length > 0) {
-                results.forEach(data => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<span class="sugg-en">${data.word}</span> <span class="sugg-ja">${data.meaning}</span>`;
-                    li.addEventListener('click', () => {
-                        openDictModal(data);
-                        dictSuggestions.classList.add('hidden');
-                        dictInput.value = ''; 
+                if (results.length > 0) {
+                    results.forEach(data => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<span class="sugg-en">${data.word}</span> <span class="sugg-ja">${data.meaning}</span>`;
+                        li.addEventListener('click', () => {
+                            openDictModal(data);
+                            dictSuggestions.classList.add('hidden');
+                            dictInput.value = ''; 
+                        });
+                        dictSuggestions.appendChild(li);
                     });
-                    dictSuggestions.appendChild(li);
-                });
-                dictSuggestions.classList.remove('hidden');
-            } else {
-                dictSuggestions.classList.add('hidden');
-            }
-        } catch (error) { console.error("辞書APIとの通信エラー:", error); }
-    }, 300); 
-});
+                    dictSuggestions.classList.remove('hidden');
+                } else {
+                    dictSuggestions.classList.add('hidden');
+                }
+            } catch (error) { console.error("辞書APIとの通信エラー:", error); }
+        }, 300); 
+    });
 
-document.addEventListener('click', (e) => {
-    if (!dictInput.contains(e.target) && !dictSuggestions.contains(e.target)) dictSuggestions.classList.add('hidden');
-});
+    document.addEventListener('click', (e) => {
+        if (!dictInput.contains(e.target) && !dictSuggestions.contains(e.target)) dictSuggestions.classList.add('hidden');
+    });
+}
 
 function openDictModal(data) {
     document.getElementById('dict-word-title').textContent = data.word;
@@ -91,5 +109,9 @@ function openDictModal(data) {
     dictModal.classList.remove('hidden');
 }
 
-closeDictBtn.addEventListener('click', () => { dictModal.classList.add('hidden'); document.getElementById('user-input').focus(); });
-dictModal.addEventListener('click', (e) => { if (e.target === dictModal) { dictModal.classList.add('hidden'); document.getElementById('user-input').focus(); } });
+if (closeDictBtn) {
+    closeDictBtn.addEventListener('click', () => { dictModal.classList.add('hidden'); document.getElementById('user-input').focus(); });
+}
+if (dictModal) {
+    dictModal.addEventListener('click', (e) => { if (e.target === dictModal) { dictModal.classList.add('hidden'); document.getElementById('user-input').focus(); } });
+}

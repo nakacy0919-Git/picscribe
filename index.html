@@ -8,6 +8,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- 🔽 オープニングアニメーション（スプラッシュ画面） 🔽 -->
+    <div id="splash-screen">
+        <div class="splash-content">
+            <img src="images/logo.webp" alt="PicScribe Logo" class="splash-logo" onerror="this.src='https://via.placeholder.com/120x120?text=Logo'">
+            <h1 class="splash-title">
+                <span class="title-pic">Pic</span><span class="title-scribe">Scribe</span>
+                <span class="splash-cursor">|</span>
+            </h1>
+            <div class="splash-subtitle-wrapper">
+                <div class="splash-subtitle">ENGLISH WRITING PLATFORM</div>
+            </div>
+        </div>
+    </div>
+
     <div id="app-wrapper">
         
         <!-- 🔽 ヘッダー（ホーム画面でのみ表示されます） 🔽 -->
@@ -32,7 +46,7 @@
                 
                 <div class="macro-grid">
                     <!-- 1. Picture Description -->
-                    <div class="macro-card active" onclick="switchMacroCategory('macro-picture', this)">
+                    <div class="macro-card" onclick="switchMacroCategory('macro-picture', this)">
                         <div class="macro-bg" style="background-image: url('https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&w=800&q=80');"></div>
                         <div class="macro-overlay"></div>
                         <div class="macro-content">
@@ -76,8 +90,15 @@
             <!-- 小分類エリア（切り替わる部分） -->
             <div class="sub-categories-wrapper">
                 
+                <!-- 初期案内画面 -->
+                <div id="initial-prompt" class="macro-panel active-panel initial-prompt-panel">
+                    <div class="prompt-icon">👆</div>
+                    <h3>カテゴリーを選択してください</h3>
+                    <p>上の4つのパネルから、今日の学習目的を選んでスタートしましょう。</p>
+                </div>
+
                 <!-- 1. Picture Description の小分類 -->
-                <div id="macro-picture" class="macro-panel active-panel">
+                <div id="macro-picture" class="macro-panel">
                     <div class="category-section">
                         <h2 class="category-title">Daily Life <span>(日常生活)</span></h2>
                         <div class="image-grid">
@@ -144,7 +165,6 @@
             
             <div class="left-sidebar">
                 
-                <!-- 新設：ホームに戻るボタン -->
                 <button id="back-to-home-btn" class="back-btn">← カテゴリ選択に戻る</button>
 
                 <div id="live-status" class="dashboard-panel score-panel">
@@ -260,6 +280,7 @@
 
     </div>
 
+    <!-- 分割したJSファイルの読み込み -->
     <script src="data/data_picture.js"></script>
     <script src="js/main.js"></script>
     <script src="js/mode_picture.js"></script>
