@@ -87,12 +87,18 @@
                 </div>
             </div>
 
-            <!-- 小分類エリア（切り替わる部分） -->
+            <!-- ★ ここが消えていました！小分類エリアを包むラッパーを復活 ★ -->
             <div class="sub-categories-wrapper">
-                
+
                 <!-- 初期案内画面 -->
                 <div id="initial-prompt" class="macro-panel active-panel initial-prompt-panel">
-                    <div class="prompt-icon">👆</div>
+                    <div class="prompt-icon">
+                        <!-- スタイリッシュな極細ラインの矢印SVG -->
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 19V5"></path>
+                            <polyline points="5 12 12 5 19 12"></polyline>
+                        </svg>
+                    </div>
                     <h3>カテゴリーを選択してください</h3>
                     <p>上の4つのパネルから、今日の学習目的を選んでスタートしましょう。</p>
                 </div>
@@ -157,7 +163,9 @@
                     </div>
                 </div>
 
+            <!-- ★ ラッパーの閉じタグを忘れずに追加 ★ -->
             </div>
+            
         </div>
         
         <!-- 🔽 プレイ画面（初期状態では非表示・ゲーム開始時に全画面で表示） 🔽 -->

@@ -1,6 +1,10 @@
 /* =========================================
    1. ベーススタイル & ヘッダー
 ========================================= */
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Noto Sans JP', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f7f7f7;
@@ -24,13 +28,15 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 30px;
     background: #ffffff;
     padding: 25px 40px;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.03);
     border: 1px solid #e0e0e0;
     gap: 35px;
+    /* ★ヘッダーの幅を絞って両サイドにキャンバス背景を見せる */
+    max-width: 960px;
+    margin: 0 auto 30px auto; 
 }
 
 #app-logo { width: 110px; height: 110px; object-fit: contain; border-radius: 50%; box-shadow: 0 8px 16px rgba(0,0,0,0.15); }
@@ -58,24 +64,21 @@ body {
     align-items: stretch;
 }
 
-/* 左サイドバー */
 .left-sidebar {
-    flex: 0 0 280px; /* サイドバーの幅を固定 */
+    flex: 0 0 280px;
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-/* 右メインコンテンツ */
 .main-content {
     flex: 1;
     display: flex;
     flex-direction: column;
     gap: 20px;
-    min-width: 0; /* フレックスバグ防止 */
+    min-width: 0;
 }
 
-/* メイン内の下部（画像と入力欄） */
 .play-area {
     display: flex;
     gap: 25px;
@@ -84,7 +87,6 @@ body {
 #image-area-wrapper { flex: 1.1; }
 #input-area-wrapper { flex: 1; display: flex; flex-direction: column; }
 
-/* パネル共通デザイン */
 .dashboard-panel {
     background: #fff;
     padding: 25px;
@@ -104,35 +106,12 @@ body {
 .gauge-text { position: absolute; bottom: -10px; left: 0; width: 100%; font-size: 32px; font-weight: 700; color: #1a1a1a; font-family: 'Playfair Display', serif; }
 .gauge-text .pts { font-size: 14px; color: #888; margin-left: 2px; }
 
-/* ★ 合体したヒントパネル全体 */
-.combined-hint-panel {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 0; /* 外側の余白を消して内側で制御 */
-    overflow: hidden;
-}
-
-/* サポートトグル部分 */
-.support-toggle-section {
-    padding: 12px 20px;
-    background: #fff;
-    border-bottom: 1px solid #eee; /* 上下を区切るさりげない線 */
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
+.combined-hint-panel { flex-grow: 1; display: flex; flex-direction: column; padding: 0; overflow: hidden; }
+.support-toggle-section { padding: 12px 20px; background: #fff; border-bottom: 1px solid #eee; display: flex; flex-direction: column; gap: 8px; }
 .switch-label { cursor: pointer; font-weight: bold; color: #111; display: inline-flex; align-items: center; gap: 10px; font-size: 14px;}
 #hint-level-select { padding: 6px 10px; border-radius: 4px; background: #f9f9f9; color: #111; border: 1px solid #ccc; outline: none; font-size: 13px;}
 
-/* ヒントコンテンツ部分（スリム化） */
-.hint-sidebar-section { 
-    flex-grow: 1; 
-    display: flex; 
-    flex-direction: column; 
-    padding: 15px 20px; /* 余白を詰めてスリムに */
-    background: #fafafa;
-}
+.hint-sidebar-section { flex-grow: 1; display: flex; flex-direction: column; padding: 15px 20px; background: #fafafa; }
 .hint-header { border-bottom: 2px solid #1a1a1a; padding-bottom: 8px; margin-bottom: 12px; }
 .hint-header h3 { margin: 0; color: #1a1a1a; font-size: 15px;} 
 .hint-placeholder { color: #888; font-size: 13px; line-height: 1.5; text-align: center; margin-top: 10px; margin-bottom: 10px; }
@@ -144,10 +123,7 @@ body {
 /* =========================================
    4. 右メイン内：司令塔（アシスタント）
 ========================================= */
-/* パネル全体の内側の余白を圧縮 */
 .assistant-panel { padding: 15px 25px; } 
-
-/* ヘッダー下部の余白を圧縮 */
 .assistant-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; } 
 .modern-step-title { font-size: 17px; font-weight: 800; color: #1a1a1a; margin: 0; font-family: 'Playfair Display', serif; }
 .assistant-actions { display: flex; align-items: center; gap: 12px; }
@@ -157,12 +133,9 @@ body {
 .skip-btn:hover { background: #1a1a1a; color: #fff; }
 .skip-btn.hidden { display: none; }
 
-/* ステッパー（1, 2, 3の丸）の上下の余白を大幅に圧縮 */
 .modern-stepper { display: flex; align-items: center; justify-content: space-between; margin: 12px 0; padding: 0; } 
 .stepper-item { display: flex; align-items: center; gap: 10px; opacity: 0.3; filter: grayscale(100%); transition: all 0.3s ease; }
 .stepper-divider { flex: 1; height: 1px; background-color: #1a1a1a; margin: 0 15px; opacity: 0.2; }
-
-/* アイコンとテキストもほんの少しだけスリム化してバランスを調整 */
 .stepper-icon { width: 30px; height: 30px; border-radius: 50%; background: #fff; border: 2px solid #1a1a1a; color: #1a1a1a; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; transition: all 0.3s; }
 .stepper-text { display: flex; flex-direction: column; }
 .stepper-title { font-size: 13px; font-weight: 700; color: #1a1a1a; }
@@ -174,10 +147,10 @@ body {
 .stepper-item.completed-slot .stepper-icon { background: #fff; border-color: #27ae60; color: #27ae60; }
 .stepper-item.completed-slot .stepper-title { color: #27ae60; }
 
-/* 指示メッセージ（NEXT ACTION）の上下の余白を圧縮 */
 .modern-message { background: #f7f7f7; padding: 12px 16px; border-radius: 6px; font-size: 14px; color: #1a1a1a; line-height: 1.5; display: block; border: 1px solid #e0e0e0; }
 .modern-message::before { content: "NEXT ACTION"; display: block; font-size: 11px; font-weight: 800; color: #888; letter-spacing: 1px; margin-bottom: 4px; }
 .modern-message strong { color: #3b82f6; font-weight: 700; background: rgba(59, 130, 246, 0.1); padding: 2px 6px; border-radius: 4px; }
+
 /* =========================================
    5. 右メイン内：画像エリア
 ========================================= */
@@ -210,16 +183,13 @@ button#submit-btn, button#retry-btn { width: 100%; background-color: #111111; co
 button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
 
 /* =========================================
-   7. ゲーミフィケーション装飾（白エフェクト）
+   7. ゲーミフィケーション装飾
 ========================================= */
 .matched-word { font-weight: 700; color: #3b82f6; background: rgba(59, 130, 246, 0.1); border-radius: 3px; padding: 0 4px; transition: all 0.3s ease; }
-
 .gold-overlay { position: absolute; background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 70%); border-radius: 50%; pointer-events: none; mix-blend-mode: normal; animation: whitePulse 2s infinite alternate; z-index: 10; }
 @keyframes whitePulse { 0% { transform: scale(0.9); opacity: 0.6; } 100% { transform: scale(1.1); opacity: 1; } }
-
 .hint-glow-overlay { position: absolute; background-color: rgba(255, 255, 255, 0.2); border: 2px dashed rgba(255, 255, 255, 0.9); border-radius: 8px; pointer-events: none; animation: targetBreathing 1.5s infinite alternate ease-in-out; z-index: 5; }
 @keyframes targetBreathing { 0% { opacity: 0.3; box-shadow: 0 0 0px rgba(255, 255, 255, 0); } 100% { opacity: 1; box-shadow: 0 0 15px rgba(255, 255, 255, 0.8); } }
-
 .floating-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 36px; font-weight: bold; color: #111; text-shadow: 0px 4px 15px rgba(255,255,255,0.8); pointer-events: none; animation: floatUp 1s ease-out forwards; z-index: 100; font-family: 'Playfair Display', serif; }
 @keyframes floatUp { 0% { opacity: 1; transform: translate(-50%, -10%); scale: 0.5; } 50% { opacity: 1; scale: 1.2; } 100% { opacity: 0; transform: translate(-50%, -100%); } }
 
@@ -244,11 +214,7 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
 #dict-synonyms li { margin-bottom: 12px; font-size: 14px; line-height: 1.5; color: #555; display: flex; flex-direction: column; background: #fcfcfc; padding: 8px 12px; border-radius: 6px; border-left: 3px solid #0984e3; }
 #dict-synonyms strong { color: #0984e3; font-size: 15px; margin-bottom: 2px; }
 
-@media (max-width: 900px) {
-    .app-body-layout { flex-direction: column; }
-    .left-sidebar { flex: auto; width: 100%; }
-    .play-area { flex-direction: column; }
-}
+
 /* =========================================
    10. ホーム画面（学習トラック ＆ 画像選択）
 ========================================= */
@@ -259,9 +225,11 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
     box-shadow: 0 10px 40px rgba(0,0,0,0.05);
     border: 1px solid #e0e0e0;
     overflow: hidden;
+    /* ★パネル全体の幅を絞って両サイドにキャンバス背景を見せる */
+    max-width: 960px;
+    margin: 0 auto;
 }
 
-/* 4つの大分類エリア */
 .macro-section {
     background: #111;
     color: #fff;
@@ -290,7 +258,6 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
     gap: 20px;
 }
 
-/* 美しいイメージボタン */
 .macro-card {
     position: relative;
     height: 160px;
@@ -319,36 +286,28 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
     z-index: 2;
     transition: transform 0.3s ease;
 }
-.macro-content h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    margin: 0 0 5px 0;
-    color: #fff;
-}
-.macro-content p {
-    font-size: 11px;
-    color: #ccc;
-    margin: 0;
-    font-weight: bold;
-    letter-spacing: 1px;
-}
+.macro-content h3 { font-family: 'Playfair Display', serif; font-size: 20px; margin: 0 0 5px 0; color: #fff; }
+.macro-content p { font-size: 11px; color: #ccc; margin: 0; font-weight: bold; letter-spacing: 1px; }
 
-/* カードのアニメーション（ホバー＆アクティブ状態） */
 .macro-card:hover .macro-bg { transform: scale(1.1); }
 .macro-card:hover .macro-overlay { background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%); }
 .macro-card.active { border-color: #fff; box-shadow: 0 0 20px rgba(255,255,255,0.2); transform: translateY(-5px); }
 .macro-card.active .macro-content { transform: translateY(-5px); }
 .macro-card.active .macro-content h3 { color: #fff; text-shadow: 0 2px 10px rgba(255,255,255,0.5); }
 
-/* 小分類（切り替わる下部エリア） */
+/* ★小分類エリア */
 .sub-categories-wrapper {
-    padding: 40px;
+    /* ここで白枠の内側にしっかりと60pxの美しい余白を作ります */
+    padding: 60px !important; 
     background: #fff;
     min-height: 400px;
 }
+
+/* （※突き破る原因だった max-width や margin の指定を完全に削除しました） */
 .macro-panel {
     display: none;
     animation: fadeInPanel 0.4s ease;
+    width: 100%;
 }
 .macro-panel.active-panel {
     display: block;
@@ -358,11 +317,23 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
     to { opacity: 1; transform: translateY(0); }
 }
 
-.category-section { margin-bottom: 40px; }
-.category-title { font-size: 22px; font-weight: 800; color: #1a1a1a; border-bottom: 2px solid #1a1a1a; padding-bottom: 10px; margin-bottom: 25px; display: flex; align-items: baseline; gap: 10px; }
-.category-title span { font-size: 13px; color: #888; font-weight: bold; }
+.category-section { margin-bottom: 50px; }
 
-.image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
+.category-title { 
+    font-size: 26px; 
+    font-weight: 800; 
+    color: #1a1a1a; 
+    border-bottom: 2px solid #1a1a1a; 
+    padding-bottom: 12px; 
+    margin-bottom: 25px; 
+    display: flex; 
+    align-items: baseline; 
+    gap: 12px; 
+}
+.category-title span { font-size: 15px; color: #888; font-weight: bold; }
+
+.image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 30px; }
+
 .image-card { background: #fff; border: 2px solid #e0e0e0; border-radius: 10px; overflow: hidden; cursor: pointer; transition: all 0.3s ease; }
 .image-card:hover { transform: translateY(-6px); border-color: #1a1a1a; box-shadow: 0 12px 24px rgba(0,0,0,0.1); }
 .image-card img { width: 100%; height: 180px; object-fit: cover; border-bottom: 1px solid #e0e0e0; transition: transform 0.3s ease; }
@@ -375,15 +346,10 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
 .coming-soon h3 { font-family: 'Playfair Display', serif; font-size: 28px; color: #1a1a1a; margin-bottom: 10px; }
 .coming-soon p { font-size: 14px; }
 
-/* 戻るボタン（プレイ画面のサイドバー上部） */
 .back-btn { width: 100%; background: transparent; color: #1a1a1a; border: 1px solid #1a1a1a; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; margin-bottom: 10px; transition: all 0.2s; }
 .back-btn:hover { background: #1a1a1a; color: #fff; }
 
-@media (max-width: 900px) {
-    .macro-grid { grid-template-columns: repeat(2, 1fr); }
-    .macro-section { padding: 30px 20px; }
-    .sub-categories-wrapper { padding: 30px 20px; }
-}
+
 /* =========================================
    11. スプラッシュ画面（オープニングアニメーション）
 ========================================= */
@@ -401,99 +367,56 @@ button#submit-btn:hover, button#retry-btn:hover { background-color: #333333; box
     align-items: center;
     transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
 }
-
 .splash-content { text-align: center; }
-
-/* ロゴがスケールダウンしながらフェードイン */
 .splash-logo {
-    width: 130px;
-    opacity: 0;
-    border-radius: 50%;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    width: 130px; opacity: 0; border-radius: 50%; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     animation: splashFadeIn 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.3s;
 }
-
-/* タイトルが下からスライドイン */
 .splash-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 64px;
-    margin: 20px 0 5px 0;
-    opacity: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: splashSlideUp 0.8s ease forwards 0.8s;
+    font-family: 'Playfair Display', serif; font-size: 64px; margin: 20px 0 5px 0; opacity: 0;
+    display: flex; align-items: center; justify-content: center; animation: splashSlideUp 0.8s ease forwards 0.8s;
 }
 .splash-title .title-pic { color: #111111; font-weight: 700; }
 .splash-title .title-scribe { color: #444444; font-style: italic; }
-
-/* タイピングを模した青いカーソルの点滅 */
-.splash-cursor {
-    font-weight: 300;
-    color: #3b82f6;
-    margin-left: 6px;
-    font-size: 56px;
-    animation: splashBlink 0.8s infinite;
-}
-
-/* サブタイトルがタイピングされるように横に広がる */
-.splash-subtitle-wrapper {
-    display: inline-block;
-    overflow: hidden;
-}
+.splash-cursor { font-weight: 300; color: #3b82f6; margin-left: 6px; font-size: 56px; animation: splashBlink 0.8s infinite; }
+.splash-subtitle-wrapper { display: inline-block; overflow: hidden; }
 .splash-subtitle {
-    font-weight: 700;
-    color: #555;
-    letter-spacing: 4px;
-    font-size: 14px;
-    white-space: nowrap;
-    opacity: 0;
-    width: 0;
+    font-weight: 700; color: #555; letter-spacing: 4px; font-size: 14px; white-space: nowrap; opacity: 0; width: 0;
     animation: splashTypewrite 1s steps(30, end) forwards 1.4s;
 }
 
-@keyframes splashFadeIn {
-    0% { opacity: 0; transform: scale(0.8) translateY(20px); }
-    100% { opacity: 1; transform: scale(1) translateY(0); }
-}
-@keyframes splashSlideUp {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: translateY(0); }
-}
-@keyframes splashBlink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
-}
-@keyframes splashTypewrite {
-    0% { width: 0; opacity: 1; }
-    100% { width: 100%; opacity: 1; }
-}
-
-.splash-hidden {
-    opacity: 0 !important;
-    visibility: hidden !important;
-}
+@keyframes splashFadeIn { 0% { opacity: 0; transform: scale(0.8) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+@keyframes splashSlideUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+@keyframes splashBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes splashTypewrite { 0% { width: 0; opacity: 1; } 100% { width: 100%; opacity: 1; } }
+.splash-hidden { opacity: 0 !important; visibility: hidden !important; }
 
 /* =========================================
    12. 初期案内のプレースホルダー
 ========================================= */
-.initial-prompt-panel {
-    text-align: center;
-    padding: 80px 20px;
-    color: #666;
+.initial-prompt-panel { text-align: center; padding: 100px 20px; color: #666; }
+
+.initial-prompt-panel.active-panel {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
 }
-.prompt-icon {
-    font-size: 48px;
-    margin-bottom: 20px;
-    animation: bounceIcon 2s infinite ease-in-out;
-}
-.initial-prompt-panel h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 26px;
-    color: #1a1a1a;
-    margin-bottom: 10px;
-}
-@keyframes bounceIcon {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+
+.prompt-icon { margin-bottom: 25px; animation: elegantFloat 2.5s infinite ease-in-out; }
+.initial-prompt-panel h3 { font-family: 'Playfair Display', serif; font-size: 26px; color: #1a1a1a; margin-bottom: 12px; letter-spacing: 1px; }
+.initial-prompt-panel p { font-size: 14px; letter-spacing: 0.5px; }
+
+@keyframes elegantFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+/* =========================================
+   レスポンシブ対応
+========================================= */
+@media (max-width: 900px) {
+    .app-body-layout { flex-direction: column; }
+    .left-sidebar { flex: auto; width: 100%; }
+    .play-area { flex-direction: column; }
+    
+    .macro-grid { grid-template-columns: repeat(2, 1fr); }
+    .macro-section { padding: 40px 30px; }
+    .sub-categories-wrapper { padding: 40px 30px; }
 }
