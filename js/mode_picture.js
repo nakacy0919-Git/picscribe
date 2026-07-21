@@ -396,3 +396,74 @@ function initGame(sceneId = 'cafe') {
     updateAssistantUI(); 
     userInput.focus();
 }
+// ==========================================
+// 手書き読み込み (OCR) ロジック
+// ==========================================
+const ocrTriggerBtn = document.getElementById('ocr-trigger-btn');
+const ocrFileInput = document.getElementById('ocr-file-input');
+const ocrLoading = document.getElementById('ocr-loading');
+const ocrProgress = document.getElementById('ocr-progress');
+// userInput 変数はすでにある想定でそのまま利用します
+
+if (ocrTriggerBtn) {
+    // 1. ボタンを押したらカメラ（ファイル選択）を起動
+    ocrTriggerBtn.addEventListener('click', () => {
+        ocrFileInput.click();
+    });
+
+    // 2. 写真が撮影/選択されたら解析スタート
+    ocrFileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // ローディング画面を表示し、ボタンを一時無効化
+        ocrLoading.classList.remove('hidden');
+        ocrTriggerBtn.disabled = true;
+        ocrProgress.textContent = "0";
+
+        try {
+            // 3. Tesseract.jsで画像から英語を抽出
+            const result = await Tesseract.recognize(
+                file,
+                'eng', // 英語として認識
+                {
+                    logger: m => {
+                        if (m.status === 'recognizing text') {
+                            // 進捗状況（%）を画面に表示
+                            ocrProgress.textContent = Math.floor(m.progress * 100);
+                        }
+                    }
+                }
+            );
+
+            // 4. 解析結果から改行を消して整形
+            const cleanText = result.data.text.replace(/\n/g, ' ').trim();
+            
+            if (cleanText) {
+                // 現在の入力欄に文字を追加
+                if (userInput.innerText.trim().length > 0) {
+                    userInput.innerText += " " + cleanText;
+                } else {
+                    userInput.innerText = cleanText;
+                }
+                
+                // 入力があったことをアプリに伝え、単語判定などを動かす
+                const event = new Event('input', { bubbles: true });
+                userInput.dispatchEvent(event);
+                
+                alert("手書き文字を読み込みました！間違いがないか確認して修正してください。");
+            } else {
+                alert("文字が読み取れませんでした。もう少し明るい場所で、はっきりと撮影してみてください。");
+            }
+
+        } catch (error) {
+            console.error("OCR Error:", error);
+            alert("解析中にエラーが発生しました。");
+        } finally {
+            // 5. 処理が終わったらローディングを消して元に戻す
+            ocrLoading.classList.add('hidden');
+            ocrTriggerBtn.disabled = false;
+            ocrFileInput.value = ''; // 連続で撮影できるようにリセット
+        }
+    });
+}

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PicScribe - English Writing Platform</title>
+    <!-- ★追加：手書き文字認識用ライブラリ -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
@@ -251,7 +253,7 @@
                         </div>
                     </div>
 
-                    <div id="input-area-wrapper">
+                   <div id="input-area-wrapper">
                         <div id="dictionary-widget">
                             <div class="search-icon">🔍</div>
                             <input type="text" id="dict-search-input" placeholder="Search dictionary (En/Ja)..." autocomplete="off">
@@ -259,8 +261,27 @@
                         </div>
 
                         <div id="user-input" contenteditable="true" spellcheck="true" lang="en" placeholder="Type your description here... (e.g. A young woman is drinking coffee...)"></div>
-                        <button id="submit-btn">Finish & Check</button>
+                        
+                        <!-- 解析中のローディング画面 -->
+                        <div id="ocr-loading" class="hidden">
+                            <div class="spinner"></div>
+                            <p>手書き文字を解析中... <span id="ocr-progress">0</span>%</p>
+                        </div>
 
+                        <!-- ★ここを変更：ボタンを横に美しく並べるラッパー -->
+                        <div class="action-buttons-wrapper">
+                            <!-- 上品なカメラアイコンのみのボタン -->
+                            <button id="ocr-trigger-btn" class="icon-only-btn" title="手書きを読み込む（カメラ起動）">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                    <circle cx="12" cy="13" r="4"></circle>
+                                </svg>
+                            </button>
+                            <input type="file" id="ocr-file-input" accept="image/*" capture="environment" class="hidden">
+                            
+                            <button id="submit-btn">Finish & Check</button>
+                        </div>
+                        
                         <div id="result-area" class="hidden">
                             <h2 id="feedback-msg"></h2>
                             <div class="model-answers">
