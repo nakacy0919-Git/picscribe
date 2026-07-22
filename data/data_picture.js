@@ -6,6 +6,15 @@ const cafeData = {
   "overall_description_en": "A young woman is sitting by a large window in a cozy cafe, quietly enjoying a cup of coffee. A notebook, a pen, a vase of white flowers, a saucer, and a spoon are placed on the wooden table, while a menu board, an espresso machine, shelves, plants, and pendant lights can be seen in the background.",
   "overall_mood": ["cozy", "warm", "peaceful", "relaxed", "serene", "quiet", "calm", "comfortable", "inviting", "sunny", "softly lit", "natural", "gentle", "homey", "pleasant", "tranquil", "thoughtful", "restful"],
 
+  "hint_language_support": {
+    "supported_languages": ["en", "ja"],
+    "default_language": "en",
+    "fallback_field": "text",
+    "text_fields": { "en": "text_en", "ja": "text_ja" },
+    "level_fields": { "en": "level", "ja": "level_ja" },
+    "type_fields": { "en": "type", "ja": "type_ja" }
+  },
+
   "core_svo_targets": [
     {
       "step": 1,
@@ -193,18 +202,18 @@ const cafeData = {
         }
       ],
       "hints": [
-        { "level": "beginner", "type": "vocabulary", "text": "woman, lady, person, customer" },
-        { "level": "beginner", "type": "vocabulary", "text": "hair, sweater, jeans, hands" },
-        { "level": "beginner", "type": "grammar", "text": "A woman is sitting in a cafe. 「女性がカフェに座っています」" },
-        { "level": "beginner", "type": "sentence_starter", "text": "There is a woman..." },
-        { "level": "beginner", "type": "sentence_starter", "text": "The woman is..." },
-        { "level": "intermediate", "type": "vocabulary", "text": "young woman, cafe customer, relaxed expression, loose bun, knit sweater" },
-        { "level": "intermediate", "type": "phrase", "text": "enjoying a quiet moment" },
-        { "level": "intermediate", "type": "phrase", "text": "taking a relaxing break" },
-        { "level": "intermediate", "type": "sentence_starter", "text": "A young woman is quietly enjoying a cup of coffee..." },
-        { "level": "advanced", "type": "phrase", "text": "Her brown hair is tied up in a loose, casual bun." },
-        { "level": "advanced", "type": "grammar", "text": "The woman, dressed in a cozy cream-colored sweater, is quietly enjoying her coffee." },
-        { "level": "advanced", "type": "sentence_starter", "text": "Seated comfortably by the window, the woman..." }
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "woman, lady, person, customer", "text_en": "woman, lady, person, customer", "text_ja": "女性、女の人、人、客" },
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "hair, sweater, jeans, hands", "text_en": "hair, sweater, jeans, hands", "text_ja": "髪、セーター、ジーンズ、手" },
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "A woman is sitting in a cafe. 「女性がカフェに座っています」", "text_en": "A woman is sitting in a cafe.", "text_ja": "女性がカフェに座っています。" },
+        { "level": "beginner", "level_ja": "初級", "type": "sentence_starter", "type_ja": "文の書き出し", "text": "There is a woman...", "text_en": "There is a woman...", "text_ja": "女性がいます……" },
+        { "level": "beginner", "level_ja": "初級", "type": "sentence_starter", "type_ja": "文の書き出し", "text": "The woman is...", "text_en": "The woman is...", "text_ja": "その女性は……です／……しています。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "vocabulary", "type_ja": "語彙", "text": "young woman, cafe customer, relaxed expression, loose bun, knit sweater", "text_en": "young woman, cafe customer, relaxed expression, loose bun, knit sweater", "text_ja": "若い女性、カフェの客、リラックスした表情、ゆるくまとめた髪、ニットのセーター" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "enjoying a quiet moment", "text_en": "enjoying a quiet moment", "text_ja": "静かなひとときを楽しんでいる" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "taking a relaxing break", "text_en": "taking a relaxing break", "text_ja": "くつろいだ休憩を取っている" },
+        { "level": "intermediate", "level_ja": "中級", "type": "sentence_starter", "type_ja": "文の書き出し", "text": "A young woman is quietly enjoying a cup of coffee...", "text_en": "A young woman is quietly enjoying a cup of coffee...", "text_ja": "若い女性が静かに一杯のコーヒーを楽しんでいます……" },
+        { "level": "advanced", "level_ja": "上級", "type": "phrase", "type_ja": "フレーズ", "text": "Her brown hair is tied up in a loose, casual bun.", "text_en": "Her brown hair is tied up in a loose, casual bun.", "text_ja": "彼女の茶色い髪は、自然な感じでゆるくお団子にまとめられています。" },
+        { "level": "advanced", "level_ja": "上級", "type": "grammar", "type_ja": "文法", "text": "The woman, dressed in a cozy cream-colored sweater, is quietly enjoying her coffee.", "text_en": "The woman, dressed in a cozy cream-colored sweater, is quietly enjoying her coffee.", "text_ja": "居心地のよさそうなクリーム色のセーターを着た女性が、静かにコーヒーを楽しんでいます。" },
+        { "level": "advanced", "level_ja": "上級", "type": "sentence_starter", "type_ja": "文の書き出し", "text": "Seated comfortably by the window, the woman...", "text_en": "Seated comfortably by the window, the woman...", "text_ja": "窓辺に心地よく座り、その女性は……" }
       ]
     },
 
@@ -302,13 +311,13 @@ const cafeData = {
         }
       ],
       "hints": [
-        { "level": "beginner", "type": "vocabulary", "text": "cup, coffee, drink, hot" },
-        { "level": "beginner", "type": "grammar", "text": "She is holding a cup. 「彼女はカップを持っています」" },
-        { "level": "beginner", "type": "sentence_starter", "text": "She has a..." },
-        { "level": "intermediate", "type": "vocabulary", "text": "coffee cup, ceramic cup, hot beverage, latte, cappuccino" },
-        { "level": "intermediate", "type": "phrase", "text": "hold the cup with both hands" },
-        { "level": "intermediate", "type": "phrase", "text": "bring the cup close to her lips" },
-        { "level": "advanced", "type": "grammar", "text": "The white ceramic cup, held gently in both hands, is close to her lips." }
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "cup, coffee, drink, hot", "text_en": "cup, coffee, drink, hot", "text_ja": "カップ、コーヒー、飲み物、熱い／温かい" },
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "She is holding a cup.", "text_en": "She is holding a cup.", "text_ja": "彼女はカップを持っています。" },
+        { "level": "beginner", "level_ja": "初級", "type": "sentence_starter", "type_ja": "文の書き出し", "text": "She has a...", "text_en": "She has a...", "text_ja": "彼女は……を持っています。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "vocabulary", "type_ja": "語彙", "text": "coffee cup, ceramic cup, hot beverage, latte, cappuccino", "text_en": "coffee cup, ceramic cup, hot beverage, latte, cappuccino", "text_ja": "コーヒーカップ、陶器のカップ、温かい飲み物、ラテ、カプチーノ" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "hold the cup with both hands", "text_en": "hold the cup with both hands", "text_ja": "両手でカップを持つ" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "bring the cup close to her lips", "text_en": "bring the cup close to her lips", "text_ja": "カップを唇の近くへ運ぶ" },
+        { "level": "advanced", "level_ja": "上級", "type": "grammar", "type_ja": "文法", "text": "The white ceramic cup, held gently in both hands, is close to her lips.", "text_en": "The white ceramic cup, held gently in both hands, is close to her lips.", "text_ja": "両手で優しく持たれた白い陶器のカップが、彼女の唇の近くにあります。" }
       ]
     },
 
@@ -407,11 +416,11 @@ const cafeData = {
         }
       ],
       "hints": [
-        { "level": "beginner", "type": "vocabulary", "text": "coffee, drink, hot, warm" },
-        { "level": "beginner", "type": "sentence_starter", "text": "She is drinking coffee." },
-        { "level": "intermediate", "type": "phrase", "text": "enjoy a warm cup of coffee" },
-        { "level": "intermediate", "type": "phrase", "text": "sip her coffee slowly" },
-        { "level": "advanced", "type": "phrase", "text": "savor the rich aroma of freshly brewed coffee" }
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "coffee, drink, hot, warm", "text_en": "coffee, drink, hot, warm", "text_ja": "コーヒー、飲み物、熱い、温かい" },
+        { "level": "beginner", "level_ja": "初級", "type": "sentence_starter", "type_ja": "文の書き出し", "text": "She is drinking coffee.", "text_en": "She is drinking coffee.", "text_ja": "彼女はコーヒーを飲んでいます。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "enjoy a warm cup of coffee", "text_en": "enjoy a warm cup of coffee", "text_ja": "温かい一杯のコーヒーを楽しむ" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "sip her coffee slowly", "text_en": "sip her coffee slowly", "text_ja": "コーヒーをゆっくり少しずつ飲む" },
+        { "level": "advanced", "level_ja": "上級", "type": "phrase", "type_ja": "フレーズ", "text": "savor the rich aroma of freshly brewed coffee", "text_en": "savor the rich aroma of freshly brewed coffee", "text_ja": "淹れたてのコーヒーの豊かな香りをじっくり味わう" }
       ]
     },
 
@@ -506,11 +515,11 @@ const cafeData = {
         }
       ],
       "hints": [
-        { "level": "beginner", "type": "vocabulary", "text": "table, wood, brown, round" },
-        { "level": "beginner", "type": "grammar", "text": "There is a table in front of her." },
-        { "level": "intermediate", "type": "phrase", "text": "on the wooden table" },
-        { "level": "intermediate", "type": "sentence_starter", "text": "Several objects are placed on the wooden table..." },
-        { "level": "advanced", "type": "grammar", "text": "The polished wooden table is decorated with flowers and several personal items." }
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "table, wood, brown, round", "text_en": "table, wood, brown, round", "text_ja": "テーブル、木、茶色、丸い" },
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "There is a table in front of her.", "text_en": "There is a table in front of her.", "text_ja": "彼女の前にテーブルがあります。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "on the wooden table", "text_en": "on the wooden table", "text_ja": "木製のテーブルの上に" },
+        { "level": "intermediate", "level_ja": "中級", "type": "sentence_starter", "type_ja": "文の書き出し", "text": "Several objects are placed on the wooden table...", "text_en": "Several objects are placed on the wooden table...", "text_ja": "木製のテーブルの上には、いくつかの物が置かれています……" },
+        { "level": "advanced", "level_ja": "上級", "type": "grammar", "type_ja": "文法", "text": "The polished wooden table is decorated with flowers and several personal items.", "text_en": "The polished wooden table is decorated with flowers and several personal items.", "text_ja": "磨かれた木製のテーブルには、花やいくつかの私物が飾られています。" }
       ]
     },
 
@@ -607,12 +616,12 @@ const cafeData = {
         }
       ],
       "hints": [
-        { "level": "beginner", "type": "vocabulary", "text": "notebook, book, paper, page" },
-        { "level": "beginner", "type": "grammar", "text": "There is a notebook on the table." },
-        { "level": "beginner", "type": "preposition", "text": "on the table 「テーブルの上に」" },
-        { "level": "intermediate", "type": "vocabulary", "text": "journal, diary, handwritten note, positive message" },
-        { "level": "intermediate", "type": "sentence_starter", "text": "A notebook with an inspiring message lies on the table..." },
-        { "level": "advanced", "type": "grammar", "text": "Lying beside the vase is a notebook containing a handwritten reminder." }
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "notebook, book, paper, page", "text_en": "notebook, book, paper, page", "text_ja": "ノート、本、紙、ページ" },
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "There is a notebook on the table.", "text_en": "There is a notebook on the table.", "text_ja": "テーブルの上にノートがあります。" },
+        { "level": "beginner", "level_ja": "初級", "type": "preposition", "type_ja": "前置詞", "text": "on the table 「テーブルの上に」", "text_en": "on the table", "text_ja": "テーブルの上に" },
+        { "level": "intermediate", "level_ja": "中級", "type": "vocabulary", "type_ja": "語彙", "text": "journal, diary, handwritten note, positive message", "text_en": "journal, diary, handwritten note, positive message", "text_ja": "記録帳、日記、手書きのメモ、前向きなメッセージ" },
+        { "level": "intermediate", "level_ja": "中級", "type": "sentence_starter", "type_ja": "文の書き出し", "text": "A notebook with an inspiring message lies on the table...", "text_en": "A notebook with an inspiring message lies on the table...", "text_ja": "励みになるメッセージが書かれたノートが、テーブルの上に置かれています……" },
+        { "level": "advanced", "level_ja": "上級", "type": "grammar", "type_ja": "文法", "text": "Lying beside the vase is a notebook containing a handwritten reminder.", "text_en": "Lying beside the vase is a notebook containing a handwritten reminder.", "text_ja": "花瓶のそばには、手書きの励ましの言葉が書かれたノートが置かれています。" }
       ]
     },
 
@@ -704,10 +713,10 @@ const cafeData = {
         }
       ],
       "hints": [
-        { "level": "beginner", "type": "vocabulary", "text": "pen, write, black" },
-        { "level": "beginner", "type": "grammar", "text": "A pen is on the notebook." },
-        { "level": "intermediate", "type": "phrase", "text": "a black pen lying on the open notebook" },
-        { "level": "advanced", "type": "grammar", "text": "A black pen rests diagonally across the notebook." }
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "pen, write, black", "text_en": "pen, write, black", "text_ja": "ペン、書く、黒い" },
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "A pen is on the notebook.", "text_en": "A pen is on the notebook.", "text_ja": "ノートの上にペンがあります。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "a black pen lying on the open notebook", "text_en": "a black pen lying on the open notebook", "text_ja": "開いたノートの上に置かれている黒いペン" },
+        { "level": "advanced", "level_ja": "上級", "type": "grammar", "type_ja": "文法", "text": "A black pen rests diagonally across the notebook.", "text_en": "A black pen rests diagonally across the notebook.", "text_ja": "黒いペンがノートの上に斜めに置かれています。" }
       ]
     },
 
@@ -801,10 +810,10 @@ const cafeData = {
         }
       ],
       "hints": [
-        { "level": "beginner", "type": "vocabulary", "text": "vase, glass, flower, water" },
-        { "level": "beginner", "type": "grammar", "text": "There is a vase on the table." },
-        { "level": "intermediate", "type": "phrase", "text": "a glass vase filled with small white flowers" },
-        { "level": "advanced", "type": "grammar", "text": "A transparent vase containing a delicate bouquet adds a natural touch to the scene." }
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "vase, glass, flower, water", "text_en": "vase, glass, flower, water", "text_ja": "花瓶、ガラス、花、水" },
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "There is a vase on the table.", "text_en": "There is a vase on the table.", "text_ja": "テーブルの上に花瓶があります。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "a glass vase filled with small white flowers", "text_en": "a glass vase filled with small white flowers", "text_ja": "小さな白い花で満たされたガラスの花瓶" },
+        { "level": "advanced", "level_ja": "上級", "type": "grammar", "type_ja": "文法", "text": "A transparent vase containing a delicate bouquet adds a natural touch to the scene.", "text_en": "A transparent vase containing a delicate bouquet adds a natural touch to the scene.", "text_ja": "繊細な花束が入った透明な花瓶が、場面に自然な雰囲気を加えています。" }
       ]
     },
 
@@ -900,10 +909,10 @@ const cafeData = {
         }
       ],
       "hints": [
-        { "level": "beginner", "type": "vocabulary", "text": "flower, flowers, white, green" },
-        { "level": "beginner", "type": "grammar", "text": "There are some white flowers." },
-        { "level": "intermediate", "type": "phrase", "text": "a small bouquet of delicate white flowers" },
-        { "level": "advanced", "type": "phrase", "text": "delicate white blossoms arranged in a transparent glass vase" }
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "flower, flowers, white, green", "text_en": "flower, flowers, white, green", "text_ja": "花、花々、白い、緑の" },
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "There are some white flowers.", "text_en": "There are some white flowers.", "text_ja": "白い花がいくつかあります。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "a small bouquet of delicate white flowers", "text_en": "a small bouquet of delicate white flowers", "text_ja": "繊細な白い花の小さな花束" },
+        { "level": "advanced", "level_ja": "上級", "type": "phrase", "type_ja": "フレーズ", "text": "delicate white blossoms arranged in a transparent glass vase", "text_en": "delicate white blossoms arranged in a transparent glass vase", "text_ja": "透明なガラスの花瓶に生けられた繊細な白い花" }
       ]
     },
 
@@ -998,10 +1007,10 @@ const cafeData = {
         }
       ],
       "hints": [
-        { "level": "beginner", "type": "vocabulary", "text": "plate, saucer, spoon" },
-        { "level": "beginner", "type": "grammar", "text": "A spoon is on the saucer." },
-        { "level": "intermediate", "type": "phrase", "text": "a small metal spoon resting on a white saucer" },
-        { "level": "advanced", "type": "grammar", "text": "Beside the notebook sits a white saucer with a spoon resting on it." }
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "plate, saucer, spoon", "text_en": "plate, saucer, spoon", "text_ja": "皿、受け皿、スプーン" },
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "A spoon is on the saucer.", "text_en": "A spoon is on the saucer.", "text_ja": "受け皿の上にスプーンがあります。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "a small metal spoon resting on a white saucer", "text_en": "a small metal spoon resting on a white saucer", "text_ja": "白い受け皿の上に置かれた小さな金属製のスプーン" },
+        { "level": "advanced", "level_ja": "上級", "type": "grammar", "type_ja": "文法", "text": "Beside the notebook sits a white saucer with a spoon resting on it.", "text_en": "Beside the notebook sits a white saucer with a spoon resting on it.", "text_ja": "ノートのそばには、スプーンが載った白い受け皿があります。" }
       ]
     },
 
@@ -1096,12 +1105,12 @@ const cafeData = {
         }
       ],
       "hints": [
-        { "level": "beginner", "type": "vocabulary", "text": "window, glass, outside, sunlight" },
-        { "level": "beginner", "type": "preposition", "text": "by the window 「窓のそばに」" },
-        { "level": "beginner", "type": "grammar", "text": "The woman is sitting by the window." },
-        { "level": "intermediate", "type": "phrase", "text": "warm sunlight coming through the window" },
-        { "level": "intermediate", "type": "sentence_starter", "text": "Through the large window, we can see..." },
-        { "level": "advanced", "type": "grammar", "text": "Warm natural light pours through the large window, creating a peaceful atmosphere." }
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "window, glass, outside, sunlight", "text_en": "window, glass, outside, sunlight", "text_ja": "窓、ガラス、外、日差し" },
+        { "level": "beginner", "level_ja": "初級", "type": "preposition", "type_ja": "前置詞", "text": "by the window 「窓のそばに」", "text_en": "by the window", "text_ja": "窓のそばに" },
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "The woman is sitting by the window.", "text_en": "The woman is sitting by the window.", "text_ja": "女性は窓のそばに座っています。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "warm sunlight coming through the window", "text_en": "warm sunlight coming through the window", "text_ja": "窓から差し込む暖かな日差し" },
+        { "level": "intermediate", "level_ja": "中級", "type": "sentence_starter", "type_ja": "文の書き出し", "text": "Through the large window, we can see...", "text_en": "Through the large window, we can see...", "text_ja": "大きな窓を通して、私たちは……を見ることができます。" },
+        { "level": "advanced", "level_ja": "上級", "type": "grammar", "type_ja": "文法", "text": "Warm natural light pours through the large window, creating a peaceful atmosphere.", "text_en": "Warm natural light pours through the large window, creating a peaceful atmosphere.", "text_ja": "暖かな自然光が大きな窓から流れ込み、穏やかな雰囲気を作り出しています。" }
       ]
     },
 
@@ -1196,10 +1205,10 @@ const cafeData = {
         }
       ],
       "hints": [
-        { "level": "beginner", "type": "vocabulary", "text": "menu, board, coffee, black" },
-        { "level": "beginner", "type": "grammar", "text": "There is a menu on the wall." },
-        { "level": "intermediate", "type": "phrase", "text": "a black menu board listing different coffee drinks" },
-        { "level": "advanced", "type": "grammar", "text": "Mounted on the wall is a chalkboard menu displaying a selection of coffee drinks." }
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "menu, board, coffee, black", "text_en": "menu, board, coffee, black", "text_ja": "メニュー、掲示板、コーヒー、黒い" },
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "There is a menu on the wall.", "text_en": "There is a menu on the wall.", "text_ja": "壁にメニューがあります。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "a black menu board listing different coffee drinks", "text_en": "a black menu board listing different coffee drinks", "text_ja": "さまざまなコーヒー飲料が書かれた黒いメニューボード" },
+        { "level": "advanced", "level_ja": "上級", "type": "grammar", "type_ja": "文法", "text": "Mounted on the wall is a chalkboard menu displaying a selection of coffee drinks.", "text_en": "Mounted on the wall is a chalkboard menu displaying a selection of coffee drinks.", "text_ja": "壁には、いくつかのコーヒー飲料を表示した黒板メニューが掛けられています。" }
       ]
     },
 
@@ -1291,10 +1300,10 @@ const cafeData = {
         }
       ],
       "hints": [
-        { "level": "beginner", "type": "vocabulary", "text": "machine, coffee machine, coffee maker" },
-        { "level": "beginner", "type": "grammar", "text": "There is a coffee machine in the background." },
-        { "level": "intermediate", "type": "phrase", "text": "a large espresso machine behind the counter" },
-        { "level": "advanced", "type": "grammar", "text": "A professional espresso machine can be seen behind the woman." }
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "machine, coffee machine, coffee maker", "text_en": "machine, coffee machine, coffee maker", "text_ja": "機械、コーヒーマシン、コーヒーメーカー" },
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "There is a coffee machine in the background.", "text_en": "There is a coffee machine in the background.", "text_ja": "背景にコーヒーマシンがあります。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "a large espresso machine behind the counter", "text_en": "a large espresso machine behind the counter", "text_ja": "カウンターの後ろにある大きなエスプレッソマシン" },
+        { "level": "advanced", "level_ja": "上級", "type": "grammar", "type_ja": "文法", "text": "A professional espresso machine can be seen behind the woman.", "text_en": "A professional espresso machine can be seen behind the woman.", "text_ja": "女性の後ろには、本格的なエスプレッソマシンが見えます。" }
       ]
     },
 
@@ -1389,10 +1398,10 @@ const cafeData = {
         }
       ],
       "hints": [
-        { "level": "beginner", "type": "vocabulary", "text": "light, lamp, bulb, ceiling" },
-        { "level": "beginner", "type": "grammar", "text": "Two lights are hanging from the ceiling." },
-        { "level": "intermediate", "type": "phrase", "text": "warm pendant lights hanging from the ceiling" },
-        { "level": "advanced", "type": "phrase", "text": "soft pendant lighting enhances the cafe's warm and inviting atmosphere" }
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "light, lamp, bulb, ceiling", "text_en": "light, lamp, bulb, ceiling", "text_ja": "照明、ランプ、電球、天井" },
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "Two lights are hanging from the ceiling.", "text_en": "Two lights are hanging from the ceiling.", "text_ja": "天井から2つの照明が下がっています。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "warm pendant lights hanging from the ceiling", "text_en": "warm pendant lights hanging from the ceiling", "text_ja": "天井から下がっている暖かな吊り下げ照明" },
+        { "level": "advanced", "level_ja": "上級", "type": "phrase", "type_ja": "フレーズ", "text": "soft pendant lighting enhances the cafe's warm and inviting atmosphere", "text_en": "soft pendant lighting enhances the cafe's warm and inviting atmosphere", "text_ja": "柔らかな吊り下げ照明が、カフェの暖かく居心地のよい雰囲気をさらに引き立てています。" }
       ]
     },
 
@@ -1489,10 +1498,10 @@ const cafeData = {
         }
       ],
       "hints": [
-        { "level": "beginner", "type": "vocabulary", "text": "plant, leaf, leaves, green" },
-        { "level": "beginner", "type": "grammar", "text": "There are some green plants." },
-        { "level": "intermediate", "type": "phrase", "text": "green plants decorating the cafe" },
-        { "level": "advanced", "type": "phrase", "text": "The lush greenery gives the interior a fresh and natural feel." }
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "plant, leaf, leaves, green", "text_en": "plant, leaf, leaves, green", "text_ja": "植物、葉、葉っぱ、緑の" },
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "There are some green plants.", "text_en": "There are some green plants.", "text_ja": "緑の植物がいくつかあります。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "green plants decorating the cafe", "text_en": "green plants decorating the cafe", "text_ja": "カフェを飾っている緑の植物" },
+        { "level": "advanced", "level_ja": "上級", "type": "phrase", "type_ja": "フレーズ", "text": "The lush greenery gives the interior a fresh and natural feel.", "text_en": "The lush greenery gives the interior a fresh and natural feel.", "text_ja": "青々とした植物が、店内に新鮮で自然な印象を与えています。" }
       ]
     },
 
@@ -1593,10 +1602,10 @@ const cafeData = {
         }
       ],
       "hints": [
-        { "level": "beginner", "type": "vocabulary", "text": "cafe, coffee shop, inside, room" },
-        { "level": "beginner", "type": "grammar", "text": "The woman is in a cafe." },
-        { "level": "intermediate", "type": "phrase", "text": "inside a cozy and peaceful coffee shop" },
-        { "level": "advanced", "type": "sentence_starter", "text": "The warmly lit cafe creates a serene and inviting atmosphere..." }
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "cafe, coffee shop, inside, room", "text_en": "cafe, coffee shop, inside, room", "text_ja": "カフェ、コーヒーショップ、中、部屋／店内" },
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "The woman is in a cafe.", "text_en": "The woman is in a cafe.", "text_ja": "女性はカフェにいます。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "inside a cozy and peaceful coffee shop", "text_en": "inside a cozy and peaceful coffee shop", "text_ja": "居心地がよく穏やかなコーヒーショップの中で" },
+        { "level": "advanced", "level_ja": "上級", "type": "sentence_starter", "type_ja": "文の書き出し", "text": "The warmly lit cafe creates a serene and inviting atmosphere...", "text_en": "The warmly lit cafe creates a serene and inviting atmosphere...", "text_ja": "暖かな明かりに照らされたカフェが、穏やかで居心地のよい雰囲気を作り出しています……" }
       ]
     },
 
@@ -1696,10 +1705,10 @@ const cafeData = {
         }
       ],
       "hints": [
-        { "level": "beginner", "type": "vocabulary", "text": "sun, sunlight, light, bright" },
-        { "level": "beginner", "type": "grammar", "text": "Sunlight is coming through the window." },
-        { "level": "intermediate", "type": "phrase", "text": "warm natural light filling the cafe" },
-        { "level": "advanced", "type": "grammar", "text": "Streaming through the window, the golden sunlight gives the scene a gentle and peaceful atmosphere." }
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "sun, sunlight, light, bright", "text_en": "sun, sunlight, light, bright", "text_ja": "太陽、日差し、光、明るい" },
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "Sunlight is coming through the window.", "text_en": "Sunlight is coming through the window.", "text_ja": "窓から日差しが差し込んでいます。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "warm natural light filling the cafe", "text_en": "warm natural light filling the cafe", "text_ja": "カフェを満たす暖かな自然光" },
+        { "level": "advanced", "level_ja": "上級", "type": "grammar", "type_ja": "文法", "text": "Streaming through the window, the golden sunlight gives the scene a gentle and peaceful atmosphere.", "text_en": "Streaming through the window, the golden sunlight gives the scene a gentle and peaceful atmosphere.", "text_ja": "窓から流れ込む金色の日差しが、場面に柔らかく穏やかな雰囲気を与えています。" }
       ]
     }
   ],
@@ -1711,12 +1720,12 @@ const cafeData = {
       "content": "Good coffee Good mood Good day ♡",
       "description_ja": "窓ガラスに書かれた、コーヒーと良い気分や一日を結びつける前向きなメッセージ。",
       "hints": [
-        { "level": "beginner", "type": "vocabulary", "text": "good, coffee, mood, day" },
-        { "level": "beginner", "type": "phrase", "text": "a positive message 「前向きなメッセージ」" },
-        { "level": "beginner", "type": "sentence_starter", "text": "The window says..." },
-        { "level": "intermediate", "type": "phrase", "text": "a positive message written on the glass" },
-        { "level": "intermediate", "type": "sentence_starter", "text": "Written on the window are the words..." },
-        { "level": "advanced", "type": "phrase", "text": "The window glass is decorated with a handwritten quote reading, \"Good coffee, Good mood, Good day,\" followed by a heart symbol." }
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "good, coffee, mood, day", "text_en": "good, coffee, mood, day", "text_ja": "良い、コーヒー、気分、一日" },
+        { "level": "beginner", "level_ja": "初級", "type": "phrase", "type_ja": "フレーズ", "text": "a positive message 「前向きなメッセージ」", "text_en": "a positive message", "text_ja": "前向きなメッセージ" },
+        { "level": "beginner", "level_ja": "初級", "type": "sentence_starter", "type_ja": "文の書き出し", "text": "The window says...", "text_en": "The window says...", "text_ja": "窓には……と書かれています。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "a positive message written on the glass", "text_en": "a positive message written on the glass", "text_ja": "ガラスに書かれた前向きなメッセージ" },
+        { "level": "intermediate", "level_ja": "中級", "type": "sentence_starter", "type_ja": "文の書き出し", "text": "Written on the window are the words...", "text_en": "Written on the window are the words...", "text_ja": "窓には……という言葉が書かれています。" },
+        { "level": "advanced", "level_ja": "上級", "type": "phrase", "type_ja": "フレーズ", "text": "The window glass is decorated with a handwritten quote reading, \"Good coffee, Good mood, Good day,\" followed by a heart symbol.", "text_en": "The window glass is decorated with a handwritten quote reading, \"Good coffee, Good mood, Good day,\" followed by a heart symbol.", "text_ja": "窓ガラスには「おいしいコーヒー、良い気分、良い一日」という手書きの言葉が、ハートの記号とともに飾られています。" }
       ]
     },
 
@@ -1726,12 +1735,12 @@ const cafeData = {
       "content": "Be kind Be you Be happy ♡",
       "description_ja": "ノートに手書きされた、自分らしさや優しさ、幸福を大切にする前向きなメッセージ。",
       "hints": [
-        { "level": "beginner", "type": "vocabulary", "text": "be, kind, you, happy" },
-        { "level": "beginner", "type": "grammar", "text": "Be kind. 「親切にしよう」命令形を使った呼びかけです。" },
-        { "level": "beginner", "type": "sentence_starter", "text": "The notebook says..." },
-        { "level": "intermediate", "type": "phrase", "text": "an inspiring message written in the notebook" },
-        { "level": "intermediate", "type": "sentence_starter", "text": "The notebook contains a positive reminder..." },
-        { "level": "advanced", "type": "phrase", "text": "An inspiring reminder handwritten on the notebook encourages the reader to be kind, be themselves, and be happy." }
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "be, kind, you, happy", "text_en": "be, kind, you, happy", "text_ja": "〜である、親切な、あなた、幸せな" },
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "Be kind. 「親切にしよう」命令形を使った呼びかけです。", "text_en": "Be kind. This is an imperative expression used to encourage someone.", "text_ja": "「親切にしよう」という、命令形を使った呼びかけです。" },
+        { "level": "beginner", "level_ja": "初級", "type": "sentence_starter", "type_ja": "文の書き出し", "text": "The notebook says...", "text_en": "The notebook says...", "text_ja": "ノートには……と書かれています。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "an inspiring message written in the notebook", "text_en": "an inspiring message written in the notebook", "text_ja": "ノートに書かれた励みになるメッセージ" },
+        { "level": "intermediate", "level_ja": "中級", "type": "sentence_starter", "type_ja": "文の書き出し", "text": "The notebook contains a positive reminder...", "text_en": "The notebook contains a positive reminder...", "text_ja": "ノートには前向きな励ましの言葉が書かれています……" },
+        { "level": "advanced", "level_ja": "上級", "type": "phrase", "type_ja": "フレーズ", "text": "An inspiring reminder handwritten on the notebook encourages the reader to be kind, be themselves, and be happy.", "text_en": "An inspiring reminder handwritten on the notebook encourages the reader to be kind, be themselves, and be happy.", "text_ja": "ノートに手書きされた励ましの言葉は、読む人に親切であること、自分らしくいること、そして幸せであることを勧めています。" }
       ]
     },
 
@@ -1741,10 +1750,10 @@ const cafeData = {
       "content": "COFFEE ESPRESSO AMERICANO LATTE CAPPUCCINO MOCHA FILTER Thank you!",
       "description_ja": "黒板メニューには、エスプレッソ、アメリカーノ、ラテ、カプチーノ、モカなどのコーヒーの種類が書かれている。",
       "hints": [
-        { "level": "beginner", "type": "vocabulary", "text": "coffee, espresso, latte, cappuccino, menu" },
-        { "level": "beginner", "type": "grammar", "text": "The menu shows different kinds of coffee." },
-        { "level": "intermediate", "type": "phrase", "text": "a menu listing several types of coffee" },
-        { "level": "advanced", "type": "phrase", "text": "The chalkboard menu displays a selection of coffee drinks, including espresso, Americano, latte, cappuccino, and mocha." }
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "coffee, espresso, latte, cappuccino, menu", "text_en": "coffee, espresso, latte, cappuccino, menu", "text_ja": "コーヒー、エスプレッソ、ラテ、カプチーノ、メニュー" },
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "The menu shows different kinds of coffee.", "text_en": "The menu shows different kinds of coffee.", "text_ja": "メニューにはさまざまな種類のコーヒーが載っています。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "a menu listing several types of coffee", "text_en": "a menu listing several types of coffee", "text_ja": "数種類のコーヒーを載せたメニュー" },
+        { "level": "advanced", "level_ja": "上級", "type": "phrase", "type_ja": "フレーズ", "text": "The chalkboard menu displays a selection of coffee drinks, including espresso, Americano, latte, cappuccino, and mocha.", "text_en": "The chalkboard menu displays a selection of coffee drinks, including espresso, Americano, latte, cappuccino, and mocha.", "text_ja": "黒板のメニューには、エスプレッソ、アメリカーノ、ラテ、カプチーノ、モカなどのコーヒー飲料が表示されています。" }
       ]
     }
   ],
@@ -1843,13 +1852,13 @@ const cafeData = {
         }
       ],
       "hints": [
-        { "level": "beginner", "type": "vocabulary", "text": "drink, coffee, cup, sip" },
-        { "level": "beginner", "type": "grammar", "text": "A woman is drinking coffee. 現在進行形は「今〜している」を表します。" },
-        { "level": "beginner", "type": "sentence_starter", "text": "She is drinking..." },
-        { "level": "intermediate", "type": "phrase", "text": "sip coffee slowly" },
-        { "level": "intermediate", "type": "phrase", "text": "enjoy a warm cup of coffee" },
-        { "level": "advanced", "type": "sentence_starter", "text": "Holding the cup close to her lips, the woman..." },
-        { "level": "advanced", "type": "phrase", "text": "The woman appears to be savoring every sip of her coffee." }
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "drink, coffee, cup, sip", "text_en": "drink, coffee, cup, sip", "text_ja": "飲む、コーヒー、カップ、少しずつ飲む" },
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "A woman is drinking coffee. 現在進行形は「今〜している」を表します。", "text_en": "A woman is drinking coffee. Use the present progressive to describe an action happening now.", "text_ja": "女性がコーヒーを飲んでいます。現在進行形は「今〜している」動作を表します。" },
+        { "level": "beginner", "level_ja": "初級", "type": "sentence_starter", "type_ja": "文の書き出し", "text": "She is drinking...", "text_en": "She is drinking...", "text_ja": "彼女は……を飲んでいます。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "sip coffee slowly", "text_en": "sip coffee slowly", "text_ja": "コーヒーをゆっくり少しずつ飲む" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "enjoy a warm cup of coffee", "text_en": "enjoy a warm cup of coffee", "text_ja": "温かい一杯のコーヒーを楽しむ" },
+        { "level": "advanced", "level_ja": "上級", "type": "sentence_starter", "type_ja": "文の書き出し", "text": "Holding the cup close to her lips, the woman...", "text_en": "Holding the cup close to her lips, the woman...", "text_ja": "カップを唇の近くに持ちながら、その女性は……" },
+        { "level": "advanced", "level_ja": "上級", "type": "phrase", "type_ja": "フレーズ", "text": "The woman appears to be savoring every sip of her coffee.", "text_en": "The woman appears to be savoring every sip of her coffee.", "text_ja": "その女性は、コーヒーの一口一口をじっくり味わっているように見えます。" }
       ]
     },
 
@@ -1943,10 +1952,10 @@ const cafeData = {
         }
       ],
       "hints": [
-        { "level": "beginner", "type": "grammar", "text": "She is holding a cup." },
-        { "level": "beginner", "type": "phrase", "text": "with both hands 「両手で」" },
-        { "level": "intermediate", "type": "sentence_starter", "text": "She is gently holding the cup with both hands..." },
-        { "level": "advanced", "type": "grammar", "text": "Cradling the warm cup in both hands, she appears calm and relaxed." }
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "She is holding a cup.", "text_en": "She is holding a cup.", "text_ja": "彼女はカップを持っています。" },
+        { "level": "beginner", "level_ja": "初級", "type": "phrase", "type_ja": "フレーズ", "text": "with both hands 「両手で」", "text_en": "with both hands", "text_ja": "両手で" },
+        { "level": "intermediate", "level_ja": "中級", "type": "sentence_starter", "type_ja": "文の書き出し", "text": "She is gently holding the cup with both hands...", "text_en": "She is gently holding the cup with both hands...", "text_ja": "彼女は両手でカップを優しく持っています……" },
+        { "level": "advanced", "level_ja": "上級", "type": "grammar", "type_ja": "文法", "text": "Cradling the warm cup in both hands, she appears calm and relaxed.", "text_en": "Cradling the warm cup in both hands, she appears calm and relaxed.", "text_ja": "温かいカップを両手で包み込むように持ち、彼女は穏やかでリラックスしているように見えます。" }
       ]
     },
 
@@ -2036,11 +2045,11 @@ const cafeData = {
         }
       ],
       "hints": [
-        { "level": "beginner", "type": "vocabulary", "text": "sit, chair, window" },
-        { "level": "beginner", "type": "preposition", "text": "by the window 「窓のそばに」" },
-        { "level": "beginner", "type": "grammar", "text": "She is sitting by the window." },
-        { "level": "intermediate", "type": "phrase", "text": "comfortably seated beside the large window" },
-        { "level": "advanced", "type": "grammar", "text": "Seated comfortably beside the sunlit window, she enjoys a peaceful moment alone." }
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "sit, chair, window", "text_en": "sit, chair, window", "text_ja": "座る、椅子、窓" },
+        { "level": "beginner", "level_ja": "初級", "type": "preposition", "type_ja": "前置詞", "text": "by the window 「窓のそばに」", "text_en": "by the window", "text_ja": "窓のそばに" },
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "She is sitting by the window.", "text_en": "She is sitting by the window.", "text_ja": "彼女は窓のそばに座っています。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "comfortably seated beside the large window", "text_en": "comfortably seated beside the large window", "text_ja": "大きな窓のそばに心地よく座っている" },
+        { "level": "advanced", "level_ja": "上級", "type": "grammar", "type_ja": "文法", "text": "Seated comfortably beside the sunlit window, she enjoys a peaceful moment alone.", "text_en": "Seated comfortably beside the sunlit window, she enjoys a peaceful moment alone.", "text_ja": "日差しの入る窓のそばに心地よく座り、彼女は一人で穏やかな時間を楽しんでいます。" }
       ]
     },
 
@@ -2132,11 +2141,11 @@ const cafeData = {
         }
       ],
       "hints": [
-        { "level": "beginner", "type": "vocabulary", "text": "relax, rest, quiet, calm" },
-        { "level": "beginner", "type": "sentence_starter", "text": "She looks..." },
-        { "level": "intermediate", "type": "phrase", "text": "enjoying a peaceful moment alone" },
-        { "level": "intermediate", "type": "phrase", "text": "taking a relaxing break from her daily routine" },
-        { "level": "advanced", "type": "sentence_starter", "text": "Surrounded by warm light and a cozy atmosphere, she..." }
+        { "level": "beginner", "level_ja": "初級", "type": "vocabulary", "type_ja": "語彙", "text": "relax, rest, quiet, calm", "text_en": "relax, rest, quiet, calm", "text_ja": "くつろぐ、休む、静かな、穏やかな" },
+        { "level": "beginner", "level_ja": "初級", "type": "sentence_starter", "type_ja": "文の書き出し", "text": "She looks...", "text_en": "She looks...", "text_ja": "彼女は……のように見えます。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "enjoying a peaceful moment alone", "text_en": "enjoying a peaceful moment alone", "text_ja": "一人で穏やかなひとときを楽しんでいる" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "taking a relaxing break from her daily routine", "text_en": "taking a relaxing break from her daily routine", "text_ja": "日常から離れて、くつろいだ休憩を取っている" },
+        { "level": "advanced", "level_ja": "上級", "type": "sentence_starter", "type_ja": "文の書き出し", "text": "Surrounded by warm light and a cozy atmosphere, she...", "text_en": "Surrounded by warm light and a cozy atmosphere, she...", "text_ja": "暖かな光と居心地のよい雰囲気に包まれ、彼女は……" }
       ]
     },
 
@@ -2233,9 +2242,9 @@ const cafeData = {
         }
       ],
       "hints": [
-        { "level": "beginner", "type": "grammar", "text": "Sunlight is coming through the window." },
-        { "level": "intermediate", "type": "phrase", "text": "warm natural light filling the cafe" },
-        { "level": "advanced", "type": "grammar", "text": "Streaming through the large window, the golden sunlight fills the cafe with warmth." }
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "Sunlight is coming through the window.", "text_en": "Sunlight is coming through the window.", "text_ja": "窓から日差しが差し込んでいます。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "phrase", "type_ja": "フレーズ", "text": "warm natural light filling the cafe", "text_en": "warm natural light filling the cafe", "text_ja": "カフェを満たす暖かな自然光" },
+        { "level": "advanced", "level_ja": "上級", "type": "grammar", "type_ja": "文法", "text": "Streaming through the large window, the golden sunlight fills the cafe with warmth.", "text_en": "Streaming through the large window, the golden sunlight fills the cafe with warmth.", "text_ja": "大きな窓から流れ込む金色の日差しが、カフェを温かな光で満たしています。" }
       ]
     },
 
@@ -2331,10 +2340,10 @@ const cafeData = {
         }
       ],
       "hints": [
-        { "level": "beginner", "type": "grammar", "text": "There is a notebook on the table." },
-        { "level": "beginner", "type": "grammar", "text": "There are some flowers on the table." },
-        { "level": "intermediate", "type": "sentence_starter", "text": "On the wooden table, there are..." },
-        { "level": "advanced", "type": "grammar", "text": "Arranged neatly on the wooden table are a notebook, a pen, a vase of flowers, and a saucer." }
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "There is a notebook on the table.", "text_en": "There is a notebook on the table.", "text_ja": "テーブルの上にノートがあります。" },
+        { "level": "beginner", "level_ja": "初級", "type": "grammar", "type_ja": "文法", "text": "There are some flowers on the table.", "text_en": "There are some flowers on the table.", "text_ja": "テーブルの上に花がいくつかあります。" },
+        { "level": "intermediate", "level_ja": "中級", "type": "sentence_starter", "type_ja": "文の書き出し", "text": "On the wooden table, there are...", "text_en": "On the wooden table, there are...", "text_ja": "木製のテーブルの上には……があります。" },
+        { "level": "advanced", "level_ja": "上級", "type": "grammar", "type_ja": "文法", "text": "Arranged neatly on the wooden table are a notebook, a pen, a vase of flowers, and a saucer.", "text_en": "Arranged neatly on the wooden table are a notebook, a pen, a vase of flowers, and a saucer.", "text_ja": "木製のテーブルの上には、ノート、ペン、花瓶、受け皿がきれいに並べられています。" }
       ]
     }
   ],
@@ -2582,4 +2591,4 @@ if (typeof globalThis !== "undefined") {
 // Node.js / CommonJSからの読み込みにも対応します。
 if (typeof module !== "undefined" && module.exports) {
   module.exports = cafeData;
-}
+  }

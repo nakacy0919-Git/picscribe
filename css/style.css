@@ -1,3 +1,9 @@
+/* 変数定義（テキストサイズ可変用） */
+:root {
+    --hint-fs: 13px;
+    --hint-ja-fs: 11.5px;
+}
+
 /* =========================================
    1. ベーススタイル & ヘッダー
 ========================================= */
@@ -62,7 +68,7 @@ body {
 }
 
 .left-sidebar {
-    flex: 0 0 340px; /* ★ 280pxから340pxに拡張し、情報量を確保 ★ */
+    flex: 0 0 420px; /* ★ さらに横幅を広げ、2段組をゆったり表示 */
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -99,8 +105,8 @@ body {
 .gauge-container { 
     position: relative; 
     width: 100%; 
-    max-width: 100%; /* ★ 140pxの制限を解除し、枠に合わせて美しく自動拡大 ★ */
-    padding: 0 30px; /* 左右に呼吸できる余白を追加 */
+    max-width: 260px; /* ★ 幅に合わせて美しくフィットする最大サイズ */
+    padding: 0 20px; 
     margin: 0 auto; 
     text-align: center; 
 }
@@ -1018,14 +1024,14 @@ button#submit-btn {
 }
 .f-tag {
     display: inline-block;
-    background: #ffffff; border: 1px solid #94a3b8; color: #334155; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;
+    background: #ffffff; border: 1px solid #94a3b8; color: #334155; padding: 6px 12px; border-radius: 20px; font-size: var(--hint-fs) !important; font-weight: 600;
     cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); user-select: none; width: 100%; text-align: center;
 }
 .f-tag:hover {
     border-color: #3b82f6; background: #f8fafc;
 }
 .f-tag-ja {
-    font-size: 11.5px; color: #64748b; font-weight: bold; margin-top: 4px; margin-left: 8px;
+    font-size: var(--hint-ja-fs) !important; color: #64748b; font-weight: bold; margin-top: 4px; margin-left: 8px;
     display: none; /* 初期状態は非表示 */
     animation: fadeIn 0.2s ease;
 }
@@ -1036,3 +1042,29 @@ button#submit-btn {
 .f-tag-wrapper.show-ja .f-tag {
     border-color: #3b82f6; background: #eff6ff; color: #1e3a8a;
 }
+/* =========================================
+   19. 追加UIコントロール（TTS、ページ、文字サイズ）
+========================================= */
+.hint-header { 
+    display: flex; justify-content: space-between; align-items: center; 
+    border-bottom: 2px solid #1a1a1a; padding-bottom: 8px; margin-bottom: 12px; 
+}
+
+.text-size-controls button {
+    background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px 8px; 
+    margin-left: 4px; cursor: pointer; color: #475569; font-weight: bold; transition: 0.2s;
+}
+.text-size-controls button:hover { background: #e2e8f0; color: #0f172a; }
+
+.tts-btn {
+    cursor: pointer; font-size: 15px; margin-right: 8px; padding: 2px;
+    transition: transform 0.1s; display: inline-block; user-select: none;
+}
+.tts-btn:hover { transform: scale(1.2); }
+
+.page-btn {
+    background: #f1f5f9; border: 1px solid #cbd5e1; padding: 4px 14px; border-radius: 6px;
+    cursor: pointer; font-size: 12px; font-weight: bold; color: #334155; transition: 0.2s;
+}
+.page-btn:hover:not(:disabled) { background: #e2e8f0; color: #0f172a; }
+.page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
