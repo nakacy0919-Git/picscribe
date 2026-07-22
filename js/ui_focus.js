@@ -94,16 +94,28 @@ focusBtns.forEach(btn => {
             }, 10);
         }
 
-        // 2. 自動的にSupport Mode（画像の白枠）をONにする
+        // 2. 自動的にSupport Mode（画像の白枠）をONにし、対象カテゴリのみ表示
         imageArea.classList.add('support-active');
-        renderOverlays();
+        renderOverlays(target);
     });
 });
 
-// 画像の白枠を生成する関数（レベルによるフィルタリングを廃止し、全て表示）
-function renderOverlays() {
+// 画像の白枠を生成する関数（ボタンに合わせて要素をフィルタリング）
+function renderOverlays(targetFocus = null) {
     overlaysContainer.innerHTML = ''; 
     cafeData.elements.forEach(element => {
+        // 要素がどのFocus Areaに属するかを分類
+        let elementFocus = 'setting'; // デフォルト（家具、背景、小物など）
+        
+        if (element.category === 'person' || (element.category === 'food_and_drink' && element.importance === 'primary')) {
+            elementFocus = 'gist'; // メインの人物やアイテム
+        } else if (['lighting', 'environment', 'decoration', 'mood'].includes(element.category)) {
+            elementFocus = 'mood'; // 雰囲気、光、装飾など
+        }
+
+        // 選ばれたFocus Areaと一致しない要素はスキップ
+        if (targetFocus && elementFocus !== targetFocus) return;
+
         if (element.bounding_box_conceptual) {
             const [top, left, height, width] = element.bounding_box_conceptual;
             const overlay = document.createElement('div');
