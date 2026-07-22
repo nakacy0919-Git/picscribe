@@ -62,7 +62,7 @@ body {
 }
 
 .left-sidebar {
-    flex: 0 0 280px;
+    flex: 0 0 340px; /* ★ 280pxから340pxに拡張し、情報量を確保 ★ */
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -96,11 +96,18 @@ body {
 ========================================= */
 .score-panel { text-align: center; padding: 25px 20px;}
 .status-header { font-size: 13px; color: #1a1a1a; margin-bottom: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; text-align: center; }
-.gauge-container { position: relative; width: 100%; max-width: 140px; margin: 0 auto; text-align: center; }
+.gauge-container { 
+    position: relative; 
+    width: 100%; 
+    max-width: 100%; /* ★ 140pxの制限を解除し、枠に合わせて美しく自動拡大 ★ */
+    padding: 0 30px; /* 左右に呼吸できる余白を追加 */
+    margin: 0 auto; 
+    text-align: center; 
+}
 .half-donut { width: 100%; height: auto; display: block; overflow: visible; }
 .gauge-bg { fill: none; stroke: #f0f0f0; stroke-width: 10; stroke-linecap: round; }
 .gauge-fill { fill: none; stroke: #1a1a1a; stroke-width: 10; stroke-linecap: round; stroke-dasharray: 125.6; stroke-dashoffset: 125.6; transition: stroke-dashoffset 0.8s ease-out, stroke 0.3s; }
-.gauge-text { position: absolute; bottom: -10px; left: 0; width: 100%; font-size: 32px; font-weight: 700; color: #1a1a1a; font-family: 'Playfair Display', serif; }
+.gauge-text { position: absolute; bottom: -5px; left: 0; width: 100%; font-size: 38px; font-weight: 700; color: #1a1a1a; font-family: 'Playfair Display', serif; }
 .gauge-text .pts { font-size: 14px; color: #888; margin-left: 2px; }
 
 .combined-hint-panel { flex-grow: 1; display: flex; flex-direction: column; padding: 0; overflow: hidden; }
@@ -147,6 +154,140 @@ body {
 .modern-message { background: #f7f7f7; padding: 12px 16px; border-radius: 6px; font-size: 14px; color: #1a1a1a; line-height: 1.5; display: block; border: 1px solid #e0e0e0; }
 .modern-message::before { content: "NEXT ACTION"; display: block; font-size: 11px; font-weight: 800; color: #888; letter-spacing: 1px; margin-bottom: 4px; }
 .modern-message strong { color: #3b82f6; font-weight: 700; background: rgba(59, 130, 246, 0.1); padding: 2px 6px; border-radius: 4px; }
+
+/* =========================================
+   4.5 Focus Area ボタン (立体白黒・ネオブルータリズム完璧版) ＆ Scaffolding
+========================================= */
+.focus-buttons-container {
+    display: flex;
+    gap: 15px;
+    margin: 15px 0 25px 0; /* 下の影の分、マージンを空ける */
+}
+
+/* ★ 1. ボタン本体（透明なコンテナにして干渉を防ぐ） */
+.focus-btn {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: transparent; /* 背景を透明に！ */
+    border: 2px solid transparent; /* 枠線も透明に！ */
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: left;
+    color: #1a1a1a;
+    outline: none;
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1; /* 独立したレイヤーを作成 */
+}
+
+/* ★ 2. ボタンの見た目（前面の白背景と黒枠を分身として作成） */
+.focus-btn::before {
+    content: "";
+    position: absolute;
+    top: -2px; left: -2px; right: -2px; bottom: -2px; /* 透明な枠線を覆い隠す */
+    background: #ffffff;
+    border: 2px solid #1a1a1a;
+    border-radius: 8px;
+    z-index: -1; /* コンテンツの裏側に配置 */
+    transition: background 0.15s ease;
+}
+
+/* ★ 3. 影（背面のストライプを分身として作成し、下にズラす） */
+.focus-btn::after {
+    content: "";
+    position: absolute;
+    top: 4px; left: -2px; right: -2px; bottom: -8px; /* 全体を6px下にズラす */
+    border: 2px solid #1a1a1a;
+    border-radius: 8px;
+    background-image: repeating-linear-gradient(
+        -45deg,
+        #1a1a1a,
+        #1a1a1a 1px,
+        transparent 2px,
+        transparent 5px
+    );
+    background-size: 7px 7px;
+    z-index: -2; /* 白背景のさらに裏側に配置 */
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ★ ホバー時の動き（押し込まれるギミック） */
+.focus-btn:hover {
+    transform: translateY(3px); /* ボタン全体が3px下がる */
+}
+.focus-btn:hover::after {
+    transform: translateY(-3px); /* 影は逆に3px上げて、画面上で静止しているように見せる */
+}
+
+/* ★ クリック・選択時の動き（完全に押し込まれるギミック） */
+.focus-btn:active, .focus-btn.active-focus {
+    transform: translateY(6px); /* ボタン全体が6px下がる */
+}
+.focus-btn:active::before, .focus-btn.active-focus::before {
+    background: #f8fafc; /* 少しグレーになって押した感を持たせる */
+}
+.focus-btn:active::after, .focus-btn.active-focus::after {
+    transform: translateY(-6px); /* 影を完全に上にズラしてボタンと重ねる */
+}
+
+/* コンテンツ（アイコンやテキスト）は一番上 */
+.focus-icon, .focus-text {
+    position: relative;
+    z-index: 2;
+}
+
+/* アイコンとテキストのスタイル */
+.focus-icon {
+    font-size: 24px; display: flex; align-items: center; justify-content: center;
+    width: 44px; height: 44px; background: #ffffff; border: 2px solid #1a1a1a; border-radius: 8px; transition: transform 0.3s ease;
+}
+.focus-btn:hover .focus-icon { transform: scale(1.1) rotate(8deg); }
+.focus-text { display: flex; flex-direction: column; }
+.focus-main { font-size: 15px; font-weight: 800; color: #1a1a1a; font-family: 'Playfair Display', serif; }
+.focus-sub { font-size: 11px; color: #555555; font-weight: 700; }
+
+/* 🌟 Scaffolding（足場かけ）UIのスタイル 🌟 */
+.scaffold-btn {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 6px 12px;
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.scaffold-btn:hover { background: #3b82f6; }
+
+.scaffold-content {
+    display: none; /* 初期状態では隠しておく */
+    margin-top: 12px;
+    padding: 12px;
+    background: #fff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #333;
+    line-height: 1.6;
+}
+.scaffold-content.show { display: block; animation: fadeIn 0.3s ease; }
+
+.scaffold-tag {
+    display: inline-block;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin: 2px 4px 4px 0;
+    font-weight: bold;
+    color: #0f172a;
+}
 
 /* =========================================
    5. 右メイン内：画像エリア
@@ -793,4 +934,105 @@ button#submit-btn {
     color: #333;
     line-height: 1.6;
     font-weight: 500;
+}
+
+/* =========================================
+   18. 生徒向けフレンドリー・スカッフホールディング（左枠用）
+========================================= */
+.friendly-scaffold {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.scaffold-desc {
+    font-size: 13.5px;
+    color: #1a1a1a;
+    line-height: 1.5;
+    margin: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #cbd5e1;
+}
+
+.scaffold-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* 「vocabulary」「grammar」の代わりとなる親切な見出し */
+.scaffold-label {
+    font-size: 12px;
+    font-weight: 800;
+    color: #3b82f6; /* 優しいブルー */
+    background: #eff6ff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    width: fit-content;
+}
+
+/* 提案されるフレーズのタグデザイン */
+.f-tag {
+    display: inline-block;
+    background: #ffffff;
+    border: 1px solid #94a3b8;
+    color: #334155;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 2px 4px 2px 0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+/* =========================================
+   18. 生徒向けフレンドリー・スカッフホールディング（2段組＆翻訳トグル）
+========================================= */
+.friendly-scaffold {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.scaffold-desc {
+    font-size: 13.5px; color: #1a1a1a; line-height: 1.5; margin: 0; padding-bottom: 10px; border-bottom: 1px dashed #cbd5e1;
+}
+.scaffold-group {
+    display: flex; flex-direction: column; gap: 8px;
+}
+.scaffold-label {
+    font-size: 12px; font-weight: 800; color: #3b82f6; background: #eff6ff; padding: 4px 8px; border-radius: 4px; display: inline-block; width: fit-content;
+}
+
+/* ★ 2段組（グリッド）レイアウト */
+.scaffold-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+/* ★ タップで日本語訳が出るインタラクティブタグ */
+.f-tag-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.f-tag {
+    display: inline-block;
+    background: #ffffff; border: 1px solid #94a3b8; color: #334155; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); user-select: none; width: 100%; text-align: center;
+}
+.f-tag:hover {
+    border-color: #3b82f6; background: #f8fafc;
+}
+.f-tag-ja {
+    font-size: 11.5px; color: #64748b; font-weight: bold; margin-top: 4px; margin-left: 8px;
+    display: none; /* 初期状態は非表示 */
+    animation: fadeIn 0.2s ease;
+}
+/* タップされて .show-ja クラスが付いた時の状態 */
+.f-tag-wrapper.show-ja .f-tag-ja {
+    display: block;
+}
+.f-tag-wrapper.show-ja .f-tag {
+    border-color: #3b82f6; background: #eff6ff; color: #1e3a8a;
 }

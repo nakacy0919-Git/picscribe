@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PicScribe - English Writing Platform</title>
+    <!-- 手書き文字認識・アニメーション用ライブラリ -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- 🔽 オープニングアニメーション（スプラッシュ画面） 🔽 -->
     <div id="splash-screen">
         <div class="splash-content">
             <img src="images/logo.webp" alt="PicScribe Logo" class="splash-logo" onerror="this.src='https://via.placeholder.com/120x120?text=Logo'">
@@ -23,7 +25,10 @@
         </div>
     </div>
 
+    <!-- 🔽 アプリケーション全体を包むラッパー 🔽 -->
     <div id="app-wrapper">
+        
+        <!-- ヘッダー -->
         <header id="app-header">
             <img src="images/logo.webp" alt="PicScribe Logo" id="app-logo" onerror="this.src='https://via.placeholder.com/120x120?text=Logo'">
             <div class="header-content">
@@ -33,6 +38,7 @@
             </div>
         </header>
 
+        <!-- 🔽 ホーム画面（学習トラック ＆ 画像選択） 🔽 -->
         <div id="selection-screen">
             <div class="macro-section">
                 <div class="macro-header">
@@ -49,7 +55,6 @@
                             <p>情景描写・基礎固め</p>
                         </div>
                     </div>
-
                     <div class="macro-card" onclick="switchMacroCategory('macro-academic', this)">
                         <div class="macro-bg" style="background-image: url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80');"></div>
                         <div class="macro-overlay"></div>
@@ -58,7 +63,6 @@
                             <p>資格対策・論理的記述</p>
                         </div>
                     </div>
-
                     <div class="macro-card" onclick="switchMacroCategory('macro-story', this)">
                         <div class="macro-bg" style="background-image: url('https://images.unsplash.com/photo-1455390582262-044cdead2708?auto=format&fit=crop&w=800&q=80');"></div>
                         <div class="macro-overlay"></div>
@@ -67,7 +71,6 @@
                             <p>物語創作・応用表現</p>
                         </div>
                     </div>
-
                     <div class="macro-card" onclick="switchMacroCategory('macro-dynamic', this)">
                         <div class="macro-bg" style="background-image: url('https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=800&q=80');"></div>
                         <div class="macro-overlay"></div>
@@ -149,7 +152,10 @@
             </div>
         </div>
         
+        <!-- 🔽 プレイ画面（初期状態では非表示） 🔽 -->
         <div id="game-container" class="app-body-layout hidden">
+            
+            <!-- 🌟 左サイドバー 🌟 -->
             <div class="left-sidebar">
                 <button id="back-to-home-btn" class="back-btn">← カテゴリ選択に戻る</button>
 
@@ -165,59 +171,55 @@
                 </div>
 
                 <div class="dashboard-panel combined-hint-panel">
-                    <div class="support-toggle-section">
-                        <label class="switch-label">
-                            <input type="checkbox" id="support-switch"> Support Mode (Hint)
-                        </label>
-                        <select id="hint-level-select" class="hidden">
-                            <option value="primary">Gist (要点のみ)</option>
-                            <option value="all">All Details (詳細も含む)</option>
-                        </select>
-                    </div>
-
                     <div id="hint-panel" class="hint-sidebar-section">
                         <div class="hint-header">
                             <h3 id="hint-title">💡 Hint Area</h3>
                         </div>
                         <div id="hint-content">
-                            <p class="hint-placeholder">Support ModeをONにして画像の枠をクリックすると、ここに単語や文法のヒントが表示されます。</p>
+                            <p class="hint-placeholder">右のFocusボタン（Main Gist / Setting / Mood）のいずれかを押すと、画像の描写ヒント枠が表示されます。</p>
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> <!-- ⛔ 左サイドバーの終了タグ -->
 
+            <!-- 🌟 右メインコンテンツ 🌟 -->
             <div class="main-content">
-                <div id="step-assistant-panel" class="dashboard-panel assistant-panel">
+                
+                <!-- 司令塔（Focus Areas ボタン） -->
+                <div id="step-assistant-panel" class="dashboard-panel assistant-panel" style="padding-bottom: 5px;">
                     <div class="assistant-header">
-                        <h2 id="current-step-title" class="modern-step-title">Step 1: Main Gist</h2>
+                        <h2 class="modern-step-title">Focus Areas</h2>
                         <div class="assistant-actions">
-                            <span id="step-progress-badge" class="modern-badge">1 / 3 挑戦中</span>
                             <button id="skip-step-btn" class="skip-btn hidden">答えを見てスキップ ⏭</button>
                         </div>
                     </div>
                     
-                    <div id="svo-slots-container" class="modern-stepper">
-                        <div class="stepper-item" id="slot-subject">
-                            <div class="stepper-icon" id="icon-subject">1</div>
-                            <div class="stepper-text"><span class="stepper-title">Subject</span><span class="stepper-subtitle">主語</span></div>
-                        </div>
-                        <div class="stepper-divider"></div>
-                        <div class="stepper-item" id="slot-verb">
-                            <div class="stepper-icon" id="icon-verb">2</div>
-                            <div class="stepper-text"><span class="stepper-title">Action</span><span class="stepper-subtitle">動作</span></div>
-                        </div>
-                        <div class="stepper-divider"></div>
-                        <div class="stepper-item" id="slot-object">
-                            <div class="stepper-icon" id="icon-object">3</div>
-                            <div class="stepper-text"><span class="stepper-title">Object</span><span class="stepper-subtitle">目的語</span></div>
-                        </div>
-                    </div>
-
-                    <div class="modern-message" id="assistant-message">
-                        まずは描写の中に主語を入れてみましょう。
+                    <div class="focus-buttons-container" style="margin-bottom: 10px;">
+                        <button class="focus-btn gist-btn" data-target="gist">
+                            <span class="focus-icon">👤</span>
+                            <div class="focus-text">
+                                <span class="focus-main">Main Gist</span>
+                                <span class="focus-sub">人物・基本動作</span>
+                            </div>
+                        </button>
+                        <button class="focus-btn setting-btn" data-target="setting">
+                            <span class="focus-icon">🪑</span>
+                            <div class="focus-text">
+                                <span class="focus-main">Setting</span>
+                                <span class="focus-sub">背景・モノ</span>
+                            </div>
+                        </button>
+                        <button class="focus-btn mood-btn" data-target="mood">
+                            <span class="focus-icon">✨</span>
+                            <div class="focus-text">
+                                <span class="focus-main">Mood</span>
+                                <span class="focus-sub">雰囲気・光</span>
+                            </div>
+                        </button>
                     </div>
                 </div>
 
+                <!-- プレイエリア（画像 ＆ 入力欄） -->
                 <div class="play-area">
                     <div id="image-area-wrapper">
                         <div id="image-area">
@@ -227,7 +229,7 @@
                         </div>
                     </div>
 
-                   <div id="input-area-wrapper">
+                    <div id="input-area-wrapper">
                         <div id="dictionary-widget">
                             <div class="search-icon">🔍</div>
                             <input type="text" id="dict-search-input" placeholder="Search dictionary (En/Ja)..." autocomplete="off">
@@ -249,6 +251,7 @@
                                 </svg>
                             </label>
                             <input type="file" id="ocr-file-input" accept="image/*" capture="environment" style="display: none;">
+                            
                             <button id="submit-btn">Finish & Check</button>
                         </div>
                         
@@ -262,9 +265,10 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div> <!-- ⛔ 右メインコンテンツの終了タグ -->
+        </div> <!-- ⛔ game-container の終了タグ -->
         
+        <!-- 辞書詳細ポップアップ -->
         <div id="dict-modal" class="hidden">
             <div class="dict-modal-content">
                 <button id="close-dict-btn">×</button>
@@ -276,6 +280,7 @@
             </div>
         </div>
 
+        <!-- 🔽 フィニッシュ後の学習モーダル (Review & Practice) 🔽 -->
         <div id="finish-modal" class="hidden">
             <div class="finish-modal-overlay"></div>
             <div class="finish-modal-content">
@@ -286,7 +291,7 @@
                 </div>
                 
                 <div class="finish-modal-body">
-                    <!-- 🌟 左ペイン -->
+                    <!-- 🌟 左ペイン：画像 ＋ Your Answer ＋ Accuracyメーター -->
                     <div class="modal-left-pane">
                         <img id="modal-review-image" src="" alt="Review Image">
                         <div class="your-answer-box" id="modal-your-answer-box">
@@ -295,6 +300,7 @@
                         </div>
                         
                         <div id="speech-result-area" class="hidden" style="background: transparent; border: none; padding: 0;">
+                            
                             <div class="reading-record-box">
                                 <div id="reading-count-badge"></div>
                                 <div id="reading-dynamic-comment"></div>
@@ -316,9 +322,9 @@
                                 <p id="sla-advice-text"></p>
                             </div>
                         </div>
-                    </div> <!-- ★ココが抜けていた「左エリアを閉じる」魔法のタグです！★ -->
+                    </div>
                     
-                    <!-- 🌟 右ペイン -->
+                    <!-- 🌟 右ペイン：英文選択 ＆ 音読エリア -->
                     <div class="modal-right-pane">
                         <div id="modal-state-selection">
                             <div class="cefr-tabs" id="cefr-tabs-container">
@@ -359,10 +365,22 @@
                 </div>
             </div>
         </div>
-    </div>
 
+    </div> <!-- app-wrapper の終了タグ -->
+
+    <!-- 1. データファイル -->
     <script src="data/data_picture.js"></script>
+    
+    <!-- 2. 全体共通のユーティリティ -->
     <script src="js/main.js"></script>
+    
+    <!-- 3. 機能ごとにモジュール化されたファイル -->
+    <script src="js/ocr_scanner.js"></script>
+    <script src="js/speech_practice.js"></script>
+    <script src="js/ui_focus.js"></script>
+    <script src="js/game_core.js"></script>
+    
+    <!-- 4. 最後に全体を初期化するメインファイル -->
     <script src="js/mode_picture.js"></script>
 </body>
 </html>
