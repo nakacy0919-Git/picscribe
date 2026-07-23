@@ -1,13 +1,13 @@
 /**
  * game_core.js
- * タイピング判定、カバレッジ計算（部分一致＆文章成立チェック）、サウンド再生
+ * タイピング判定、カバレッジ計算（3要素で必ず100%）、サウンド再生
  */
 
 let scoringTargets = [];
 let maxScore = 0;
 let categoryHits = { gist: 0, setting: 0, mood: 0 }; 
 let alreadyHitWords = []; 
-const CLEAR_THRESHOLD = 2; 
+const CLEAR_THRESHOLD = 1; 
 let currentEarnedScore = 0;
 let isFormatting = false;
 
@@ -27,13 +27,11 @@ function playHitSound(isPerfect = false) {
     const gainNode = audioCtx.createGain();
     
     if (isPerfect) {
-        // 完全一致や高得点時のキラキラ和音（ちょっと豪華に）
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime); // C6
-        osc.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.05); // E6
-        osc.frequency.setValueAtTime(1567.98, audioCtx.currentTime + 0.1); // G6
+        osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime); 
+        osc.frequency.setValueAtTime(1318.51, audioCtx.currentTime + 0.05); 
+        osc.frequency.setValueAtTime(1567.98, audioCtx.currentTime + 0.1); 
     } else {
-        // 部分一致や単語ヒット時のシンプルな音
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(880, audioCtx.currentTime); 
         osc.frequency.exponentialRampToValueAtTime(1760, audioCtx.currentTime + 0.1);
@@ -49,93 +47,83 @@ function playHitSound(isPerfect = false) {
     osc.stop(audioCtx.currentTime + 0.4);
 }
 
-// --- データセットアップ（配点の最適化） ---
+// --- データセットアップ（Moodデータを完全復旧・大文字小文字に対応） ---
 function setupGameData() {
     scoringTargets = []; maxScore = 0; categoryHits = { gist: 0, setting: 0, mood: 0 };
+    if (!cafeData) return;
 
-    // ヒントデータ等からターゲットとなる表現を抽出
-    cafeData.elements.forEach(el => {
-        let bucket = 'setting';
-        const isPrimary = el.importance === 'primary';
+    // 1. Elementsの読み込み
+    if (cafeData.elements) {
+        cafeData.elements.forEach(el => {
+            let bucket = 'setting';
+            const isPrimary = el.importance === 'primary';
+            // ★ 大文字小文字の差異をなくすために小文字に統一
+            const cat = (el.category || '').toLowerCase();
 
-        if (el.category === 'person' || (isPrimary && el.category === 'food_and_drink')) { 
-            bucket = 'gist'; 
-        } else if (['architecture', 'place', 'furniture', 'equipment'].includes(el.category)) { 
-            bucket = 'setting'; 
-        } else if (['nature', 'decoration', 'lighting', 'environment', 'sign', 'mood'].includes(el.category) || (!isPrimary && el.category === 'object')) { 
-            bucket = 'mood'; 
-        }
+            if (cat === 'person' || cat === 'animal' || (isPrimary && cat === 'food_and_drink')) { 
+                bucket = 'gist'; 
+            } else if (['nature', 'decoration', 'lighting', 'environment', 'sign', 'mood', 'atmosphere', 'abstract'].includes(cat) || (!isPrimary && cat === 'object')) { 
+                bucket = 'mood'; 
+            }
 
-        const wordsArray = el.accepted_words || el.synonyms_and_related_words || [];
-        
-        // ターゲット表現ごとに、単語数に応じたウェイト（配点）を設定
-        wordsArray.forEach(w => {
-            const wordCount = w.split(' ').length;
-            let weight = 3; // デフォルト（単語）
-            if (wordCount >= 4) weight = 10; // 長いフレーズや文は高得点
-            else if (wordCount >= 2) weight = 6; // 短いフレーズは中得点
-            
-            scoringTargets.push({
-                id: el.id, bucket: bucket, 
-                targetPhrase: w.toLowerCase(),
-                wordCount: wordCount,
-                weight: weight, 
-                earnedPoints: 0 // 獲得済みのポイント（部分一致に対応するため）
+            const wordsArray = el.accepted_words || el.synonyms_and_related_words || [];
+            wordsArray.forEach(w => {
+                const wordCount = w.split(' ').length;
+                let weight = wordCount >= 4 ? 10 : (wordCount >= 2 ? 6 : 3);
+                scoringTargets.push({ id: el.id, bucket: bucket, targetPhrase: w.toLowerCase(), weight: weight, earnedPoints: 0 });
+                maxScore += weight; 
             });
-            // 最大スコアの計算（全ターゲットの合計ではなく、各エレメントの最大値を加算するなど調整可能ですが、今回は単純加算ベースで全体のパイを計算します）
-            maxScore += weight; 
         });
-    });
+    }
 
-    // アクションなどの追加データ
-    cafeData.actions_analysis.forEach(action => {
-        const wordsArray = action.accepted_words || action.synonyms || [];
-        wordsArray.forEach(p => {
-            scoringTargets.push({
-                id: action.id, bucket: 'gist', 
-                targetPhrase: p.toLowerCase(),
-                wordCount: p.split(' ').length,
-                weight: p.split(' ').length >= 3 ? 10 : 6, 
-                earnedPoints: 0
+    // 2. Actionsの読み込み
+    if (cafeData.actions_analysis) {
+        cafeData.actions_analysis.forEach(action => {
+            const wordsArray = action.accepted_words || action.synonyms || [];
+            wordsArray.forEach(p => {
+                const wordCount = p.split(' ').length;
+                let weight = wordCount >= 3 ? 10 : 6;
+                scoringTargets.push({ id: action.id, bucket: 'gist', targetPhrase: p.toLowerCase(), weight: weight, earnedPoints: 0 });
+                maxScore += weight;
             });
-            maxScore += (p.split(' ').length >= 3 ? 10 : 6);
         });
-    });
+    }
+
+    // ★ 3. 消失していた Overall Mood の読み込みを復活！
+    if (cafeData.overall_mood) {
+        cafeData.overall_mood.forEach(mood => {
+            const wordCount = mood.split(' ').length;
+            let weight = wordCount >= 3 ? 10 : (wordCount >= 2 ? 6 : 4);
+            scoringTargets.push({ id: 'mood_' + mood, bucket: 'mood', targetPhrase: mood.toLowerCase(), weight: weight, earnedPoints: 0 });
+            maxScore += weight;
+        });
+    }
 }
 
 // --- カバレッジと文章ルール・3要素網羅の厳格な判定 ---
 function updateCoverageDisplay(rawText) {
-    const targetScore = maxScore * 0.15; // 獲得スコアの基準値
+    const targetScore = maxScore * 0.12; 
     let baseCoverage = Math.floor((currentEarnedScore / targetScore) * 100);
 
-    // ★ 1. 文章成立チェック（The Sentence Barrier）
     const words = rawText.trim().split(/\s+/);
     const hasCapital = /^[A-Z]/.test(rawText.trim());
-    const hasPeriod = /[.!?]$/.test(rawText.trim());
+    const hasPeriod = /[.!?]/.test(rawText.trim()); 
     const isValidSentence = hasCapital && hasPeriod && words.length >= 3;
 
-    // ★ 2. 3要素網羅チェック（Gist, Setting, Moodのすべてで1回以上ヒットしているか）
-    const allCategoriesHit = (categoryHits.gist > 0 && categoryHits.setting > 0 && categoryHits.mood > 0);
+    const allCategoriesHit = (categoryHits.gist >= CLEAR_THRESHOLD && categoryHits.setting >= CLEAR_THRESHOLD && categoryHits.mood >= CLEAR_THRESHOLD);
 
     let finalCoverage = baseCoverage;
 
-    // --- 厳格な上限（キャップ）システム ---
-    if (!isValidSentence) {
-        // 文のルールを満たしていなければ、最大50%
-        finalCoverage = Math.min(finalCoverage, 50);
-    } else if (!allCategoriesHit) {
-        // 文にはなっているが、3要素が揃っていなければ、最大80%
-        finalCoverage = Math.min(finalCoverage, 80);
+    if (isValidSentence && allCategoriesHit) {
+        finalCoverage = 100;
+    } else if (!isValidSentence) {
+        finalCoverage = Math.min(finalCoverage, 50); 
     } else {
-        // 文になっており、かつ3要素揃っていれば100%到達を許可！
-        // （スコアが足りなくても、条件を満たして80%を超えていれば100%にして達成感を与える）
-        if (finalCoverage >= 80) finalCoverage = 100; 
+        finalCoverage = Math.min(finalCoverage, 95); 
     }
 
-    // 100を超えないようにガード
     if (finalCoverage > 100) finalCoverage = 100;
 
-    // --- UIへの反映（ゲージの色と数値） ---
     liveScoreDisplay.innerHTML = `${finalCoverage}<span class="pts">%</span>`;
     const offset = 125.6 - (125.6 * (finalCoverage / 100));
     const gaugePath = document.getElementById('gauge-fill-path');
@@ -145,36 +133,28 @@ function updateCoverageDisplay(rawText) {
         gaugePath.style.transition = "stroke-dashoffset 0.5s ease-out, stroke 0.5s ease";
         
         if (finalCoverage === 100) {
-            gaugePath.style.stroke = "#10b981"; // 完璧！(緑)
+            gaugePath.style.stroke = "#10b981"; 
         } else if (isValidSentence && finalCoverage > 50) {
-            gaugePath.style.stroke = "#3b82f6"; // 文になっているが要素不足(青)
+            gaugePath.style.stroke = "#3b82f6"; 
         } else if (!isValidSentence && baseCoverage > 50) {
-            gaugePath.style.stroke = "#f59e0b"; // 単語は合ってるが文じゃない警告(オレンジ)
+            gaugePath.style.stroke = "#f59e0b"; 
         } else {
-            gaugePath.style.stroke = "#1a1a1a"; // 初期状態(黒)
+            gaugePath.style.stroke = "#1a1a1a"; 
         }
     }
 }
 
 function updateFocusButtonStyles() {
-    if (categoryHits.gist >= CLEAR_THRESHOLD) {
-        const btn = document.querySelector('.gist-btn');
-        if (btn && !btn.classList.contains('mission-completed')) btn.classList.add('mission-completed');
-    }
-    if (categoryHits.setting >= CLEAR_THRESHOLD) {
-        const btn = document.querySelector('.setting-btn');
-        if (btn && !btn.classList.contains('mission-completed')) btn.classList.add('mission-completed');
-    }
-    if (categoryHits.mood >= CLEAR_THRESHOLD) {
-        const btn = document.querySelector('.mood-btn');
-        if (btn && !btn.classList.contains('mission-completed')) btn.classList.add('mission-completed');
-    }
+    if (categoryHits.gist >= CLEAR_THRESHOLD) document.querySelector('.gist-btn')?.classList.add('mission-completed');
+    if (categoryHits.setting >= CLEAR_THRESHOLD) document.querySelector('.setting-btn')?.classList.add('mission-completed');
+    if (categoryHits.mood >= CLEAR_THRESHOLD) document.querySelector('.mood-btn')?.classList.add('mission-completed');
 }
 
 function boldMatchedWords() {
     let htmlContent = userInput.innerText; 
-    alreadyHitWords.forEach(word => {
-        // 単語の一部がHTMLタグと干渉しないように安全に置換
+    const wordsToHighlight = alreadyHitWords.filter(w => w.length > 3 || w === 'cup' || w === 'bun');
+    
+    wordsToHighlight.forEach(word => {
         const regex = new RegExp(`\\b(${word})\\b`, 'gi');
         htmlContent = htmlContent.replace(regex, `<span class="matched-word">$1</span>`);
     });
@@ -194,57 +174,53 @@ function placeCaretAtEnd(el) {
     }
 }
 
-// --- タイピング判定ロジック（部分一致アルゴリズム搭載） ---
+// --- タイピング判定ロジック ---
 userInput.addEventListener('input', () => {
     if (isFormatting) return; 
     initAudio(); 
     
     const rawText = userInput.innerText;
-    // 判定用に記号を抜いた小文字の配列を作成
-    const textForTyping = rawText.toLowerCase().replace(/[,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+    // ★ ピリオドやカンマを「スペース」に置換し、単語が記号と癒着しないように修正
+    const textForTyping = rawText.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, " ");
     const inputWords = textForTyping.split(/\s+/);
     
     let newHitFound = false;
     let perfectHitFound = false;
 
+    const stopWords = ['a', 'an', 'the', 'is', 'are', 'was', 'were', 'in', 'on', 'at', 'of', 'for', 'to', 'with', 'it', 'we', 'they', 'he', 'she'];
+
     scoringTargets.forEach(target => {
-        // 既に満点を獲得しているターゲットはスキップ
         if (target.earnedPoints >= target.weight) return;
 
         const targetWords = target.targetPhrase.split(' ');
+        let sigWords = targetWords.filter(w => !stopWords.includes(w));
+        if (sigWords.length === 0) sigWords = targetWords; 
+
         let matchCount = 0;
 
-        // ターゲットフレーズの各単語が、ユーザー入力に含まれているかチェック
-        targetWords.forEach(tw => {
+        sigWords.forEach(tw => {
             if (inputWords.includes(tw)) {
                 matchCount++;
                 if (!alreadyHitWords.includes(tw)) alreadyHitWords.push(tw);
             }
         });
 
-        // 一致率を計算 (0.0 〜 1.0)
-        const matchRatio = matchCount / target.wordCount;
+        const matchRatio = matchCount / sigWords.length;
         let pointsToAward = 0;
 
-        if (matchRatio === 1.0) {
-            // 完全一致：満点
+        if (matchRatio >= 0.75) {
             pointsToAward = target.weight;
             perfectHitFound = true;
-        } else if (matchRatio >= 0.5) {
-            // 半分以上一致（惜しい！）：半分のスコア
+        } else if (matchRatio >= 0.40) {
             pointsToAward = target.weight * 0.5;
         }
 
-        // 過去に獲得したポイントよりも高くなった場合のみ、差分を加算
         if (pointsToAward > target.earnedPoints) {
-            const diff = pointsToAward - target.earnedPoints;
-            currentEarnedScore += diff;
-            target.earnedPoints = pointsToAward; // 獲得スコアを更新
-            
-            // カテゴリヒット数をカウント（完全一致の場合のみ確実にカウント）
-            if (matchRatio === 1.0) {
+            currentEarnedScore += (pointsToAward - target.earnedPoints);
+            target.earnedPoints = pointsToAward;
+
+            if (matchRatio >= 0.40) {
                 categoryHits[target.bucket]++; 
-                createGoldOverlayFromTarget(target);
             }
 
             newHitFound = true;
@@ -257,7 +233,7 @@ userInput.addEventListener('input', () => {
 
     if (newHitFound) {
         updateFocusButtonStyles(); 
-        playHitSound(perfectHitFound); // 完全一致時は豪華な音を鳴らす
+        playHitSound(perfectHitFound); 
         isFormatting = true;
         try {
             boldMatchedWords();
@@ -266,14 +242,3 @@ userInput.addEventListener('input', () => {
         }
     }
 });
-
-function createGoldOverlayFromTarget(target) {
-    const elData = cafeData.elements.find(e => e.id === target.id);
-    if (!elData || !elData.bounding_box_conceptual) return;
-    const [top, left, height, width] = elData.bounding_box_conceptual;
-    const overlay = document.createElement('div');
-    overlay.className = 'gold-overlay';
-    overlay.style.top = `${top}%`; overlay.style.left = `${left}%`;
-    overlay.style.height = `${height}%`; overlay.style.width = `${width}%`;
-    imageArea.appendChild(overlay);
-}
