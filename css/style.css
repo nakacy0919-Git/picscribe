@@ -1155,3 +1155,37 @@ button#submit-btn {
     height: 100%;
     min-width: 400px; /* 右側が潰れすぎないように */
 }
+/* =========================================
+   22. ヒントヘッダーの1段組固定（折り返し防止）
+========================================= */
+.hint-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: nowrap !important; /* 絶対に折り返さない */
+    gap: 8px; /* タイトルとボタンの間の余白 */
+    width: 100%;
+    overflow: hidden; /* はみ出しを隠す */
+}
+
+/* タイトルテキストの制御 */
+#hint-title {
+    white-space: nowrap; /* テキストの改行を禁止 */
+    overflow: hidden;
+    text-overflow: ellipsis; /* 幅が足りない場合は「...」で省略 */
+    margin: 0;
+    flex: 1; /* 余ったスペースを占有する */
+}
+
+/* A- / A+ ボタンのグループ */
+.text-size-controls {
+    display: flex;
+    flex-wrap: nowrap; /* ボタン同士も折り返さない */
+    gap: 4px;
+    flex-shrink: 0; /* ボタンのサイズが潰れるのを防ぐ */
+}
+
+.text-size-controls button {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
