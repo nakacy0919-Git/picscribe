@@ -153,24 +153,14 @@
         </div>
         
         <!-- 🔽 プレイ画面（初期状態では非表示） 🔽 -->
-        <div id="game-container" class="app-body-layout hidden">
+        <div id="game-container" class="app-body-layout hidden" style="position: relative; overflow: visible;">
             
+            <!-- 🌟 紫枠の位置に移動した「← 戻る」ボタン 🌟 -->
+            <button id="back-to-home-btn" class="back-btn" style="position: absolute; left: -95px; top: 0; width: 80px; padding: 10px 0; display: flex; justify-content: center; background: white; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 13px; font-weight: bold; color: #475569; text-align: center; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05); z-index: 50;">← 戻る</button>
+
             <!-- 🌟 左サイドバー 🌟 -->
-            <div class="left-sidebar">
-                <button id="back-to-home-btn" class="back-btn">← カテゴリ選択に戻る</button>
-
-                <div id="live-status" class="dashboard-panel score-panel">
-                    <div class="status-header">COVERAGE RATE</div>
-                    <div class="gauge-container">
-                        <svg viewBox="0 0 100 50" class="half-donut">
-                            <path d="M 10 50 A 40 40 0 0 1 90 50" class="gauge-bg"/>
-                            <path d="M 10 50 A 40 40 0 0 1 90 50" class="gauge-fill" id="gauge-fill-path"/>
-                        </svg>
-                        <div id="live-score" class="gauge-text">0<span class="pts">%</span></div>
-                    </div>
-                </div>
-
-                <div class="dashboard-panel combined-hint-panel">
+            <div class="left-sidebar" id="left-sidebar" style="flex: 0 0 340px;">
+                <div class="dashboard-panel combined-hint-panel" style="flex: 1; display: flex; flex-direction: column;">
                     <div id="hint-panel" class="hint-sidebar-section">
                         <div class="hint-header">
                             <h3 id="hint-title">💡 Hint Area</h3>
@@ -182,39 +172,60 @@
                 </div>
             </div> <!-- ⛔ 左サイドバーの終了タグ -->
 
+            <!-- 🌟 リサイズバー（ピンクの線になる部分） 🌟 -->
+            <div class="resizer" id="dragMe"></div>
+
             <!-- 🌟 右メインコンテンツ 🌟 -->
             <div class="main-content">
                 
-                <!-- 司令塔（Focus Areas ボタン） -->
-                <div id="step-assistant-panel" class="dashboard-panel assistant-panel" style="padding-bottom: 5px;">
-                    <div class="assistant-header">
-                        <h2 class="modern-step-title">Focus Areas</h2>
-                        <div class="assistant-actions">
-                      </div>
-                    </div>
+                <!-- 司令塔（Coverage Rate ＆ Focus Areas） -->
+                <div id="step-assistant-panel" class="dashboard-panel assistant-panel" style="padding: 20px; display: flex; align-items: center; gap: 35px;">
                     
-                    <div class="focus-buttons-container" style="margin-bottom: 10px;">
-                        <button class="focus-btn gist-btn" data-target="gist">
-                            <span class="focus-icon">👤</span>
-                            <div class="focus-text">
-                                <span class="focus-main">Main Gist</span>
-                                <span class="focus-sub">人物・基本動作</span>
-                            </div>
-                        </button>
-                        <button class="focus-btn setting-btn" data-target="setting">
-                            <span class="focus-icon">🪑</span>
-                            <div class="focus-text">
-                                <span class="focus-main">Setting</span>
-                                <span class="focus-sub">背景・モノ</span>
-                            </div>
-                        </button>
-                        <button class="focus-btn mood-btn" data-target="mood">
-                            <span class="focus-icon">✨</span>
-                            <div class="focus-text">
-                                <span class="focus-main">Mood</span>
-                                <span class="focus-sub">雰囲気・光</span>
-                            </div>
-                        </button>
+                    <!-- 🌟 左側：拡大した Coverage Rate 🌟 -->
+                    <div id="live-status" style="width: 160px; flex-shrink: 0; text-align: center; background: transparent; border: none; box-shadow: none;">
+                        <div class="status-header" style="font-size: 15px; font-weight: 700; margin-bottom: 8px; color: #1e293b;">COVERAGE RATE</div>
+                        <div class="gauge-container" style="width: 140px; margin: 0 auto; padding: 0; position: relative;">
+                            <!-- SVGの大きさと線の太さを調整 -->
+                            <svg viewBox="0 0 100 50" class="half-donut" style="width: 100%; height: auto;">
+                                <path d="M 10 50 A 40 40 0 0 1 90 50" class="gauge-bg" fill="none" stroke="#e2e8f0" stroke-width="8" stroke-linecap="round"/>
+                                <path d="M 10 50 A 40 40 0 0 1 90 50" class="gauge-fill" id="gauge-fill-path" fill="none" stroke="#1a1a1a" stroke-width="8" stroke-linecap="round" stroke-dasharray="125.6" stroke-dashoffset="125.6"/>
+                            </svg>
+                            <!-- パーセントの文字を大きく -->
+                            <div id="live-score" class="gauge-text" style="font-size: 34px; font-weight: 800; position: absolute; bottom: 0; left: 0; right: 0;">0<span class="pts" style="font-size: 18px;">%</span></div>
+                        </div>
+                    </div>
+
+                    <!-- 🌟 右側：Focus Areasとボタン群 🌟 -->
+                    <div style="flex: 1; display: flex; flex-direction: column;">
+                        <!-- 赤枠の位置に移動した Focus Areas タイトル -->
+                        <div class="assistant-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 12px; display: flex; align-items: center;">
+                            <h2 class="modern-step-title" style="font-size: 18px; margin: 0; color: #0f172a;">Focus Areas</h2>
+                        </div>
+                        
+                        <!-- ボタン群 -->
+                        <div class="focus-buttons-container" style="display: flex; gap: 12px; margin-bottom: 0;">
+                            <button class="focus-btn gist-btn" data-target="gist" style="padding: 8px 12px; flex: 1;">
+                                <span class="focus-icon">👤</span>
+                                <div class="focus-text">
+                                    <span class="focus-main">Main Gist</span>
+                                    <span class="focus-sub" style="font-size: 10px;">人物・基本動作</span>
+                                </div>
+                            </button>
+                            <button class="focus-btn setting-btn" data-target="setting" style="padding: 8px 12px; flex: 1;">
+                                <span class="focus-icon">🪑</span>
+                                <div class="focus-text">
+                                    <span class="focus-main">Setting</span>
+                                    <span class="focus-sub" style="font-size: 10px;">背景・モノ</span>
+                                </div>
+                            </button>
+                            <button class="focus-btn mood-btn" data-target="mood" style="padding: 8px 12px; flex: 1;">
+                                <span class="focus-icon">✨</span>
+                                <div class="focus-text">
+                                    <span class="focus-main">Mood</span>
+                                    <span class="focus-sub" style="font-size: 10px;">雰囲気・光</span>
+                                </div>
+                            </button>
+                        </div>
                     </div>
                 </div>
 

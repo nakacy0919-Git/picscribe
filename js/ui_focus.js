@@ -283,3 +283,56 @@ function updateGlowAndButtons() {
         if(skipBtn) skipBtn.classList.add('hidden');
     }
 }
+// --- リサイズバー（ドラッグで幅を調整）の機能 ---
+document.addEventListener('DOMContentLoaded', function () {
+    const resizer = document.getElementById('dragMe');
+    const leftSide = document.getElementById('left-sidebar');
+    const container = document.getElementById('game-container');
+
+    if (!resizer || !leftSide || !container) return;
+
+    let x = 0;
+    let leftWidth = 0;
+
+    const mouseDownHandler = function (e) {
+        // マウスの初期位置とサイドバーの初期幅を取得
+        x = e.clientX;
+        leftWidth = leftSide.getBoundingClientRect().width;
+
+        // リサイズ中のマウスイベントを追加
+        document.addEventListener('mousemove', mouseMoveHandler);
+        document.addEventListener('mouseup', mouseUpHandler);
+        
+        // ピンク色を維持するためのクラスを追加
+        resizer.classList.add('resizing');
+        document.body.style.cursor = 'col-resize'; // 全体のカーソルを変更
+        
+        // 画像やテキストの選択を防ぐ
+        leftSide.style.userSelect = 'none';
+        leftSide.style.pointerEvents = 'none';
+    };
+
+    const mouseMoveHandler = function (e) {
+        // マウスの移動量を計算して新しい幅を設定
+        const dx = e.clientX - x;
+        const newWidth = leftWidth + dx;
+
+        // 最小幅(250px)と最大幅(600px)の制限を設ける
+        if (newWidth > 250 && newWidth < 600) {
+            leftSide.style.flex = `0 0 ${newWidth}px`;
+        }
+    };
+
+    const mouseUpHandler = function () {
+        resizer.classList.remove('resizing');
+        document.body.style.cursor = '';
+        
+        leftSide.style.userSelect = '';
+        leftSide.style.pointerEvents = '';
+
+        document.removeEventListener('mousemove', mouseMoveHandler);
+        document.removeEventListener('mouseup', mouseUpHandler);
+    };
+
+    resizer.addEventListener('mousedown', mouseDownHandler);
+});

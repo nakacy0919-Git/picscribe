@@ -1023,16 +1023,34 @@ button#submit-btn {
     align-items: flex-start;
 }
 .f-tag {
-    display: inline-block;
-    background: #ffffff; border: 1px solid #94a3b8; color: #334155; padding: 6px 12px; border-radius: 20px; font-size: var(--hint-fs) !important; font-weight: 600;
-    cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); user-select: none; width: 100%; text-align: center;
+    display: flex;
+    align-items: center;
+    background: transparent;
+    border: none; /* 余計な枠線を削除 */
+    color: #1e293b;
+    padding: 4px 6px; /* 余白を最小限に */
+    border-radius: 6px; /* 長丸をやめて、ごくわずかな角丸に */
+    font-size: var(--hint-fs) !important;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    user-select: none;
+    width: 100%;
+    text-align: left;
 }
+
 .f-tag:hover {
-    border-color: #3b82f6; background: #f8fafc;
+    background: #f1f5f9; /* マウスを乗せた時だけうっすらハイライト */
 }
+
 .f-tag-ja {
-    font-size: var(--hint-ja-fs) !important; color: #64748b; font-weight: bold; margin-top: 4px; margin-left: 8px;
-    display: none; /* 初期状態は非表示 */
+    font-size: var(--hint-ja-fs) !important;
+    color: #64748b;
+    font-weight: bold;
+    margin-top: 2px;
+    margin-left: 28px; /* 🔊アイコンの幅を避けて英単語と縦のラインを揃える */
+    margin-bottom: 6px; /* 下の単語との間隔 */
+    display: none;
     animation: fadeIn 0.2s ease;
 }
 /* タップされて .show-ja クラスが付いた時の状態 */
@@ -1068,3 +1086,72 @@ button#submit-btn {
 }
 .page-btn:hover:not(:disabled) { background: #e2e8f0; color: #0f172a; }
 .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+/* =========================================
+   21. リサイズバー ＆ 柔軟なレイアウト
+========================================= */
+/* おしゃれな薄い灰色のリサイズバー */
+.resizer {
+    width: 14px; /* つかみやすい幅に少し拡大 */
+    cursor: col-resize;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+    margin: 0 4px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+}
+
+/* ドラッグできることを示す「2本の縦線」のグリップ */
+.resizer::after {
+    content: '';
+    width: 4px;
+    height: 28px;
+    border-left: 1.5px solid #cbd5e1; /* 薄いグレーの線 */
+    border-right: 1.5px solid #cbd5e1; 
+    transition: border-color 0.2s ease;
+}
+
+/* ホバー時・ドラッグ中の状態 */
+.resizer:hover, .resizer.resizing {
+    background-color: #f1f5f9; /* 背景をほんのりグレーに光らせる */
+}
+
+.resizer:hover::after, .resizer.resizing::after {
+    border-color: #94a3b8; /* ドラッグ中はグリップを少し濃くする */
+}
+
+/* 枠を消したCoverage Rateの微調整 */
+#live-status {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+/* 幅に合わせて1段組・2段組が切り替わるグリッド（最小160pxで折り返し） */
+.scaffold-2col {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;
+    gap: 8px !important;
+}
+
+/* アプリ全体のフレックスレイアウトを横並び固定に */
+.app-body-layout {
+    display: flex;
+    flex-direction: row;
+    height: calc(100vh - 80px); /* 画面高さにフィット */
+    overflow: hidden;
+}
+
+/* サイドバーとメインコンテンツのスクロール設定 */
+.left-sidebar {
+    overflow-y: auto;
+    height: 100%;
+}
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+    height: 100%;
+    min-width: 400px; /* 右側が潰れすぎないように */
+}
