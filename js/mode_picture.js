@@ -3,39 +3,40 @@
  * ピクチャー描写モードの初期化・司令塔（全体の制御）
  */
 
-// ★追加：システム全体で「現在どのシーンをプレイしているか」を共有するための変数
+// システム全体で「現在どのシーンをプレイしているか」を共有するための変数
 window.currentSceneData = null;
 
 function initGame(sceneId = 'cafe') {
-    // 1. sceneId（例: 'library_boy'）に基づいて、使用するデータを自動で切り替える
-    if (sceneId === 'cafe') {
-        window.currentSceneData = typeof cafeData !== 'undefined' ? cafeData : null;
-    } else if (sceneId === 'library_boy') {
-        window.currentSceneData = typeof libraryBoyData !== 'undefined' ? libraryBoyData : null;
-    } 
-    // ※今後30枚増えたら、ここに else if (sceneId === 'bedroom') {...} と足していくだけでOKです！
-    else {
-        window.currentSceneData = typeof cafeData !== 'undefined' ? cafeData : null; // 安全装置
-    }
+    // 1. 【改善】30枚のデータを管理しやすいように「辞書（マップ）」化
+    const sceneDataMap = {
+        'cafe': typeof cafeData !== 'undefined' ? cafeData : null,
+        'library_boy': typeof libraryBoyData !== 'undefined' ? libraryBoyData : null,
+        // 🌟 今後イラストが増えたら、ここに1行ずつ足していくだけでOKです！
+        // 'bedroom': typeof bedroomData !== 'undefined' ? bedroomData : null,
+    };
+
+    // 辞書からデータを取得（見つからなければ安全装置としてcafeをセット）
+    window.currentSceneData = sceneDataMap[sceneId] || sceneDataMap['cafe'];
 
     if (!window.currentSceneData) {
         console.error("エラー: 指定されたシーンのデータが見つかりません。(" + sceneId + ")");
         return;
     }
 
-    // 2. 決定したデータを基にゲームをセットアップ（※game_core.jsも後で修正します）
-    setupGameData();
+    // 2. 決定したデータを基にゲームをセットアップ
+    if (typeof setupGameData === 'function') setupGameData();
     
-    // 3. 画像も cafeData 固定ではなく、現在選択中のデータから読み込む
+    // 3. 画像の読み込み
     const imagePath = window.currentSceneData.imageUrl ? window.currentSceneData.imageUrl : ("images/" + window.currentSceneData.image_id);
     document.getElementById('target-image').src = imagePath;
     
     // 入力とスコアのリセット
     const userInput = document.getElementById('user-input');
-    userInput.innerText = ''; 
-    alreadyHitWords = []; 
-    currentEarnedScore = 0;
-    categoryHits = { gist: 0, setting: 0, mood: 0 }; // detailsではなくmoodに修正
+    if (userInput) userInput.innerText = ''; 
+    
+    if (typeof alreadyHitWords !== 'undefined') alreadyHitWords = []; 
+    if (typeof currentEarnedScore !== 'undefined') currentEarnedScore = 0;
+    if (typeof categoryHits !== 'undefined') categoryHits = { gist: 0, setting: 0, mood: 0 };
     if (typeof currentStep !== 'undefined') currentStep = 1;
     
     // UIのリセット
@@ -45,6 +46,9 @@ function initGame(sceneId = 'cafe') {
     document.querySelectorAll('.gold-overlay, .hint-glow-overlay').forEach(el => el.remove());
     if (typeof updateCoverageDisplay === 'function') updateCoverageDisplay('');
     
+    // ★追加改善：別の画像を選んだ時に、前のFocusボタンのオン状態を解除する
+    document.querySelectorAll('.focus-btn').forEach(btn => btn.classList.remove('active-focus'));
+
     const resultArea = document.getElementById('result-area');
     if(resultArea) resultArea.classList.add('hidden'); 
     
@@ -61,15 +65,15 @@ function initGame(sceneId = 'cafe') {
     const imageArea = document.getElementById('image-area');
     if (imageArea) imageArea.classList.remove('support-active');
     
-    userInput.contentEditable = "true"; 
+    if (userInput) userInput.contentEditable = "true"; 
     const submitBtn = document.getElementById('submit-btn');
-    if(submitBtn) submitBtn.disabled = false;
+    if (submitBtn) submitBtn.disabled = false;
     
-    // UI更新関数の呼び出し（存在する場合）
+    // UI更新関数の呼び出し
     if (typeof updateGlowAndButtons === 'function') updateGlowAndButtons(); 
     
     // 少し待ってからフォーカスを当てる（画面遷移時のバグ防止）
     setTimeout(() => {
-        userInput.focus();
+        if (userInput) userInput.focus();
     }, 100);
 }

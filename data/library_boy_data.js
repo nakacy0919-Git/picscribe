@@ -20,7 +20,47 @@ const libraryBoyData = {
     "inviting",
     "softly lit"
   ],
-  "hint_language_support": {
+
+  // ...(上部の省略)...
+  "overall_mood": [
+    "quiet",
+    "focused",
+    "peaceful",
+    "calm",
+    "studious",
+    "warm",
+    "comfortable",
+    "sunlit",
+    "organized",
+    "academic",
+    "serene",
+    "concentrated",
+    "inviting",
+    "softly lit"
+  ],
+
+  // 🌟🌟🌟 ここから追加 🌟🌟🌟
+  "focus_hints": {
+    "gist": [
+      {"en": "A teenage boy is ~", "ja": "男子生徒が〜している"},
+      {"en": "He is reading ~", "ja": "彼は〜を読んでいる"},
+      {"en": "sitting at a desk", "ja": "机に座っている"},
+      {"en": "studying hard", "ja": "一生懸命勉強している"}
+    ],
+    "setting": [
+      {"en": "in the library", "ja": "図書館で"},
+      {"en": "on the desk", "ja": "机の上に"},
+      {"en": "in the background", "ja": "背景に"},
+      {"en": "There are some books.", "ja": "何冊か本があります。"}
+    ],
+    "mood": [
+      {"en": "looks focused", "ja": "集中しているように見える"},
+      {"en": "quiet atmosphere", "ja": "静かな雰囲気"},
+      {"en": "brightly lit", "ja": "明るく照らされた"},
+      {"en": "peaceful", "ja": "穏やかな"}
+    ]
+  },
+     "hint_language_support": {
     "supported_languages": [
       "en",
       "ja"
