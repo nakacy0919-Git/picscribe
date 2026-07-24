@@ -99,17 +99,18 @@
                         <h2 class="category-title">Daily Life <span>(日常生活)</span></h2>
                         <div class="image-grid">
                             <div class="image-card" onclick="launchGame('cafe')">
-                                <img src="images/cafe.jpg" alt="At a Cafe" onerror="this.src='https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=500&q=80'">
+                                <img src="images/cafe_woman.webp" alt="At a Cafe" onerror="this.src='https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=500&q=80'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">At a Cafe</h3>
                                     <p class="image-card-desc">カフェでくつろぐ女性を描写しよう</p>
                                 </div>
                             </div>
-                            <div class="image-card" onclick="launchGame('park')">
-                                <img src="images/park.jpg" alt="In the Park" onerror="this.src='https://images.unsplash.com/photo-1519331379826-f10be5486c6f?auto=format&fit=crop&w=500&q=80'">
+                            <!-- 🌟 ここから追加：図書館の男子生徒カード 🌟 -->
+                            <div class="image-card" onclick="launchGame('library_boy')">
+                                <img src="images/library_boy.webp" alt="Library Boy" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
-                                    <h3 class="image-card-title">In the Park</h3>
-                                    <p class="image-card-desc">公園を散歩する風景を描写しよう</p>
+                                    <h3 class="image-card-title">Library</h3>
+                                    <p class="image-card-desc">図書館で勉強する男子生徒を描写しよう</p>
                                 </div>
                             </div>
                         </div>
@@ -390,6 +391,7 @@
 
     <!-- 1. データファイル -->
     <script src="data/data_picture.js"></script>
+    <script src="data/library_boy_data.js"></script> <!-- 🌟 これを追加！ -->
     
     <!-- 2. 全体共通のユーティリティ -->
     <script src="js/main.js"></script>
