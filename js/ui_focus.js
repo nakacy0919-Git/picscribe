@@ -53,42 +53,68 @@ function createTagHtml(en, ja) {
     `;
 }
 
-// Focusボタン用の基本ヒントデータ
-const focusHints = {
-    'gist': {
-        title: "💡 Main Gist のヒント",
-        content: `<div class="friendly-scaffold">
-            <p class="scaffold-desc">画像の中心となる<strong>「人物」</strong>や<strong>「主な動作」</strong>を書いてみましょう。<br><span style="font-size:11.5px;color:#888;">※英単語タップで和訳表示 / 🔊で発音</span></p>
-            <div class="scaffold-group"><div class="scaffold-label">📝 使える表現</div><div class="scaffold-2col">
-            ${createTagHtml('A young woman is ~', '若い女性が〜している')}
-            ${createTagHtml('She is holding ~', '彼女は〜を持っている')}
-            ${createTagHtml('drinking coffee', 'コーヒーを飲んでいる')}
-            ${createTagHtml('sitting at a table', 'テーブルに座っている')}
-            </div></div></div>`
-    },
-    'setting': {
-        title: "💡 Setting のヒント",
-        content: `<div class="friendly-scaffold">
-            <p class="scaffold-desc">画像の点線枠をクリックして、窓や机などの<strong>「背景・モノ」</strong>を足してみましょう。<br><span style="font-size:11.5px;color:#888;">※英単語タップで和訳表示 / 🔊で発音</span></p>
-            <div class="scaffold-group"><div class="scaffold-label">🚀 文のつなぎ方</div><div class="scaffold-2col">
-            ${createTagHtml('There is a ~', '〜があります')}
-            ${createTagHtml('by the window', '窓のそばに')}
-            ${createTagHtml('on the table', '木製のテーブルの上に')}
-            ${createTagHtml('in the background', '背景に')}
-            </div></div></div>`
-    },
-    'mood': {
-        title: "💡 Mood のヒント",
-        content: `<div class="friendly-scaffold">
-            <p class="scaffold-desc">光の加減や全体から感じる<strong>「雰囲気」</strong>を表現してみましょう。<br><span style="font-size:11.5px;color:#888;">※英単語タップで和訳表示 / 🔊で発音</span></p>
-            <div class="scaffold-group"><div class="scaffold-label">✨ 使えるフレーズ</div><div class="scaffold-2col">
-            ${createTagHtml('It looks relaxing.', 'リラックスしているように見える')}
-            ${createTagHtml('brightly lit', '明るく照らされた')}
-            ${createTagHtml('cozy atmosphere', '居心地の良い雰囲気')}
-            ${createTagHtml('warm sunlight', '暖かい日差し')}
-            </div></div></div>`
+// ★修正：ヒントの内容を現在のデータ（window.currentSceneData）から動的に生成する関数
+function getDynamicHint(target) {
+    // デフォルト（カフェ）のヒントデータ（フォールバック用）
+    const defaultHints = {
+        'gist': [
+            {en: 'A young woman is ~', ja: '若い女性が〜している'},
+            {en: 'She is holding ~', ja: '彼女は〜を持っている'},
+            {en: 'drinking coffee', ja: 'コーヒーを飲んでいる'},
+            {en: 'sitting at a table', ja: 'テーブルに座っている'}
+        ],
+        'setting': [
+            {en: 'There is a ~', ja: '〜があります'},
+            {en: 'by the window', ja: '窓のそばに'},
+            {en: 'on the table', ja: '木製のテーブルの上に'},
+            {en: 'in the background', ja: '背景に'}
+        ],
+        'mood': [
+            {en: 'It looks relaxing.', ja: 'リラックスしているように見える'},
+            {en: 'brightly lit', ja: '明るく照らされた'},
+            {en: 'cozy atmosphere', ja: '居心地の良い雰囲気'},
+            {en: 'warm sunlight', ja: '暖かい日差し'}
+        ]
+    };
+
+    const titles = {
+        'gist': "💡 Main Gist のヒント",
+        'setting': "💡 Setting のヒント",
+        'mood': "💡 Mood のヒント"
+    };
+    
+    const descriptions = {
+        'gist': "画像の中心となる<strong>「人物」</strong>や<strong>「主な動作」</strong>を書いてみましょう。",
+        'setting': "画像の点線枠をクリックして、窓や机などの<strong>「背景・モノ」</strong>を足してみましょう。",
+        'mood': "光の加減や全体から感じる<strong>「雰囲気」</strong>を表現してみましょう。"
+    };
+    
+    const labels = {
+        'gist': "📝 使える表現",
+        'setting': "🚀 文のつなぎ方",
+        'mood': "✨ 使えるフレーズ"
+    };
+
+    // 現在のデータに focus_hints があればそれを使い、無ければデフォルトを使う
+    let hintItems = defaultHints[target];
+    if (window.currentSceneData && window.currentSceneData.focus_hints && window.currentSceneData.focus_hints[target]) {
+        hintItems = window.currentSceneData.focus_hints[target];
     }
-};
+
+    let tagsHtml = '';
+    hintItems.forEach(item => {
+        tagsHtml += createTagHtml(item.en, item.ja);
+    });
+
+    return {
+        title: titles[target],
+        content: `<div class="friendly-scaffold">
+            <p class="scaffold-desc">${descriptions[target]}<br><span style="font-size:11.5px;color:#888;">※英単語タップで和訳表示 / 🔊で発音</span></p>
+            <div class="scaffold-group"><div class="scaffold-label">${labels[target]}</div><div class="scaffold-2col">
+            ${tagsHtml}
+            </div></div></div>`
+    };
+}
 
 // --- Focusボタンのトグル（オンオフ）機能 ---
 function resetHintPanel() {
@@ -114,7 +140,9 @@ focusBtns.forEach(btn => {
         // オフ状態からオンにする処理
         btn.classList.add('active-focus');
         const target = btn.getAttribute('data-target');
-        const hintData = focusHints[target];
+        
+        // ★修正：動的ヒントジェネレーターを呼び出す
+        const hintData = getDynamicHint(target);
         
         if (hintTitle) hintTitle.innerHTML = hintData.title;
         if (hintContent) {
@@ -134,7 +162,12 @@ focusBtns.forEach(btn => {
 // 画像の白枠を生成
 function renderOverlays(targetFocus = null) {
     overlaysContainer.innerHTML = ''; 
-    cafeData.elements.forEach(element => {
+    
+    // ★修正：現在選択されているシーンのデータを使用する
+    const currentData = window.currentSceneData;
+    if (!currentData || !currentData.elements) return;
+
+    currentData.elements.forEach(element => {
         let elementFocus = 'setting'; 
         if (element.category === 'person' || (element.category === 'food_and_drink' && element.importance === 'primary')) {
             elementFocus = 'gist'; 
@@ -168,7 +201,6 @@ function showHints(element) {
     currentTargetTitleEn = element.label;
     
     let allItems = [];
-    // 情報をひとまとめにするためのグループ定義
     const groupOrder = [
         { keys: ['vocabulary'], label: '📝 使える単語' },
         { keys: ['phrase', 'sentence'], label: '✨ 使える表現文' },
@@ -186,7 +218,6 @@ function showHints(element) {
         });
     });
 
-    // 1ページあたり6要素（2段組で3行）で分割
     const ITEMS_PER_PAGE = 6;
     currentHintPages = [];
     for(let i=0; i<allItems.length; i+=ITEMS_PER_PAGE) {
@@ -212,9 +243,8 @@ function renderHintPage() {
     let currentGroup = '';
 
     pageItems.forEach(item => {
-        // グループラベルが変わった時に見出しを挿入
         if (item.groupLabel !== currentGroup) {
-            if (currentGroup !== '') html += `</div></div>`; // 前のグループを閉じる
+            if (currentGroup !== '') html += `</div></div>`;
             html += `
                 <div class="scaffold-group" style="margin-top: 5px;">
                     <div class="scaffold-label">${item.groupLabel}</div>
@@ -225,7 +255,6 @@ function renderHintPage() {
 
         let enText = item.text.replace(/\*(.*?)\*/g, "<strong>$1</strong>");
         let cleanEnText = item.text.replace(/\*(.*?)\*/g, "$1").replace(/'/g, "\\'"); 
-        // ★ ここがデータファイルの text_ja を正確に読み込むための修正箇所です ★
         let jaText = item.text_ja || item.ja || "（詳細な訳）";
 
         html += `
@@ -239,9 +268,8 @@ function renderHintPage() {
         `;
     });
 
-    if (currentGroup !== '') html += `</div></div>`; // 最後のグループを閉じる
+    if (currentGroup !== '') html += `</div></div>`; 
 
-    // ページネーションコントロール
     if (currentHintPages.length > 1) {
         html += `
             <div class="pagination-controls" style="display:flex; justify-content: space-between; align-items:center; margin-top: 15px; border-top: 1px dashed #cbd5e1; padding-top: 12px;">
@@ -264,9 +292,14 @@ window.changePage = function(delta) {
     renderHintPage();
 }
 
+// ★修正：現在選択されているシーンのデータを使用する
 function createGoldOverlayFromTarget(target) {
-    const elData = cafeData.elements.find(e => e.id === target.id);
+    const currentData = window.currentSceneData;
+    if (!currentData || !currentData.elements) return;
+
+    const elData = currentData.elements.find(e => e.id === target.id);
     if (!elData || !elData.bounding_box_conceptual) return;
+    
     const [top, left, height, width] = elData.bounding_box_conceptual;
     const overlay = document.createElement('div');
     overlay.className = 'gold-overlay';
@@ -277,12 +310,15 @@ function createGoldOverlayFromTarget(target) {
 
 function updateGlowAndButtons() {
     const skipBtn = document.getElementById('skip-step-btn');
-    if (currentStep <= totalSteps || categoryHits.setting < LIGHT_THRESHOLD || categoryHits.details < LIGHT_THRESHOLD) {
-        if(skipBtn) skipBtn.classList.remove('hidden');
-    } else {
-        if(skipBtn) skipBtn.classList.add('hidden');
+    if (typeof currentStep !== 'undefined' && typeof categoryHits !== 'undefined') {
+        if (currentStep <= (typeof totalSteps !== 'undefined' ? totalSteps : 1) || (categoryHits.setting && categoryHits.setting < CLEAR_THRESHOLD) || (categoryHits.mood && categoryHits.mood < CLEAR_THRESHOLD)) {
+            if(skipBtn) skipBtn.classList.remove('hidden');
+        } else {
+            if(skipBtn) skipBtn.classList.add('hidden');
+        }
     }
 }
+
 // --- リサイズバー（ドラッグで幅を調整）の機能 ---
 document.addEventListener('DOMContentLoaded', function () {
     const resizer = document.getElementById('dragMe');
@@ -295,29 +331,23 @@ document.addEventListener('DOMContentLoaded', function () {
     let leftWidth = 0;
 
     const mouseDownHandler = function (e) {
-        // マウスの初期位置とサイドバーの初期幅を取得
         x = e.clientX;
         leftWidth = leftSide.getBoundingClientRect().width;
 
-        // リサイズ中のマウスイベントを追加
         document.addEventListener('mousemove', mouseMoveHandler);
         document.addEventListener('mouseup', mouseUpHandler);
         
-        // ピンク色を維持するためのクラスを追加
         resizer.classList.add('resizing');
-        document.body.style.cursor = 'col-resize'; // 全体のカーソルを変更
+        document.body.style.cursor = 'col-resize'; 
         
-        // 画像やテキストの選択を防ぐ
         leftSide.style.userSelect = 'none';
         leftSide.style.pointerEvents = 'none';
     };
 
     const mouseMoveHandler = function (e) {
-        // マウスの移動量を計算して新しい幅を設定
         const dx = e.clientX - x;
         const newWidth = leftWidth + dx;
 
-        // 最小幅(250px)と最大幅(600px)の制限を設ける
         if (newWidth > 250 && newWidth < 600) {
             leftSide.style.flex = `0 0 ${newWidth}px`;
         }

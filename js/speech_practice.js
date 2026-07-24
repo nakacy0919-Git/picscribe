@@ -89,13 +89,15 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    // ★修正：cafeData固定ではなく、現在選択されているシーンのデータを使用する
     function renderCefrContent(level) {
         cefrContentArea.innerHTML = '';
         const isBlank = blankReadingSwitch.checked;
         
-        // ※ グローバルの cafeData を参照しています（将来的に複数モード対応時はここを汎用化します）
-        if (typeof cafeData !== 'undefined' && cafeData.cefr_model_answers && cafeData.cefr_model_answers[level]) {
-            cafeData.cefr_model_answers[level].forEach((answer, index) => {
+        const currentData = window.currentSceneData;
+        
+        if (currentData && currentData.cefr_model_answers && currentData.cefr_model_answers[level]) {
+            currentData.cefr_model_answers[level].forEach((answer, index) => {
                 let displayText = answer.en;
                 if (isBlank) {
                     displayText = displayText.replace(/\b[a-zA-Z]{5,}\b/g, (match) => {

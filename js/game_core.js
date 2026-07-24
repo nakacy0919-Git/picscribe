@@ -46,12 +46,15 @@ function playHitSound(isPerfect = false) {
     osc.stop(audioCtx.currentTime + 0.4);
 }
 
+// ★修正：cafeData固定ではなく、現在選択されているシーンのデータを使用する
 function setupGameData() {
     scoringTargets = []; maxScore = 0; categoryHits = { gist: 0, setting: 0, mood: 0 };
-    if (!cafeData) return;
+    
+    const currentData = window.currentSceneData;
+    if (!currentData) return;
 
-    if (cafeData.elements) {
-        cafeData.elements.forEach(el => {
+    if (currentData.elements) {
+        currentData.elements.forEach(el => {
             let bucket = 'setting'; 
             const isPrimary = el.importance === 'primary';
             const cat = (el.category || '').toLowerCase();
@@ -83,8 +86,8 @@ function setupGameData() {
         });
     }
 
-    if (cafeData.actions_analysis) {
-        cafeData.actions_analysis.forEach(action => {
+    if (currentData.actions_analysis) {
+        currentData.actions_analysis.forEach(action => {
             let wordsArray = [];
             ['accepted_words', 'synonyms', 'phrases', 'useful_phrases', 'expressions'].forEach(key => {
                 if (Array.isArray(action[key])) wordsArray = wordsArray.concat(action[key]);
@@ -101,8 +104,8 @@ function setupGameData() {
         });
     }
 
-    if (cafeData.overall_mood) {
-        cafeData.overall_mood.forEach(mood => {
+    if (currentData.overall_mood) {
+        currentData.overall_mood.forEach(mood => {
             let cleanPhrase = mood.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, " ").replace(/\s{2,}/g, " ").trim();
             if (!cleanPhrase) return;
             const wordCount = cleanPhrase.split(' ').length;
@@ -114,7 +117,6 @@ function setupGameData() {
 }
 
 function updateCoverageDisplay(rawText) {
-    // ★追加：起動時などにテキストが渡されなかった場合のエラー（クラッシュ）を完全に防ぐ
     if (typeof rawText !== 'string') {
         rawText = '';
     }
