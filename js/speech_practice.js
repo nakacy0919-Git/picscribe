@@ -300,3 +300,64 @@ document.addEventListener("DOMContentLoaded", () => {
         finishReadingBtn.addEventListener('click', () => processSpeechResult());
     }
 });
+/* =========================================
+   自分の英文（Your Answer）を音読する処理
+========================================= */
+const practiceMyAnswerBtn = document.getElementById('practice-my-answer-btn');
+
+if (practiceMyAnswerBtn) {
+    practiceMyAnswerBtn.addEventListener('click', () => {
+        let myAnswer = document.getElementById('modal-user-answer').innerText;
+        if (!myAnswer || myAnswer.trim() === '') return;
+
+        // 改行や余分なスペースを削除して綺麗な英文にする
+        myAnswer = myAnswer.replace(/\n/g, ' ').replace(/\s{2,}/g, ' ').trim();
+
+        // 1. もしすでに音読画面（Practice状態）にいる場合は、一度「選択画面」に戻る処理を挟む
+        const backBtn = document.getElementById('back-to-selection-btn');
+        const practiceState = document.getElementById('modal-state-practice');
+        if (backBtn && practiceState && !practiceState.classList.contains('hidden')) {
+            backBtn.click();
+        }
+
+        // ★修正1：既存の「チェックボックス」のチェックをすべて外す
+        document.querySelectorAll('.sentence-checkbox').forEach(cb => cb.checked = false);
+
+        // 3. 採点システムを完全に騙すための「透明な本物そっくりのチェックボックス」を生成
+        const cefrContainer = document.getElementById('cefr-content-area');
+        if (cefrContainer) {
+            let fakeCheckbox = document.getElementById('custom-answer-checkbox-btn');
+            if (!fakeCheckbox) {
+                fakeCheckbox = document.createElement('input');
+                // ★修正2：型を 'checkbox' にし、システムが探しているクラス名 'sentence-checkbox' を付与！
+                fakeCheckbox.type = 'checkbox';
+                fakeCheckbox.className = 'sentence-checkbox'; 
+                fakeCheckbox.id = 'custom-answer-checkbox-btn';
+                fakeCheckbox.style.display = 'none'; // 画面には見せない
+                cefrContainer.appendChild(fakeCheckbox);
+            }
+            
+            // システムが読み取る値に自分の英文をセット
+            fakeCheckbox.value = myAnswer;
+            fakeCheckbox.dataset.text = myAnswer;
+            fakeCheckbox.checked = true;
+
+            // 4. 元からある「🎤 選択した英文を音読する」ボタンをプログラムから強制クリック！
+            const startBtn = document.getElementById('speech-practice-btn');
+            if (startBtn) {
+                startBtn.click();
+                
+                // 念のため、練習画面の表示テキストを自分の英文に上書き
+                setTimeout(() => {
+                    const targetTextContainer = document.getElementById('practice-target-text');
+                    if (targetTextContainer) {
+                        targetTextContainer.innerText = myAnswer;
+                        targetTextContainer.dataset.text = myAnswer;
+                    }
+                }, 50);
+            } else {
+                console.error("スタートボタンが見つかりません");
+            }
+        }
+    });
+}

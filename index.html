@@ -304,9 +304,19 @@
                     <!-- 🌟 左ペイン：画像 ＋ Your Answer ＋ Accuracyメーター -->
                     <div class="modal-left-pane">
                         <img id="modal-review-image" src="" alt="Review Image">
-                        <div class="your-answer-box" id="modal-your-answer-box">
-                            <h3>Your Answer:</h3>
-                            <p id="modal-user-answer"></p>
+                        <div class="your-answer-box" id="modal-your-answer-box" style="display: flex; flex-direction: column; max-height: 300px;">
+                            <h3 style="margin-top: 0; margin-bottom: 10px;">Your Answer:</h3>
+                            
+                            <!-- 文章が長くなったらここだけスクロールさせる -->
+                            <div style="flex-grow: 1; overflow-y: auto; margin-bottom: 15px; padding-right: 5px;">
+                                <p id="modal-user-answer" style="margin: 0; line-height: 1.5;"></p>
+                            </div>
+                            
+                            <!-- ボタンは常に一番下に固定 -->
+                            <button id="practice-my-answer-btn" style="flex-shrink: 0; width: 100%; font-size: 14px; background-color: #f59e0b; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: background-color 0.2s;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>
+                                自分が作った英文を音読する
+                            </button>
                         </div>
                         
                         <div id="speech-result-area" class="hidden" style="background: transparent; border: none; padding: 0;">
