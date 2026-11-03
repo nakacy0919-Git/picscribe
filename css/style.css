@@ -1279,3 +1279,40 @@ button#submit-btn {
     .practice-text { font-size: 1.1rem; padding: 12px; }
     .cefr-content { padding: 10px; font-size: 1rem; }
 }
+
+/* Scene thumbnails and one-at-a-time data loading */
+.image-grid img { content-visibility: auto; }
+.scene-status, .scene-error {
+    margin: 14px 0;
+    padding: 12px 16px;
+    border-radius: 9px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+.scene-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+}
+.scene-status button {
+    margin-left: auto;
+    cursor: pointer;
+    border: 1px solid #94a3b8;
+    border-radius: 7px;
+    padding: 7px 11px;
+    background: white;
+    color: #334155;
+}
+.scene-status-spinner {
+    flex: 0 0 18px;
+    width: 18px; height: 18px;
+    border: 2px solid #cbd5e1;
+    border-top-color: #334155;
+    border-radius: 50%;
+    animation: ocr-spin 0.7s linear infinite;
+}
+.scene-error { background: #fff7f7; border: 1px solid #fecaca; color: #991b1b; }
+.scene-selection-loading .image-card { pointer-events: none; opacity: 0.65; }
