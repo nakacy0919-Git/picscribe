@@ -1,5 +1,5 @@
 // shrink_dict.js
-const fs = require('fs');
+import fs from 'node:fs';
 
 console.log("110MBの辞書データを読み込んでいます...（数秒かかります）");
 
