@@ -149,10 +149,23 @@ const dictModal = document.getElementById('dict-modal');
 const closeDictBtn = document.getElementById('close-dict-btn');
 let searchTimeout;
 let searchRequestId = 0;
+let dictAbortController = null;
+
+function showDictionaryStatus(message) {
+    dictSuggestions.replaceChildren();
+    const item = document.createElement('li');
+    item.textContent = message;
+    item.className = 'dict-status-message';
+    item.setAttribute('role', 'status');
+    dictSuggestions.appendChild(item);
+    dictSuggestions.classList.remove('hidden');
+}
 
 if (dictInput) {
     dictInput.addEventListener('input', (e) => {
         clearTimeout(searchTimeout);
+        if (dictAbortController) dictAbortController.abort();
+        dictAbortController = null;
         const query = e.target.value.trim();
         const requestId = ++searchRequestId;
         dictSuggestions.replaceChildren();
@@ -163,7 +176,10 @@ if (dictInput) {
 
         searchTimeout = setTimeout(async () => {
             try {
-                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+                dictAbortController = new AbortController();
+                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`, {
+                    signal: dictAbortController.signal
+                });
                 if (!response.ok) throw new Error('API request failed');
                 const results = await response.json();
                 if (requestId !== searchRequestId || !Array.isArray(results)) return;
@@ -182,6 +198,7 @@ if (dictInput) {
                         li.setAttribute('role', 'option');
                         const selectSuggestion = () => {
                             searchRequestId++;
+                            if (dictAbortController) dictAbortController.abort();
                             openDictModal(data);
                             dictSuggestions.classList.add('hidden');
                             dictInput.value = '';
@@ -197,9 +214,13 @@ if (dictInput) {
                     });
                     dictSuggestions.classList.remove('hidden');
                 } else {
-                    dictSuggestions.classList.add('hidden');
+                    showDictionaryStatus('候補が見つかりません。');
                 }
-            } catch (error) { console.error("辞書APIとの通信エラー:", error); }
+            } catch (error) {
+                if (error.name === 'AbortError' || requestId !== searchRequestId) return;
+                console.error("辞書APIとの通信エラー:", error);
+                showDictionaryStatus('辞書に接続できません。通信状況を確認してください。');
+            }
         }, 300); 
     });
 
