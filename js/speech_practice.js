@@ -27,7 +27,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let currentCefrLevel = 'A1';
     let currentTargetSentences = []; 
-    let finalTranscript = ''; 
+    let finalTranscript = '';
+    let interimTranscript = '';
+    let isRecording = false;
+    let finishingRequested = false;
+    let isFinalizing = false; 
 
     // Web Speech API の初期化
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -57,7 +61,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (closeFinishModalBtn) {
         closeFinishModalBtn.addEventListener('click', () => {
             finishModal.classList.add('hidden');
-            if(recognition) recognition.stop();
+            isFinalizing = true;
+            finishingRequested = false;
+            if (recognition && isRecording) recognition.abort();
+            isRecording = false;
             userInput.contentEditable = "true"; 
             submitBtn.disabled = false;
         });
@@ -65,12 +72,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (backToSelectionBtn) {
         backToSelectionBtn.addEventListener('click', () => {
-            if(recognition) recognition.stop();
+            isFinalizing = true;
+            finishingRequested = false;
+            if (recognition && isRecording) recognition.abort();
+            isRecording = false;
             resetToSelectionState();
         });
     }
 
     function resetToSelectionState() {
+        isFinalizing = true;
+        finishingRequested = false;
         stateSelection.classList.remove('hidden');
         statePractice.classList.add('hidden');
         document.getElementById('modal-main-title').innerText = "Review & Practice";
@@ -90,33 +102,51 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // ★修正：cafeData固定ではなく、現在選択されているシーンのデータを使用する
-    function renderCefrContent(level) {
-        cefrContentArea.innerHTML = '';
-        const isBlank = blankReadingSwitch.checked;
-        
-        const currentData = window.currentSceneData;
-        
-        if (currentData && currentData.cefr_model_answers && currentData.cefr_model_answers[level]) {
-            currentData.cefr_model_answers[level].forEach((answer, index) => {
-                let displayText = answer.en;
-                if (isBlank) {
-                    displayText = displayText.replace(/\b[a-zA-Z]{5,}\b/g, (match) => {
-                        return Math.random() > 0.4 ? '<span class="blanked-word"></span>' : match;
-                    });
-                }
-                
-                const label = document.createElement('label');
-                label.className = 'cefr-sentence-item';
-                label.innerHTML = `
-                    <input type="checkbox" class="sentence-checkbox" value="${answer.en}">
-                    <div>
-                        <strong>[${level}]</strong> <span style="font-size:1.1em; color:#111;">${displayText}</span><br>
-                        <span style="font-size: 0.85em; color: #666;">${answer.ja}</span>
-                    </div>
-                `;
-                cefrContentArea.appendChild(label);
-            });
+    function appendPracticeText(element, text, isBlank) {
+        const value = String(text || '');
+        if (!isBlank) {
+            element.textContent = value;
+            return;
         }
+        const parts = value.split(/(\\b[a-zA-Z]{5,}\\b)/g);
+        parts.forEach(part => {
+            if (/^[a-zA-Z]{5,}$/.test(part) && Math.random() > 0.4) {
+                const span = document.createElement('span');
+                span.className = 'blanked-word';
+                element.appendChild(span);
+            } else {
+                element.appendChild(document.createTextNode(part));
+            }
+        });
+    }
+
+    function renderCefrContent(level) {
+        cefrContentArea.replaceChildren();
+        const currentData = window.currentSceneData;
+        const answers = currentData?.cefr_model_answers?.[level] || [];
+        answers.forEach(answer => {
+            if (!answer || typeof answer.en !== 'string') return;
+            const label = document.createElement('label');
+            label.className = 'cefr-sentence-item';
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'sentence-checkbox';
+            checkbox.value = answer.en;
+            const description = document.createElement('div');
+            const title = document.createElement('strong');
+            title.textContent = '[' + level + '] ';
+            const english = document.createElement('span');
+            english.style.fontSize = '1.1em';
+            english.style.color = '#111';
+            appendPracticeText(english, answer.en, blankReadingSwitch.checked);
+            const japanese = document.createElement('span');
+            japanese.style.fontSize = '0.85em';
+            japanese.style.color = '#666';
+            japanese.textContent = String(answer.ja || '');
+            description.append(title, english, document.createElement('br'), japanese);
+            label.append(checkbox, description);
+            cefrContentArea.appendChild(label);
+        });
     }
 
     if (blankReadingSwitch) {
@@ -125,39 +155,48 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    function launchReadingPractice() {
+        if (!recognition) {
+            alert('お使いのブラウザは音声認識に対応していません。');
+            return;
+        }
+        practiceTargetText.replaceChildren();
+        currentTargetSentences.forEach(sentence => {
+            const paragraph = document.createElement('p');
+            appendPracticeText(paragraph, sentence, blankReadingSwitch.checked);
+            practiceTargetText.appendChild(paragraph);
+        });
+        stateSelection.classList.add('hidden');
+        statePractice.classList.remove('hidden');
+        document.getElementById('modal-your-answer-box').style.display = 'none';
+        document.getElementById('modal-main-title').innerText = 'Reading Practice';
+        document.getElementById('modal-sub-title').innerText =
+            'マイクに向かって、表示されている英文を音読してください。';
+        startRecording();
+    }
+
     if (speechPracticeBtn) {
         speechPracticeBtn.addEventListener('click', () => {
-            if (!recognition) {
-                alert("お使いのブラウザは音声認識に対応していません。Chromeをご利用ください。");
-                return;
-            }
-
             const checkboxes = document.querySelectorAll('.sentence-checkbox:checked');
-            if (checkboxes.length === 0) {
-                alert("音読練習したい英文にチェックを入れてください。");
+            if (!checkboxes.length) {
+                alert('音読練習したい英文にチェックを入れてください。');
                 return;
             }
-
             currentTargetSentences = Array.from(checkboxes).map(cb => cb.value);
-            const isBlank = blankReadingSwitch.checked;
-            
-            let practiceHtml = '';
-            currentTargetSentences.forEach(sentence => {
-                let text = sentence;
-                if (isBlank) {
-                    text = text.replace(/\b[a-zA-Z]{5,}\b/g, match => Math.random() > 0.4 ? '<span class="blanked-word"></span>' : match);
-                }
-                practiceHtml += `<p>${text}</p>`;
-            });
+            launchReadingPractice();
+        });
+    }
 
-            practiceTargetText.innerHTML = practiceHtml;
-            stateSelection.classList.add('hidden');
-            statePractice.classList.remove('hidden');
-            document.getElementById('modal-your-answer-box').style.display = "none";
-            document.getElementById('modal-main-title').innerText = "Reading Practice";
-            document.getElementById('modal-sub-title').innerText = "マイクに向かって、表示されている英文を音読してください。";
-            
-            startRecording();
+    // Use the same supported path as model-answer practice, without hidden
+    // fake checkboxes or injecting user-supplied HTML into the DOM.
+    if (document.getElementById('practice-my-answer-btn')) {
+        document.getElementById('practice-my-answer-btn').addEventListener('click', () => {
+            const answer = document.getElementById('modal-user-answer').innerText
+                .replace(/\\s+/g, ' ').trim();
+            if (!answer || answer === '(No answer)') return;
+            blankReadingSwitch.checked = false;
+            currentTargetSentences = [answer];
+            launchReadingPractice();
         });
     }
 
@@ -169,63 +208,83 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function startRecording() {
         finalTranscript = '';
-        liveTranscription.innerHTML = '<span style="color:#999;">Waiting for your voice... (話し始めてください)</span>';
+        interimTranscript = '';
+        finishingRequested = false;
+        isFinalizing = false;
+        isRecording = false;
+        liveTranscription.textContent = 'Waiting for your voice... (話し始めてください)';
         speechResultArea.classList.add('hidden');
         finishReadingBtn.classList.remove('hidden');
         retryReadingBtn.classList.add('hidden');
-        
-        try { recognition.start(); } catch(e) {}
+        try {
+            recognition.start();
+            isRecording = true;
+        } catch (error) {
+            liveTranscription.textContent =
+                '録音を開始できませんでした。マイク許可を確認して再試行してください。';
+            finishReadingBtn.classList.add('hidden');
+            retryReadingBtn.classList.remove('hidden');
+        }
     }
 
-    // 🌟 判定処理と演出（ローカルストレージ・紙吹雪・SLAアドバイス）
-    function processSpeechResult() {
-        if(recognition) recognition.stop();
-        
+    function finishReading() {
+        if (isFinalizing || finishingRequested) return;
+        finishingRequested = true;
+        if (recognition && isRecording) {
+            try {
+                recognition.stop(); // wait for final results and onend
+            } catch (error) {
+                finalizeSpeechResult();
+            }
+        } else {
+            finalizeSpeechResult();
+        }
+    }
+
+    function finalizeSpeechResult() {
+        if (isFinalizing) return;
+        isFinalizing = true;
+        isRecording = false;
         finishReadingBtn.classList.add('hidden');
         retryReadingBtn.classList.remove('hidden');
-        
-        const fullText = liveTranscription.innerText.replace('Waiting for your voice... (話し始めてください)', '');
-        if (!fullText.trim()) return; 
-
-        const targetWords = currentTargetSentences.join(' ').toLowerCase().replace(/[.,!?]/g, '').split(/\s+/).filter(w => w.length > 0);
-        const spokenWords = fullText.toLowerCase().replace(/[.,!?]/g, '').split(/\s+/).filter(w => w.length > 0);
-        
-        let matchCount = 0;
-        spokenWords.forEach(word => {
-            if (targetWords.includes(word)) matchCount++;
-        });
-        
-        let accuracy = 0;
-        if (targetWords.length > 0) {
-            accuracy = (matchCount / targetWords.length) * 100;
+        const spoken = (finalTranscript + ' ' + interimTranscript).trim();
+        if (!spoken) {
+            liveTranscription.textContent =
+                '音声を認識できませんでした。マイクを確認して再試行してください。';
+            return;
         }
-        if (accuracy > 95 && accuracy < 100) accuracy = 100; 
-        
-        let displayAcc = accuracy % 1 === 0 ? accuracy : accuracy.toFixed(1);
-        document.getElementById('accuracy-number-value').innerText = displayAcc;
-        
+        const accuracy = PicScribeScoring.wordAccuracy(
+            currentTargetSentences.join(' '), spoken);
+        document.getElementById('accuracy-number-value').textContent =
+            Number.isInteger(accuracy) ? String(accuracy) : accuracy.toFixed(1);
         const playCount = saveReadingRecord(accuracy);
         updateReadingRecordUI(playCount, accuracy);
         updateSLAAdvice(accuracy);
 
-        const offset = 125.6 - (125.6 * (accuracy / 100));
         const gaugeFill = document.getElementById('modal-gauge-fill');
         if (gaugeFill) {
-            gaugeFill.style.strokeDashoffset = offset;
-            if (accuracy >= 80) gaugeFill.style.stroke = "#f59e0b";
-            else if (accuracy >= 50) gaugeFill.style.stroke = "#fbbf24";
-            else gaugeFill.style.stroke = "#ef4444";
+            gaugeFill.style.strokeDashoffset = 125.6 * (1 - accuracy / 100);
+            gaugeFill.style.stroke = accuracy >= 80 ? '#f59e0b' :
+                accuracy >= 50 ? '#fbbf24' : '#ef4444';
         }
-        
         speechResultArea.classList.remove('hidden');
         triggerCelebration(accuracy);
     }
 
     function saveReadingRecord(accuracy) {
-        let stats = JSON.parse(localStorage.getItem('picscribe_reading_stats')) || { count: 0, history: [] };
+        let stats = {count: 0, history: []};
+        try {
+            const previous = JSON.parse(localStorage.getItem('picscribe_reading_stats'));
+            if (previous && Number.isFinite(previous.count)) stats = previous;
+        } catch (error) { /* storage can be unavailable or corrupted */ }
         stats.count += 1;
-        stats.history.push({ score: accuracy, date: new Date().toISOString() });
-        localStorage.setItem('picscribe_reading_stats', JSON.stringify(stats));
+        stats.history = Array.isArray(stats.history) ? stats.history : [];
+        stats.history.push({score: accuracy, date: new Date().toISOString()});
+        // Keep browser storage bounded; count remains cumulative.
+        stats.history = stats.history.slice(-200);
+        try {
+            localStorage.setItem('picscribe_reading_stats', JSON.stringify(stats));
+        } catch (error) { /* reading remains usable without storage */ }
         return stats.count;
     }
 
@@ -242,18 +301,13 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateSLAAdvice(accuracy) {
         const adviceText = document.getElementById('sla-advice-text');
         if (!adviceText) return;
-        
-        if (accuracy === 100) {
-            adviceText.innerHTML = "<strong>【概念への直接アクセス完成】</strong><br>Perfect! 英語を日本語に訳さず、英語のままイメージ（状況モデル）として捉え、直接音声化できています。最高の言語処理状態です！";
-        } else if (accuracy >= 90) {
-            adviceText.innerHTML = "<strong>【プロソディと状況モデル】</strong><br>ほぼ完璧です！脳内で「文法」ではなく「情景そのもの」をイメージできています。次は文全体のイントネーション（プロソディ）や感情を意識してみましょう。";
-        } else if (accuracy >= 80) {
-            adviceText.innerHTML = "<strong>【発話の自動化の兆し】</strong><br>素晴らしい！文字から音への変換（デコーディング）がスムーズに自動化されてきています。この調子で反復し、脳の負担をさらに減らしましょう。";
-        } else if (accuracy >= 50) {
-            adviceText.innerHTML = "<strong>【ワーキングメモリの負担軽減】</strong><br>単語の区切り（チャンク）を意識しましょう。意味のまとまりで発音することで、脳のワーキングメモリの負担が減り、流暢さが向上します。";
-        } else {
-            adviceText.innerHTML = "<strong>【音韻ループの活性化】</strong><br>まずはボトムアップ処理を意識し、一つ一つの単語の音を正確に捉えましょう。文字と音の結びつきを意識して、もう一度ゆっくり読んでみてください。";
-        }
+        const hint = accuracy >= 90
+            ? '単語の聞き取りが目標文とよく一致しました。次は文のリズムや自然な区切りも意識しましょう。'
+            : accuracy >= 70
+            ? 'おおむね一致しています。誤認識された語や抜けた語を確認し、短いまとまりごとに読み直しましょう。'
+            : '一文ずつゆっくり読み、マイク環境と読み方を確かめてから再挑戦しましょう。';
+        adviceText.textContent = hint +
+            ' ※Accuracyは音声認識の単語一致率です。発音の質・理解度・イントネーションを直接測定するものではありません。';
     }
 
     function triggerCelebration(accuracy) {
@@ -278,88 +332,50 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (recognition) {
-        recognition.onresult = (event) => {
-            let interimTranscript = '';
-            for (let i = event.resultIndex; i < event.results.length; ++i) {
-                if (event.results[i].isFinal) finalTranscript += event.results[i][0].transcript + ' ';
-                else interimTranscript += event.results[i][0].transcript;
+        recognition.onresult = event => {
+            const finals = [];
+            const interims = [];
+            for (let i = 0; i < event.results.length; i++) {
+                const result = event.results[i];
+                if (!result[0]) continue;
+                if (result.isFinal) finals.push(result[0].transcript);
+                else interims.push(result[0].transcript);
             }
-            liveTranscription.innerHTML = finalTranscript + '<span style="color: #999;">' + interimTranscript + '</span>';
+            finalTranscript = finals.join(' ').trim();
+            interimTranscript = interims.join(' ').trim();
+            liveTranscription.textContent =
+                (finalTranscript + ' ' + interimTranscript).trim();
         };
 
         recognition.onend = () => {
-            if (speechResultArea.classList.contains('hidden')) processSpeechResult();
+            isRecording = false;
+            if (finishingRequested && !isFinalizing) {
+                finalizeSpeechResult();
+            } else if (!isFinalizing && !statePractice.classList.contains('hidden') &&
+                !finishModal.classList.contains('hidden')) {
+                finishReadingBtn.classList.add('hidden');
+                retryReadingBtn.classList.remove('hidden');
+                if (!finalTranscript && !interimTranscript) {
+                    liveTranscription.textContent =
+                        '音声認識が終了しました。もう一度試してください。';
+                }
+            }
         };
 
-        recognition.onerror = (event) => {
-            liveTranscription.innerHTML = `<span style="color:red;">Error: ${event.error}</span>`;
+        recognition.onerror = event => {
+            isRecording = false;
+            if (isFinalizing || statePractice.classList.contains('hidden') ||
+                finishModal.classList.contains('hidden') || event.error === 'aborted') return;
+            finishingRequested = false;
+            isFinalizing = true;
+            liveTranscription.textContent =
+                '音声認識エラー: ' + String(event.error || 'unknown');
             finishReadingBtn.classList.add('hidden');
             retryReadingBtn.classList.remove('hidden');
         };
     }
 
     if (finishReadingBtn) {
-        finishReadingBtn.addEventListener('click', () => processSpeechResult());
+        finishReadingBtn.addEventListener('click', finishReading);
     }
 });
-/* =========================================
-   自分の英文（Your Answer）を音読する処理
-========================================= */
-const practiceMyAnswerBtn = document.getElementById('practice-my-answer-btn');
-
-if (practiceMyAnswerBtn) {
-    practiceMyAnswerBtn.addEventListener('click', () => {
-        let myAnswer = document.getElementById('modal-user-answer').innerText;
-        if (!myAnswer || myAnswer.trim() === '') return;
-
-        // 改行や余分なスペースを削除して綺麗な英文にする
-        myAnswer = myAnswer.replace(/\n/g, ' ').replace(/\s{2,}/g, ' ').trim();
-
-        // 1. もしすでに音読画面（Practice状態）にいる場合は、一度「選択画面」に戻る処理を挟む
-        const backBtn = document.getElementById('back-to-selection-btn');
-        const practiceState = document.getElementById('modal-state-practice');
-        if (backBtn && practiceState && !practiceState.classList.contains('hidden')) {
-            backBtn.click();
-        }
-
-        // ★修正1：既存の「チェックボックス」のチェックをすべて外す
-        document.querySelectorAll('.sentence-checkbox').forEach(cb => cb.checked = false);
-
-        // 3. 採点システムを完全に騙すための「透明な本物そっくりのチェックボックス」を生成
-        const cefrContainer = document.getElementById('cefr-content-area');
-        if (cefrContainer) {
-            let fakeCheckbox = document.getElementById('custom-answer-checkbox-btn');
-            if (!fakeCheckbox) {
-                fakeCheckbox = document.createElement('input');
-                // ★修正2：型を 'checkbox' にし、システムが探しているクラス名 'sentence-checkbox' を付与！
-                fakeCheckbox.type = 'checkbox';
-                fakeCheckbox.className = 'sentence-checkbox'; 
-                fakeCheckbox.id = 'custom-answer-checkbox-btn';
-                fakeCheckbox.style.display = 'none'; // 画面には見せない
-                cefrContainer.appendChild(fakeCheckbox);
-            }
-            
-            // システムが読み取る値に自分の英文をセット
-            fakeCheckbox.value = myAnswer;
-            fakeCheckbox.dataset.text = myAnswer;
-            fakeCheckbox.checked = true;
-
-            // 4. 元からある「🎤 選択した英文を音読する」ボタンをプログラムから強制クリック！
-            const startBtn = document.getElementById('speech-practice-btn');
-            if (startBtn) {
-                startBtn.click();
-                
-                // 念のため、練習画面の表示テキストを自分の英文に上書き
-                setTimeout(() => {
-                    const targetTextContainer = document.getElementById('practice-target-text');
-                    if (targetTextContainer) {
-                        targetTextContainer.innerText = myAnswer;
-                        targetTextContainer.dataset.text = myAnswer;
-                    }
-                }, 50);
-            } else {
-                console.error("スタートボタンが見つかりません");
-            }
-        }
-    });
-}
