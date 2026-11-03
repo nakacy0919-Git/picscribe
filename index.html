@@ -472,8 +472,8 @@
                     <div id="input-area-wrapper">
                         <div id="dictionary-widget">
                             <div class="search-icon">🔍</div>
-                            <input type="text" id="dict-search-input" placeholder="Search dictionary (En/Ja)..." autocomplete="off">
-                            <ul id="dict-suggestions" class="hidden"></ul>
+                            <input type="text" id="dict-search-input" placeholder="単語の先頭から検索（英語・日本語）" aria-controls="dict-suggestions" aria-autocomplete="list" autocomplete="off">
+                            <ul id="dict-suggestions" class="hidden" role="listbox" aria-label="辞書検索候補"></ul>
                         </div>
 
                         <div id="user-input" contenteditable="true" spellcheck="true" lang="en" placeholder="Type your description here... (e.g. A young woman is drinking coffee...)"></div>
