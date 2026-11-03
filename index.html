@@ -46,6 +46,12 @@
                     <p>目的に合わせたライティング・トラックを選択してください</p>
                 </div>
                 
+                <div id="scene-loading" class="scene-status hidden" role="status" aria-live="polite">
+                    <span class="scene-status-spinner" aria-hidden="true"></span>
+                    <span id="scene-loading-message">教材を読み込んでいます…</span>
+                    <button id="cancel-scene-load-btn" type="button">キャンセル</button>
+                </div>
+                <div id="scene-load-error" class="scene-error hidden" role="alert"></div>
                 <div class="macro-grid">
                     <div class="macro-card" onclick="switchMacroCategory('macro-picture', this)">
                         <div class="macro-bg" style="background-image: url('https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&w=800&q=80');"></div>
@@ -99,245 +105,245 @@
                         <h2 class="category-title">Daily Life <span>(日常生活)</span></h2>
                         <div class="image-grid">
                             <div class="image-card" onclick="launchGame('cafe')">
-                                <img src="images/cafe_woman.webp" alt="At a Cafe" onerror="this.src='https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=500&q=80'">
+                                <img src="images/cafe_woman.webp" loading="lazy" decoding="async" alt="At a Cafe" onerror="this.src='https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=500&q=80'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">At a Cafe</h3>
                                     <p class="image-card-desc">カフェでくつろぐ女性を描写しよう</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('library_boy')">
-                                <img src="images/library_boy.webp" alt="Library Boy" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/library_boy.webp" loading="lazy" decoding="async" alt="Library Boy" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Library</h3>
                                     <p class="image-card-desc">図書館で勉強する男子生徒を描写しよう</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_003')">
-                                <img src="images/003.webp" alt="Scene 003" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/003.webp" loading="lazy" decoding="async" alt="Scene 003" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 003</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_004')">
-                                <img src="images/004.webp" alt="Scene 004" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/004.webp" loading="lazy" decoding="async" alt="Scene 004" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 004</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_005')">
-                                <img src="images/005.webp" alt="Scene 005" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/005.webp" loading="lazy" decoding="async" alt="Scene 005" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 005</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_006')">
-                                <img src="images/006.webp" alt="Scene 006" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/006.webp" loading="lazy" decoding="async" alt="Scene 006" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 006</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_007')">
-                                <img src="images/007.webp" alt="Scene 007" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/007.webp" loading="lazy" decoding="async" alt="Scene 007" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 007</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_008')">
-                                <img src="images/008.webp" alt="Scene 008" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/008.webp" loading="lazy" decoding="async" alt="Scene 008" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 008</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_009')">
-                                <img src="images/009.webp" alt="Scene 009" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/009.webp" loading="lazy" decoding="async" alt="Scene 009" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 009</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_010')">
-                                <img src="images/010.webp" alt="Scene 010" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/010.webp" loading="lazy" decoding="async" alt="Scene 010" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 010</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_011')">
-                                <img src="images/011.webp" alt="Scene 011" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/011.webp" loading="lazy" decoding="async" alt="Scene 011" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 011</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_012')">
-                                <img src="images/012.webp" alt="Scene 012" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/012.webp" loading="lazy" decoding="async" alt="Scene 012" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 012</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_013')">
-                                <img src="images/013.webp" alt="Scene 013" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/013.webp" loading="lazy" decoding="async" alt="Scene 013" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 013</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_014')">
-                                <img src="images/014.webp" alt="Scene 014" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/014.webp" loading="lazy" decoding="async" alt="Scene 014" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 014</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_015')">
-                                <img src="images/015.webp" alt="Scene 015" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/015.webp" loading="lazy" decoding="async" alt="Scene 015" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 015</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_016')">
-                                <img src="images/016.webp" alt="Scene 016" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/016.webp" loading="lazy" decoding="async" alt="Scene 016" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 016</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_017')">
-                                <img src="images/017.webp" alt="Scene 017" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/017.webp" loading="lazy" decoding="async" alt="Scene 017" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 017</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_018')">
-                                <img src="images/018.webp" alt="Scene 018" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/018.webp" loading="lazy" decoding="async" alt="Scene 018" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 018</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_019')">
-                                <img src="images/019.webp" alt="Scene 019" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/019.webp" loading="lazy" decoding="async" alt="Scene 019" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 019</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_020')">
-                                <img src="images/020.webp" alt="Scene 020" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/020.webp" loading="lazy" decoding="async" alt="Scene 020" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 020</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_021')">
-                                <img src="images/021.webp" alt="Scene 021" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/021.webp" loading="lazy" decoding="async" alt="Scene 021" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 021</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_022')">
-                                <img src="images/022.webp" alt="Scene 022" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/022.webp" loading="lazy" decoding="async" alt="Scene 022" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 022</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_023')">
-                                <img src="images/023.webp" alt="Scene 023" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/023.webp" loading="lazy" decoding="async" alt="Scene 023" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 023</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_024')">
-                                <img src="images/024.webp" alt="Scene 024" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/024.webp" loading="lazy" decoding="async" alt="Scene 024" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 024</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_025')">
-                                <img src="images/025.webp" alt="Scene 025" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/025.webp" loading="lazy" decoding="async" alt="Scene 025" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 025</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_026')">
-                                <img src="images/026.webp" alt="Scene 026" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/026.webp" loading="lazy" decoding="async" alt="Scene 026" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 026</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_027')">
-                                <img src="images/027.webp" alt="Scene 027" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/027.webp" loading="lazy" decoding="async" alt="Scene 027" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 027</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_028')">
-                                <img src="images/028.webp" alt="Scene 028" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/028.webp" loading="lazy" decoding="async" alt="Scene 028" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 028</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_029')">
-                                <img src="images/029.webp" alt="Scene 029" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/029.webp" loading="lazy" decoding="async" alt="Scene 029" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 029</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_030')">
-                                <img src="images/030.webp" alt="Scene 030" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/030.webp" loading="lazy" decoding="async" alt="Scene 030" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 030</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_031')">
-                                <img src="images/031.webp" alt="Scene 031" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/031.webp" loading="lazy" decoding="async" alt="Scene 031" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 031</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_032')">
-                                <img src="images/032.webp" alt="Scene 032" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/032.webp" loading="lazy" decoding="async" alt="Scene 032" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 032</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_033')">
-                                <img src="images/033.webp" alt="Scene 033" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/033.webp" loading="lazy" decoding="async" alt="Scene 033" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 033</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_034')">
-                                <img src="images/034.webp" alt="Scene 034" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/034.webp" loading="lazy" decoding="async" alt="Scene 034" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 034</h3>
                                     <p class="image-card-desc">準備中</p>
                                 </div>
                             </div>
                             <div class="image-card" onclick="launchGame('scene_035')">
-                                <img src="images/035.webp" alt="Scene 035" onerror="this.src='https://via.placeholder.com/500'">
+                                <img src="images/035.webp" loading="lazy" decoding="async" alt="Scene 035" onerror="this.src='https://via.placeholder.com/500'">
                                 <div class="image-card-info">
                                     <h3 class="image-card-title">Scene 035</h3>
                                     <p class="image-card-desc">準備中</p>
@@ -606,43 +612,7 @@
 
     </div> <!-- app-wrapper の終了タグ -->
 
-    <!-- 1. データファイル -->
-    <script src="data/data_picture.js"></script>
-    <script src="data/library_boy_data.js"></script> 
-    <script src="data/003_data.js"></script>
-    <script src="data/004_data.js"></script>
-    <script src="data/005_data.js"></script>
-    <script src="data/006_data.js"></script>
-    <script src="data/007_data.js"></script>
-    <script src="data/008_data.js"></script>
-    <script src="data/009_data.js"></script>
-    <script src="data/010_data.js"></script>
-    <script src="data/011_data.js"></script>
-    <script src="data/012_data.js"></script>
-    <script src="data/013_data.js"></script>
-    <script src="data/014_data.js"></script>
-    <script src="data/015_data.js"></script>
-    <script src="data/016_data.js"></script>
-    <script src="data/017_data.js"></script>
-    <script src="data/018_data.js"></script>
-    <script src="data/019_data.js"></script>
-    <script src="data/020_data.js"></script>
-    <script src="data/021_data.js"></script>
-    <script src="data/022_data.js"></script>
-    <script src="data/023_data.js"></script>
-    <script src="data/024_data.js"></script>
-    <script src="data/025_data.js"></script>
-    <script src="data/026_data.js"></script>
-    <script src="data/027_data.js"></script>
-    <script src="data/028_data.js"></script>
-    <script src="data/029_data.js"></script>
-    <script src="data/030_data.js"></script>
-    <script src="data/031_data.js"></script>
-    <script src="data/032_data.js"></script>
-    <script src="data/033_data.js"></script>
-    <script src="data/034_data.js"></script>
-    <script src="data/035_data.js"></script>
-    
+    <!-- Scene data is fetched only after a learner selects that image. -->
     <!-- 2. 全体共通のユーティリティ -->
     <script src="js/scoring_utils.js"></script>
     <script src="js/main.js"></script>
