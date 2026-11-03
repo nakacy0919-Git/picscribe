@@ -46,12 +46,11 @@ function initGame(sceneId = 'cafe') {
         'scene_035': typeof scene035Data !== 'undefined' ? scene035Data : null
     };
 
-    // 辞書からデータを取得（見つからなければ安全装置としてcafeをセット）
-    window.currentSceneData = sceneDataMap[sceneId] || sceneDataMap['cafe'];
-
+    // Never silently show a different picture when the selected scene fails.
+    window.currentSceneData = sceneDataMap[sceneId] || null;
     if (!window.currentSceneData) {
-        console.error("エラー: 指定されたシーンのデータが見つかりません。(" + sceneId + ")");
-        return;
+        console.error('Missing PicScribe scene: ' + sceneId);
+        return false;
     }
 
     // 2. 決定したデータを基にゲームをセットアップ
@@ -107,4 +106,5 @@ function initGame(sceneId = 'cafe') {
     setTimeout(() => {
         if (userInput) userInput.focus();
     }, 100);
+    return true;
 }
