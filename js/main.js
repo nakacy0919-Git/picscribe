@@ -28,14 +28,78 @@ function showSelectionScreen() {
     gameContainer.classList.add('hidden');      
 }
 
-function launchGame(sceneId) {
-    appHeader.classList.add('hidden');          
-    selectionScreen.classList.add('hidden');    
-    gameContainer.classList.remove('hidden');   
-    if (typeof initGame === 'function') {
-        initGame(sceneId); 
+// Lazy scene loader: one data script per selected scene instead of 35 at startup.
+// Restrict filenames to known catalog IDs, and keep the promise for repeat visits.
+const sceneScriptCache = new Map();
+const sceneLoading = document.getElementById('scene-loading');
+const sceneLoadingMessage = document.getElementById('scene-loading-message');
+const sceneLoadError = document.getElementById('scene-load-error');
+let sceneRequestToken = 0;
+
+function getSceneFile(sceneId) {
+    if (sceneId === 'cafe') return 'data/data_picture.js';
+    if (sceneId === 'library_boy') return 'data/library_boy_data.js';
+    if (/^scene_0(?:0[3-9]|[12][0-9]|3[0-5])$/.test(sceneId)) {
+        return 'data/' + sceneId.slice(-3) + '_data.js';
+    }
+    return null;
+}
+
+function loadSceneScript(sceneId) {
+    const file = getSceneFile(sceneId);
+    if (!file) return Promise.reject(new Error('Unknown scene'));
+    if (sceneScriptCache.has(sceneId)) return sceneScriptCache.get(sceneId);
+    const promise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = file;
+        script.async = true;
+        script.onload = () => resolve();
+        script.onerror = () => {
+            sceneScriptCache.delete(sceneId);
+            script.remove();
+            reject(new Error('Failed to load ' + file));
+        };
+        document.body.appendChild(script);
+    });
+    sceneScriptCache.set(sceneId, promise);
+    return promise;
+}
+
+async function launchGame(sceneId) {
+    const token = ++sceneRequestToken;
+    sceneLoadError.classList.add('hidden');
+    sceneLoadingMessage.textContent = '教材を読み込んでいます…';
+    sceneLoading.classList.remove('hidden');
+    selectionScreen.classList.add('scene-selection-loading');
+    try {
+        await loadSceneScript(sceneId);
+        if (token !== sceneRequestToken) return;
+        if (typeof initGame !== 'function' || !initGame(sceneId)) {
+            throw new Error('Scene data was not initialized');
+        }
+        appHeader.classList.add('hidden');
+        selectionScreen.classList.add('hidden');
+        gameContainer.classList.remove('hidden');
+    } catch (error) {
+        if (token !== sceneRequestToken) return;
+        console.error('PicScribe scene load error:', error);
+        sceneLoadError.textContent =
+            '教材を読み込めませんでした。通信状態を確認し、画像をもう一度選択してください。';
+        sceneLoadError.classList.remove('hidden');
+    } finally {
+        if (token === sceneRequestToken) {
+            sceneLoading.classList.add('hidden');
+            selectionScreen.classList.remove('scene-selection-loading');
+        }
     }
 }
+
+document.getElementById('cancel-scene-load-btn').addEventListener('click', () => {
+    sceneRequestToken++;
+    sceneLoading.classList.add('hidden');
+    selectionScreen.classList.remove('scene-selection-loading');
+});
+
 
 function switchMacroCategory(targetId, element) {
     document.querySelectorAll('.macro-card').forEach(card => card.classList.remove('active'));
