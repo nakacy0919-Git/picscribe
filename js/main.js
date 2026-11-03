@@ -110,6 +110,35 @@ function switchMacroCategory(targetId, element) {
 
 backToHomeBtn.addEventListener('click', showSelectionScreen);
 
+// Image picker stays searchable without downloading any large scene data.
+const sceneFilterInput = document.getElementById('scene-filter-input');
+const sceneFilterCount = document.getElementById('scene-filter-count');
+const sceneFilterEmpty = document.getElementById('scene-filter-empty');
+const sceneCards = Array.from(document.querySelectorAll('.image-card'));
+function filterSceneCards() {
+    if (!sceneFilterInput) return;
+    const query = sceneFilterInput.value.normalize('NFKC').toLowerCase().trim();
+    let shown = 0;
+    sceneCards.forEach(card => {
+        const matches = !query || card.textContent.normalize('NFKC').toLowerCase().includes(query);
+        card.hidden = !matches;
+        if (matches) shown++;
+    });
+    if (sceneFilterCount) sceneFilterCount.textContent = shown + ' / ' + sceneCards.length + ' scenes';
+    if (sceneFilterEmpty) sceneFilterEmpty.classList.toggle('hidden', shown !== 0);
+}
+if (sceneFilterInput) {
+    sceneFilterInput.addEventListener('input', filterSceneCards);
+    filterSceneCards();
+}
+sceneCards.forEach(card => card.addEventListener('keydown', event => {
+    if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        card.click();
+    }
+}));
+
+
 
 // ==========================================
 // スマート辞書＆サジェスト機能（共通API連携）
@@ -127,7 +156,10 @@ if (dictInput) {
         const query = e.target.value.trim();
         const requestId = ++searchRequestId;
         dictSuggestions.replaceChildren();
-        if (query.length === 0) { dictSuggestions.classList.add('hidden'); return; }
+        if (query.length === 0 || (/^[a-z0-9]/i.test(query) && query.length < 2)) {
+            dictSuggestions.classList.add('hidden');
+            return;
+        }
 
         searchTimeout = setTimeout(async () => {
             try {
@@ -146,10 +178,20 @@ if (dictInput) {
                         ja.className = 'sugg-ja';
                         ja.textContent = String(data.meaning || '');
                         li.append(en, document.createTextNode(' '), ja);
-                        li.addEventListener('click', () => {
+                        li.tabIndex = 0;
+                        li.setAttribute('role', 'option');
+                        const selectSuggestion = () => {
+                            searchRequestId++;
                             openDictModal(data);
                             dictSuggestions.classList.add('hidden');
-                            dictInput.value = ''; 
+                            dictInput.value = '';
+                        };
+                        li.addEventListener('click', selectSuggestion);
+                        li.addEventListener('keydown', event => {
+                            if (event.key === 'Enter' || event.key === ' ') {
+                                event.preventDefault();
+                                selectSuggestion();
+                            }
                         });
                         dictSuggestions.appendChild(li);
                     });
@@ -159,6 +201,17 @@ if (dictInput) {
                 }
             } catch (error) { console.error("辞書APIとの通信エラー:", error); }
         }, 300); 
+    });
+
+    dictInput.addEventListener('keydown', event => {
+        if (event.key === 'Escape') dictSuggestions.classList.add('hidden');
+        if (event.key === 'ArrowDown') {
+            const first = dictSuggestions.querySelector('li');
+            if (first) {
+                event.preventDefault();
+                first.focus();
+            }
+        }
     });
 
     document.addEventListener('click', (e) => {
