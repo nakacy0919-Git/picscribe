@@ -1189,3 +1189,93 @@ button#submit-btn {
     white-space: nowrap;
     flex-shrink: 0;
 }
+/* P0 responsive corrections: override late desktop-only flex rules. */
+#user-input { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+@media (max-width: 900px) {
+    body { padding: 12px; }
+    #game-container { padding: 18px; }
+    .app-body-layout {
+        flex-direction: column;
+        height: auto;
+        min-height: 0;
+        overflow: visible;
+    }
+    #back-to-home-btn {
+        position: static !important;
+        left: auto !important;
+        top: auto !important;
+        margin-bottom: 12px;
+    }
+    .left-sidebar {
+        flex: none;
+        width: 100%;
+        height: auto;
+        max-height: 260px;
+        overflow-y: auto;
+    }
+    .resizer { display: none; }
+    .main-content {
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        overflow: visible;
+    }
+    .play-area { flex-direction: column; }
+    #step-assistant-panel {
+        flex-wrap: wrap;
+        gap: 14px !important;
+        padding: 15px !important;
+    }
+    .finish-modal-content {
+        width: 98%;
+        height: 96dvh;
+        padding: 24px;
+    }
+    .finish-modal-body {
+        flex-direction: column;
+        gap: 16px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        height: auto;
+    }
+    .modal-left-pane {
+        flex: none;
+        width: 100%;
+        max-width: none;
+        gap: 12px;
+    }
+    .modal-right-pane {
+        flex: none;
+        width: 100%;
+        overflow: visible;
+        padding-right: 0;
+        gap: 12px;
+    }
+    #modal-review-image { max-height: 180px; object-fit: contain; }
+    .practice-text { font-size: 1.35rem; padding: 18px; }
+    .transcription-box { padding: 14px; margin-bottom: 12px; }
+}
+
+@media (max-width: 600px) {
+    #app-header { padding: 16px; gap: 12px; }
+    #app-logo { width: 65px; height: 65px; }
+    .app-title { font-size: 33px; }
+    .app-subtitle { font-size: 9px; letter-spacing: 1px; }
+    .app-desc { font-size: 12px; }
+    .macro-grid { grid-template-columns: 1fr; }
+    .macro-section, .sub-categories-wrapper { padding: 20px 12px; }
+    .focus-buttons-container { flex-wrap: wrap; gap: 8px !important; }
+    .focus-btn { flex: 1 1 125px; min-width: 0; }
+    #live-status { width: 100% !important; }
+    .finish-modal-content {
+        width: 100%;
+        height: 100dvh;
+        border-radius: 0;
+        padding: 18px 14px;
+    }
+    .finish-modal-body { margin-top: 12px; }
+    #close-finish-modal-btn { top: 12px; right: 12px; }
+    .practice-text { font-size: 1.1rem; padding: 12px; }
+    .cefr-content { padding: 10px; font-size: 1rem; }
+}
