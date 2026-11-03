@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
             element.textContent = value;
             return;
         }
-        const parts = value.split(/(\\b[a-zA-Z]{5,}\\b)/g);
+        const parts = value.split(/(\b[a-zA-Z]{5,}\b)/g);
         parts.forEach(part => {
             if (/^[a-zA-Z]{5,}$/.test(part) && Math.random() > 0.4) {
                 const span = document.createElement('span');
@@ -192,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById('practice-my-answer-btn')) {
         document.getElementById('practice-my-answer-btn').addEventListener('click', () => {
             const answer = document.getElementById('modal-user-answer').innerText
-                .replace(/\\s+/g, ' ').trim();
+                .replace(/\s+/g, ' ').trim();
             if (!answer || answer === '(No answer)') return;
             blankReadingSwitch.checked = false;
             currentTargetSentences = [answer];
