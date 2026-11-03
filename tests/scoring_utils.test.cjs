@@ -1,6 +1,16 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const s = require('../js/scoring_utils.js');
+// Browser scoring helper is a classic script; run it in a browser-like VM
+// so the Node test suite also works when the project uses ESM for its API.
+const fs = require('node:fs');
+const path = require('node:path');
+const vm = require('node:vm');
+const sandbox = {window:{},module:{exports:{}}};
+vm.runInNewContext(
+  fs.readFileSync(path.join(__dirname,'../js/scoring_utils.js'),'utf8'),
+  sandbox
+);
+const s = sandbox.module.exports;
 
 test('normalization handles punctuation and repeated spaces', () => {
   assert.equal(s.normalizeWords("  A girl's  BOOK!  "), "a girl's book");
