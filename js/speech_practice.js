@@ -215,6 +215,7 @@ document.addEventListener("DOMContentLoaded", () => {
         liveTranscription.textContent = 'Waiting for your voice... (話し始めてください)';
         speechResultArea.classList.add('hidden');
         finishReadingBtn.classList.remove('hidden');
+        finishReadingBtn.textContent = '⏹ 音読 Finish';
         retryReadingBtn.classList.add('hidden');
         try {
             recognition.start();
@@ -353,12 +354,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 finalizeSpeechResult();
             } else if (!isFinalizing && !statePractice.classList.contains('hidden') &&
                 !finishModal.classList.contains('hidden')) {
-                finishReadingBtn.classList.add('hidden');
-                retryReadingBtn.classList.remove('hidden');
-                if (!finalTranscript && !interimTranscript) {
+                // Browsers can stop automatically after silence. Keep a manual
+                // Finish action if speech was captured; never grade implicitly.
+                if (finalTranscript || interimTranscript) {
+                    finishReadingBtn.classList.remove('hidden');
+                    finishReadingBtn.textContent = '⏹ 音読を採点する';
+                } else {
+                    finishReadingBtn.classList.add('hidden');
                     liveTranscription.textContent =
                         '音声認識が終了しました。もう一度試してください。';
                 }
+                retryReadingBtn.classList.remove('hidden');
             }
         };
 
