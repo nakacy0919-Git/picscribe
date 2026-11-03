@@ -1316,3 +1316,26 @@ button#submit-btn {
 }
 .scene-error { background: #fff7f7; border: 1px solid #fecaca; color: #991b1b; }
 .scene-selection-loading .image-card { pointer-events: none; opacity: 0.65; }
+
+/* Filterable, keyboard-accessible image catalogue */
+.scene-filter {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin: 14px 0 18px;
+}
+.scene-filter label { font-size: 14px; font-weight: 700; }
+.scene-filter input {
+    flex: 1 1 200px; min-width: 0;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px; background: #fff;
+    font: inherit; font-size: 14px;
+    padding: 10px 12px;
+}
+.scene-filter span { color: #475569; font-size: 12px; }
+.image-card[hidden] { display: none !important; }
+.image-card:focus-visible, #dict-suggestions li:focus-visible {
+    outline: 3px solid #2563eb;
+    outline-offset: 3px;
+}
