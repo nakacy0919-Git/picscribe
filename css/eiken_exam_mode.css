@@ -1,0 +1,16 @@
+.ps-exam-lab{border:1px solid #d7e4f0;border-radius:12px;padding:13px;background:#f6f9fd;margin:11px 0;color:#234260}
+.ps-exam-lab-head{display:flex;justify-content:space-between;gap:9px;align-items:center;margin-bottom:9px}
+.ps-exam-lab-head strong{font-size:15px}.ps-exam-lab-head span,.ps-exam-caveat{font-size:11px;color:#6c7d8e}
+.ps-exam-timer{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.ps-exam-timer label{font-size:12px;font-weight:700}
+.ps-exam-timer select,.ps-exam-timer button{min-height:35px;border:1px solid #c6d4e2;border-radius:8px;background:white;color:#204a78;padding:5px 10px;font-weight:700}
+.ps-exam-timer output{font:700 21px/1 monospace;color:#1e4f82;background:white;border-radius:7px;padding:7px 10px;border:1px solid #dbe6f0}
+.ps-exam-timer output.ps-time-end{color:#bd463e}
+.ps-exam-timer button:disabled{opacity:.45;cursor:not-allowed}
+.ps-selfreview-title{font-size:13px;font-weight:700;margin:12px 0 7px}
+.ps-selfreview-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.ps-selfreview-item{display:flex;align-items:start;gap:7px;background:white;border:1px solid #e0e8f0;border-radius:8px;padding:8px;font-size:12px;line-height:1.5;cursor:pointer}
+.ps-selfreview-item input{flex-shrink:0;width:17px;height:17px;margin:0;accent-color:#307e6b}
+.ps-exam-caveat{line-height:1.7;margin:9px 0 0}
+@media(max-width:600px){.ps-selfreview-list{grid-template-columns:1fr}.ps-exam-timer{gap:5px}.ps-exam-timer button{flex:1}}
+@media print{.ps-exam-lab{display:none}}
