@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/writing_coach.css">
     <link rel="stylesheet" href="css/eiken_practice.css">
+    <link rel="stylesheet" href="css/writing_portfolio.css">
+    <link rel="stylesheet" href="css/writing_quests.css">
+    <link rel="stylesheet" href="css/learning_layout.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -403,7 +406,7 @@
                     
                     <!-- 🌟 左側：拡大した Coverage Rate 🌟 -->
                     <div id="live-status" style="width: 160px; flex-shrink: 0; text-align: center; background: transparent; border: none; box-shadow: none;">
-                        <div class="status-header" style="font-size: 15px; font-weight: 700; margin-bottom: 8px; color: #1e293b;">COVERAGE RATE</div>
+                        <div class="status-header" title="写真の内容をどの程度書いたかの参考指標。文法評価ではありません。" style="font-size: 15px; font-weight: 700; margin-bottom: 8px; color: #1e293b;">COVERAGE RATE</div>
                         <div class="gauge-container" style="width: 140px; margin: 0 auto; padding: 0; position: relative;">
                             <!-- SVGの大きさと線の太さを調整 -->
                             <svg viewBox="0 0 100 50" class="half-donut" style="width: 100%; height: auto;">
@@ -466,7 +469,7 @@
                             <ul id="dict-suggestions" class="hidden"></ul>
                         </div>
 
-                        <div id="user-input" contenteditable="true" spellcheck="true" lang="en" placeholder="Type your description here... (e.g. A young woman is drinking coffee...)"></div>
+                        <div id="user-input" contenteditable="true" role="textbox" aria-label="写真を英語で描写する入力欄" aria-multiline="true" autocapitalize="sentences" spellcheck="true" lang="en" placeholder="Type your description here... (e.g. A young woman is drinking coffee...)"></div>
                         <div id="live-feedback-box" style="display: none; margin-top: 10px; margin-bottom: 15px; padding: 12px 16px; background-color: #fff1f2; border-left: 4px solid #f43f5e; border-radius: 4px; font-size: 13.5px; color: #881337; line-height: 1.5; box-shadow: rgba(0, 0, 0, 0.05) 0px 2px 4px;"></div>
                         <div id="ocr-loading" class="hidden">
                             <div class="spinner"></div>
@@ -656,7 +659,10 @@
     
     <!-- 4. 最後に全体を初期化するメインファイル -->
     <script src="js/mode_picture.js"></script>
+    <script src="js/ai_client.js"></script>
     <script src="js/writing_coach.js"></script>
+    <script src="js/writing_quests.js"></script>
     <script src="js/eiken_practice.js"></script>
+    <script src="js/writing_portfolio.js"></script>
 </body>
 </html>
