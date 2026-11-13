@@ -64,19 +64,51 @@ function extract(response) {
   }
   throw Error('Missing model output');
 }
-function validateResult(result) {
-  if(!result || typeof result!=='object') throw Error('Malformed feedback');
+function wordCount(value) {
+  return (String(value||'').match(/[A-Za-z]+(?:[-'][A-Za-z]+)*/g)||[]).length;
+}
+const CRITERIA=['内容','構成','語彙','文法'];
+function criterionKey(value) {
+  const keys={'content':'内容','task fulfillment':'内容','task achievement':'内容','task completion':'内容',
+    '内容':'内容','organization':'構成','organisation':'構成','coherence':'構成','構成':'構成',
+    'vocabulary':'語彙','lexical resource':'語彙','語彙':'語彙',
+    'grammar':'文法','grammatical accuracy':'文法','文法':'文法'};
+  return keys[String(value||'').trim().toLowerCase()]||'';
+}
+function validateResult(result,mode,draft,grade,task) {
+  if(!result||typeof result!=='object'||Array.isArray(result))throw Error('Malformed feedback');
   for(const key of ['summary_ja','corrected','upgraded','next_step_ja'])
-    if(typeof result[key]!=='string') throw Error('Malformed feedback');
+    if(typeof result[key]!=='string'||result[key].length>9000)throw Error('Malformed feedback');
   if(!Array.isArray(result.scores)||!Array.isArray(result.revisions)||!Array.isArray(result.strengths))
     throw Error('Malformed feedback');
-  result.scores = result.scores.slice(0,4).filter(s=>Number.isInteger(s.score)&&s.score>=0&&s.score<=4&&
-    typeof s.criterion==='string'&&typeof s.reason_ja==='string');
-  result.revisions = result.revisions.slice(0,5).filter(r=>
-    typeof r.original==='string' && typeof r.revised==='string' && typeof r.explanation_ja==='string');
-  result.strengths = result.strengths.slice(0,4).filter(s=>typeof s==='string');
+  const scoreMap=new Map();
+  for(const s of result.scores) {
+    const key=criterionKey(s&&s.criterion);
+    if(!key||scoreMap.has(key)||!Number.isInteger(s&&s.score)||s.score<0||s.score>4||
+      typeof s.reason_ja!=='string')throw Error('Invalid rubric dimensions');
+    scoreMap.set(key,{criterion:key,score:s.score,reason_ja:s.reason_ja.slice(0,1000)});
+  }
+  if(mode==='eiken'&&CRITERIA.some(key=>!scoreMap.has(key)))throw Error('Incomplete rubric');
+  if(mode==='picture'&&scoreMap.size)throw Error('Picture mode must not give exam scores');
+  result.scores=mode==='eiken'?CRITERIA.map(key=>scoreMap.get(key)):[];
+  const original=String(draft||'');
+  result.revisions=result.revisions.slice(0,5).filter(r=>
+    r&&typeof r.original==='string'&&typeof r.revised==='string'&&
+    typeof r.explanation_ja==='string'&&r.original.length>=2&&
+    r.original.length<=300&&r.revised.length<=500&&
+    original.includes(r.original)).map(r=>({
+      original:r.original,revised:r.revised,explanation_ja:r.explanation_ja.slice(0,1000)
+    }));
+  result.strengths=result.strengths.slice(0,4).filter(s=>typeof s==='string').map(s=>s.slice(0,500));
+  result.score_total=mode==='eiken'?result.scores.reduce((sum,s)=>sum+s.score,0):null;
+  result.grade_status='practice_estimate_not_official';
+  result.word_count=wordCount(original);
+  const limit=mode==='eiken'&&LIMITS[grade]&&LIMITS[grade][task];
+  result.word_target=limit||null;
+  result.word_range_ok=limit?(result.word_count>=limit[0]&&result.word_count<=limit[1]):null;
   return result;
 }
+
 export default async function handler(req,res) {
   res.setHeader('Cache-Control','no-store');
   res.setHeader('X-Content-Type-Options','nosniff');
@@ -159,7 +191,7 @@ export default async function handler(req,res) {
       return error(res,502,'AIサービスへの接続に失敗しました。管理者に連絡してください。');
     }
     const response=await api.json();
-    const parsed=validateResult(JSON.parse(extract(response)));
+    const parsed=validateResult(JSON.parse(extract(response)),mode,draft,body.grade,body.task);
     return res.status(200).json(parsed);
   }catch(_){
     return error(res,502,'AI添削を完了できませんでした。もう一度お試しください。');
