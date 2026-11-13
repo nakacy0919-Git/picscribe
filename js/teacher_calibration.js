@@ -53,6 +53,7 @@
  });
  const save=button('この答案の比較を記録',()=>{
    if(!recent){context.textContent='先に英検ライティングをAI添削してください。';return;}
+   if(recent.saved){context.textContent='この答案の比較は記録済みです。次の答案をAI添削してください。';return;}
    const selected=inputs.map(x=>Number(x.score.value));
    if(selected.some(n=>!Number.isInteger(n)||n<0||n>4)){
      context.textContent='4観点すべてに先生の採点を入力してください。';return;
@@ -63,6 +64,7 @@
      teacher:selected,ai:recent.ai
    });
    if(!saveData(records)){context.textContent='端末に記録できませんでした。空き容量を確認してください。';return;}
+   recent.saved=true;
    context.textContent='答案本文を保存せず、4観点の比較を記録しました。';
    renderStats();
  });
@@ -122,7 +124,7 @@
    if(CRITERIA.some(x=>!Number.isInteger(map.get(x))))return;
    recent={exerciseId:String(d.exerciseId||'').slice(0,80),
      grade:String(d.grade||'').slice(0,15),task:String(d.task||'').slice(0,15),
-     wordCount:Number(d.result.word_count)||0,ai:CRITERIA.map(x=>map.get(x))};
+     wordCount:Number(d.result.word_count)||0,ai:CRITERIA.map(x=>map.get(x)),saved:false};
    inputs.forEach((input,i)=>{input.model.textContent='AI参考: '+recent.ai[i]+'/4';
      input.score.value='-1';});
    context.textContent='比較対象：'+recent.exerciseId+'（'+recent.grade+' / '+recent.task+'）';
