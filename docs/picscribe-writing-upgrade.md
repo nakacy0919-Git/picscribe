@@ -20,6 +20,26 @@ This branch intentionally does **not** update `main`, run any deployment action,
 - `tests/smoke.test.cjs`: no-dependency smoke test suite: run `node --test tests/smoke.test.cjs` after checking out the branch.
 
 
+## Phase 3 — learning-loop upgrades
+
+- `js/revision_workshop.js` and `css/revision_workshop.css`: a student-first correction activity. The student rewrites exact excerpts from their submission before revealing AI examples. A student's rewrite can replace the cited span only with explicit confirmation; the previous draft is saved first. Alternative valid wording is not automatically marked wrong.
+- `js/teacher_calibration.js` and `css/teacher_calibration.css`: collapsed, local-only "Teacher Calibration Lab" in Academic & Exam. Teachers can enter their own 0–4 ratings for 内容・構成・語彙・文法, compare them with AI practice scores, inspect criterion-level absolute differences (including grade/task breakdowns), and export a comparison CSV **without the student's essay or name**. This is NOT teacher authentication, central records or proof of accuracy.
+- `js/picture_gallery.js` and `css/picture_gallery.css`: text search across the 35 scenes, Japanese contextual descriptions, drafted/new filters, saved-draft badges and a missing-scene guard. The legacy café dataset uses the Writing Coach's new scene-specific hint fallback.
+- `api/writing-feedback.js`: validates exactly four distinct rubric dimensions on EIKEN practice tasks (0–4 each); forbids exam points in photo mode; drops model-reported errors when the quoted original is absent from the student's essay; calculates word count and target-range status server-side; returns a clearly labeled non-official /16 practice total. **It still does not guarantee agreement with official EIKEN raters.**
+- `tests/feedback_quality.test.cjs` and `tests/scene_integrity.test.cjs`: tests for grounded corrections/rubric guardrails and all 35 photo datasets/image files.
+- `.github/workflows/picscribe-dev-check.yml`: development-branch-only Node.js test workflow. It runs tests, **not** deployment.
+
+**Verified CI:** GitHub Actions run [43507501133](https://github.com/nakacy0919-Git/picscribe/actions/runs/43507501133) completed successfully (12 tests, 12 passed, 0 failed). It covered every scene's data/image/hints (with the documented café fallback), snippet safety, model-response validation and the earlier smoke checks. **No live model request, screenshot-based browser check or physical iPad test was performed.**
+
+### Teacher calibration procedure
+
+1. In a restricted development environment, enable the server-side model and class code, after applying an access policy and usage budget.
+2. Open Academic & Exam; select the grade, writing format, and an original practice question.
+3. Have the learner produce an answer without personal identifiers, then use AI添削 (with explicit consent).
+4. Expand **Teacher Calibration Lab**, enter the teacher's **independent** four-dimensional ratings, and save one comparison.
+5. For calibration, use diverse submissions across levels, task types, writing quality, and lengths. Export CSV to inspect grade/task bias and disagreements of two or more points.
+6. Do not interpret aggregate agreement alone as proof of fair scoring; review essays where the model and teacher disagree. Do not automatically convert these local comparisons into exam pass/fail predictions.
+
 ## EIKEN word count reference (2026)
 
 | Grade | Opinion essay | Email | Summary |
@@ -82,6 +102,6 @@ Before any public rollout: add user authentication or teacher invite limits, a p
 - Mocked AI endpoint checks: disabled response, missing/wrong class code, authorized response, and invalid task fields behaved as expected.
 - Verified the new modules are included in the branch's `index.html`, in dependency order.
 - Verified `main/index.html` still has none of the development modules.
-- Added source smoke tests, **but these tests have not yet been executed through Node in a full checkout**.
+- The CI smoke tests have now been **executed successfully** on GitHub Actions (12 passing, zero failing); browser/iPad end-to-end tests remain outstanding.
 - No AI provider key was configured. No real model request, Vercel deployment, or live browser/iPad end-to-end test was performed.
 - **Pre-production gates:** test on student iPads; verify original 35 scene data and photo alignment; run Node smoke suite; calibrate AI feedback with teacher scores; set up production-grade authentication, a persistent quota and a fixed spending ceiling; confirm teacher privacy/parental consent policy for minors.
