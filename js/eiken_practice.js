@@ -208,15 +208,14 @@
     button.disabled = true; button.textContent = '添削中…';
     out.classList.remove('hidden'); out.textContent = 'AI添削に接続しています…';
     try {
-      var response = await fetch('/api/writing-feedback', {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({mode:'eiken',grade:current.grade,task:current.task,
-          draft:answer.value.slice(0,6000),
-          context:{prompt:current.prompt,source:current.source || '', exerciseId:current.id}})
+      if(!window.PicScribeAI)throw new Error('AI接続機能を読み込めませんでした。');
+      var requestId=current.id, requestDraft=answer.value;
+      var result=await window.PicScribeAI.submit({
+        mode:'eiken',grade:current.grade,task:current.task,
+        draft:requestDraft.slice(0,6000),
+        context:{prompt:current.prompt,source:current.source||'',exerciseId:current.id}
       });
-      var result = await response.json();
-      if (!response.ok) throw new Error(result.message || 'AI添削は設定されていません');
-      showAI(result);
+      if(current&&current.id===requestId&&answer.value===requestDraft)showAI(result);
     } catch (error) {out.textContent = 'AI添削は現在利用できません: ' + error.message;}
     finally {button.disabled=false;button.textContent='AI添削';}
   }
