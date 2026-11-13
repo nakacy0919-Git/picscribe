@@ -212,15 +212,13 @@
     aiBox.classList.remove('hidden');
     aiBox.textContent = '安全なサーバーを通じて添削を依頼しています…';
     try {
-      var d = data();
-      var response = await fetch('/api/writing-feedback', {
-        method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({mode: 'picture', draft: input.innerText.slice(0, 6000),
-          context: {imageDescription: (d.overall_description_en || '').slice(0, 1000)}})
+      if (!window.PicScribeAI) throw new Error('AI接続機能を読み込めませんでした。');
+      var d = data(), requestedScene = sceneId, requestedText = input.innerText;
+      var result = await window.PicScribeAI.submit({
+        mode:'picture',draft:requestedText.slice(0,6000),
+        context:{imageDescription:(d.overall_description_en||'').slice(0,1000)}
       });
-      var result = await response.json();
-      if (!response.ok) throw new Error(result.message || 'AI接続が利用できません');
-      showFeedback(result);
+      if (requestedScene === sceneId && requestedText === input.innerText) showFeedback(result);
     } catch (error) { aiBox.textContent = 'AI添削は現在利用できません: ' + error.message; }
     finally { button.disabled = false; button.textContent = 'AIで添削'; }
   }
