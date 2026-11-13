@@ -114,6 +114,33 @@
      const diff=rows.slice(-1)[0].ai[i]-v;return CRITERIA[i]+' '+(diff>0?'+':'')+diff;
    }).join(' / ');
    results.appendChild(last);
+   const groups=new Map();
+   rows.forEach(r=>{
+     const key=String(r.grade||'')+' / '+String(r.task||'');
+     const group=groups.get(key)||{count:0,diffs:[],flags:0};
+     group.count++;
+     if(Array.isArray(r.teacher)&&Array.isArray(r.ai)&&r.teacher.length===4&&r.ai.length===4){
+       r.teacher.forEach((score,i)=>{
+         const difference=Math.abs(Number(r.ai[i])-Number(score));
+         if(Number.isFinite(difference)) {
+           group.diffs.push(difference);
+           if(difference>=2)group.flags++;
+         }
+       });
+     }
+     groups.set(key,group);
+   });
+   const groupTitle=document.createElement('strong');groupTitle.textContent='級・形式別の比較';
+   results.appendChild(groupTitle);
+   const groupList=document.createElement('div');groupList.className='ps-calibration-groups';
+   for(const [name,group] of groups){
+     const p=document.createElement('p');
+     const avg=group.diffs.length?group.diffs.reduce((a,b)=>a+b,0)/group.diffs.length:0;
+     p.textContent=name+'：'+group.count+'件 ／ 平均絶対誤差 '+avg.toFixed(2)+
+       '点 ／ 2点以上の差 '+group.flags+'観点';
+     groupList.appendChild(p);
+   }
+   results.appendChild(groupList);
  }
  window.addEventListener('picscribe:ai-feedback',e=>{
    const d=e.detail||{};
