@@ -1,0 +1,22 @@
+/* PicScribe Revision Workshop — model answer stays behind an explicit reveal. */
+.ps-revision-workshop{margin:12px 0 16px;padding:15px;background:#f8fbfe;border:1px solid #cdddeb;border-radius:12px;color:#17324a;line-height:1.6}
+.ps-revision-workshop h3{font-size:18px;margin:0 0 6px}
+.ps-revision-instructions{font-size:12px;color:#526a80;margin:3px 0 10px}
+.ps-revision-item{border:1px solid #d8e1ec;border-radius:10px;background:white;padding:12px;margin:10px 0}
+.ps-revision-item strong{font-size:14px}
+.ps-revision-original{background:#fcf1ef;border-left:3px solid #cf8b73;padding:8px;border-radius:5px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px}
+.ps-revision-workshop details{margin:7px 0;font-size:12px}
+.ps-revision-workshop summary{cursor:pointer;color:#215b90;font-weight:700;padding:5px 0}
+.ps-revision-workshop details p{white-space:pre-wrap;overflow-wrap:anywhere;margin:5px 0}
+.ps-revision-label{display:block;font-weight:700;font-size:12px;margin:9px 0 5px}
+.ps-revision-workshop textarea{display:block;box-sizing:border-box;width:100%;min-height:65px;font:16px/1.6 Arial,sans-serif;background:#fff;color:#18334d;border:1px solid #b9c9d9;border-radius:7px;padding:9px;resize:vertical}
+.ps-revision-actions{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0}
+.ps-revision-actions button{border:1px solid #93b5d1;border-radius:8px;background:#fff;color:#195487;padding:8px 10px;font-size:12px;font-weight:700;min-height:39px;cursor:pointer}
+.ps-revision-actions button:last-child{background:#1c5997;color:white;border-color:#1c5997}
+.ps-revision-note{font-size:12px;color:#356252;margin:5px 0}
+.ps-revision-final{border-top:1px solid #d0ddea;padding-top:10px;margin-top:13px!important}
+.ps-revision-final strong{display:block;margin-top:8px}
+.ps-revision-final p{padding:8px;background:white;border-radius:6px}
+.ps-revision-workshop :focus-visible{outline:2px solid #2779c7;outline-offset:2px}
+@media(max-width:620px){.ps-revision-workshop{padding:10px}.ps-revision-actions button{flex:1 1 100%}}
+@media print{.ps-revision-actions{display:none}}
