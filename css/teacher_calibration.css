@@ -1,0 +1,16 @@
+.ps-calibration{max-width:1050px;margin:16px auto 0;padding:11px 15px;border:1px solid #bacbdc;border-radius:10px;background:#f6f9fc;color:#193950;font-family:"Noto Sans JP",sans-serif}
+.ps-calibration>summary{cursor:pointer;font-size:14px;font-weight:700;line-height:1.5}
+.ps-calibration-body{padding:11px 0 4px}
+.ps-calibration-body>p{font-size:12px;color:#5c7489;line-height:1.6;margin:7px 0}
+.ps-calibration-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:11px 0}
+.ps-calibration-row{display:grid;grid-template-columns:60px 1fr;align-items:center;gap:6px;background:#fff;border:1px solid #e0e8ee;border-radius:7px;padding:9px}
+.ps-calibration-row strong{font-size:13px}.ps-calibration-row span{font-size:12px;color:#62798c}
+.ps-calibration-row select{grid-column:1/span 2;width:100%;min-height:36px;font-size:13px;border:1px solid #bccbd7;border-radius:7px;padding:7px;background:white;color:#223f5a}
+.ps-calibration-actions{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
+.ps-calibration-actions button{border:1px solid #b4c6d9;background:#fff;color:#1d507e;border-radius:7px;padding:9px 12px;min-height:40px;font-size:12px;font-weight:700;cursor:pointer}
+.ps-calibration-actions button:first-child{background:#1e5487;color:white;border-color:#1e5487}
+.ps-calibration-actions button:last-child{color:#98483e;border-color:#dcbbb4}
+.ps-calibration-results{background:white;padding:10px;border-radius:8px;font-size:12px;line-height:1.7}
+.ps-calibration-results p{margin:7px 0}.ps-calibration-last{font-weight:700}
+.ps-calibration :focus-visible{outline:2px solid #277dc9;outline-offset:2px}
+@media(max-width:650px){.ps-calibration-form{grid-template-columns:1fr}.ps-calibration-actions button{flex:1 1 100%}}
