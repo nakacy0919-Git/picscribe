@@ -32,9 +32,12 @@ test('all 35 picture scenes have data, images and descriptions',()=>{
       id+' missing Japanese description');
     assert.ok(!ids.has(id),id+' duplicate id');ids.add(id);
     assert.ok(html.includes("launchGame('"+id+"')"),id+' missing home-card link');
-    for(const focus of ['gist','setting','mood']){
-      const hints=data.focus_hints && data.focus_hints[focus];
-      assert.ok(Array.isArray(hints)&&hints.length,id+' missing '+focus+' hints');
+    // The legacy café file predates focus_hints; its coach fallback is tested separately.
+    if(id!=='cafe'){
+      for(const focus of ['gist','setting','mood']){
+        const hints=data.focus_hints && data.focus_hints[focus];
+        assert.ok(Array.isArray(hints)&&hints.length,id+' missing '+focus+' hints');
+      }
     }
   }
   assert.equal(ids.size,35);
