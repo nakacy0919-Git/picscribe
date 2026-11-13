@@ -1,0 +1,49 @@
+/* PicScribe responsive/iPad overrides. Loaded last on purpose. */
+#game-container{box-sizing:border-box;max-width:100%;overflow:visible!important;}
+#game-container .main-content,#game-container .play-area,#game-container #image-area-wrapper,#game-container #input-area-wrapper{min-width:0;}
+#game-container #user-input{box-sizing:border-box;min-height:165px;font-size:16px;line-height:1.6;overflow-wrap:anywhere;white-space:pre-wrap;outline-offset:2px;}
+#game-container #user-input:focus-visible{outline:2px solid #2f86cb;}
+#input-area-wrapper .ps-coach,#input-area-wrapper .ps-quests{max-width:100%;box-sizing:border-box;}
+.ps-coach .ps-coach-actions button:focus-visible,.ps-portfolio button:focus-visible,.ps-exam button:focus-visible{outline:2px solid #2c78b6;outline-offset:2px;}
+#back-to-home-btn{min-height:40px;}
+#game-container .play-area{min-height:0;}
+@media (min-width:1101px) {
+  #game-container.app-body-layout{gap:15px;}
+  #game-container .play-area{gap:14px;}
+  #input-area-wrapper .ps-coach{max-height:280px;overflow-y:auto;}
+}
+@media (max-width:1100px) {
+  #game-container.app-body-layout{display:flex;flex-direction:column;height:auto;max-height:none;overflow:visible;padding:15px 12px;margin:0;gap:10px;}
+  #game-container .left-sidebar{flex:0 0 auto!important;display:block;width:100%;height:auto;max-height:185px;overflow-y:auto;box-sizing:border-box;}
+  #game-container .main-content{width:100%;flex:1 1 auto;min-width:0;overflow:visible;height:auto;gap:8px;}
+  #game-container .play-area{flex-direction:column;gap:9px;min-width:0;}
+  #game-container #image-area-wrapper,#game-container #input-area-wrapper{width:100%;flex:0 0 auto;}
+  #game-container .resizer{display:none;}
+  #game-container #back-to-home-btn{position:static!important;width:auto!important;align-self:flex-start;padding:8px 16px!important;}
+  #game-container #step-assistant-panel{padding:12px!important;gap:12px!important;}
+  #game-container #live-status{width:95px!important;}
+  #game-container #live-status .gauge-container{width:88px!important;}
+  #game-container .assistant-header{margin-bottom:5px!important;}
+  #game-container .focus-buttons-container{gap:5px!important;}
+  #game-container .focus-btn{min-width:0;padding:7px 5px!important;}
+  #game-container #input-area-wrapper .ps-coach{max-height:none;overflow:visible;}
+  #game-container #user-input{min-height:155px;}
+}
+@media (max-width:600px) {
+  #game-container.app-body-layout{padding:8px 5px;}
+  #game-container #step-assistant-panel{flex-wrap:wrap;align-items:center;}
+  #game-container #live-status{width:100%!important;}
+  #game-container #live-status .gauge-container{width:85px!important;}
+  #game-container .focus-text .focus-sub{display:none;}
+  #game-container .focus-btn .focus-main{font-size:11px;}
+  #game-container .left-sidebar{max-height:140px;}
+  #game-container #user-input{min-height:200px;}
+}
+@media (prefers-reduced-motion:reduce){
+  #game-container *,#selection-screen .ps-portfolio *{animation-duration:.01ms!important;transition-duration:.01ms!important;}
+}
+@media print {
+ .ps-coach-actions,.ps-portfolio-actions,.ps-exam-actions,.ps-exam-hints,.ps-quest-list,.ps-quest-track{display:none!important}
+ #game-container.app-body-layout{height:auto!important;overflow:visible!important}
+ #ps-answer{height:auto!important;min-height:10cm!important}
+}
