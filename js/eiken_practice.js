@@ -192,12 +192,13 @@
     }
     if (result.strengths && result.strengths.length)
       addText(out,'良かった点',result.strengths.join(' / '));
-    if (result.revisions && result.revisions.length)
-      result.revisions.forEach(function(r) {addText(out,'改善',r.original + ' → ' + r.revised + '（' + r.explanation_ja + '）');});
-    addText(out,'必要最小限の修正例',result.corrected);
-    addText(out,'発展した表現例',result.upgraded);
+    addText(out,'自力修正', '具体的な指摘を見て、まず自分で書き直しましょう。');
     addText(out,'次の練習',result.next_step_ja);
     out.classList.remove('hidden');
+    window.dispatchEvent(new CustomEvent('picscribe:ai-feedback',{detail:{
+      mode:'eiken',result:result,draft:answer.value,exerciseId:current&&current.id,
+      grade:current&&current.grade,task:current&&current.task
+    }}));
   }
   async function requestAI() {
     if (!current || countWords(answer.value) < 3) {
