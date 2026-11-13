@@ -16,7 +16,7 @@ const liveScoreDisplay = document.getElementById('live-score');
 
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioCtx;
-function initAudio() { if (!audioCtx) audioCtx = new AudioContext(); }
+function initAudio() { if (!audioCtx && AudioContext) audioCtx = new AudioContext(); }
 
 function playHitSound(isPerfect = false) {
     if (!audioCtx) return;
@@ -116,53 +116,35 @@ function setupGameData() {
     }
 }
 
+// This gauge estimates picture *content coverage*, never grammatical correctness.
+// A concept is counted once even if many synonymous words are recognized.
 function updateCoverageDisplay(rawText) {
-    if (typeof rawText !== 'string') {
-        rawText = '';
-    }
-
-    if (rawText.trim() === '') {
-        currentEarnedScore = 0;
+    const text = typeof rawText === 'string' ? rawText.trim() : '';
+    if (!text) {
         categoryHits = { gist: 0, setting: 0, mood: 0 };
         alreadyHitWords = [];
-        scoringTargets.forEach(t => t.earnedPoints = 0);
-        updateFocusButtonStyles(); 
-        setGauge(0, "#1a1a1a");
+        setGauge(0, '#1a1a1a');
         return;
     }
-
-    const targetScore = maxScore * 0.12; 
-    let baseCoverage = Math.floor((currentEarnedScore / targetScore) * 100);
-    const textTrimmed = rawText.trim();
-    const words = textTrimmed.split(/\s+/);
-    const hasCapital = /[A-Z]/.test(textTrimmed);
-    const hasPeriod = /[.!?]/.test(textTrimmed); 
-    const hasOneValidSentence = hasCapital && hasPeriod && words.length >= 3;
-    const isTextCompleted = /[.!?]$/.test(textTrimmed);
-    const allCategoriesHit = (categoryHits.gist >= CLEAR_THRESHOLD && categoryHits.setting >= CLEAR_THRESHOLD && categoryHits.mood >= CLEAR_THRESHOLD);
-
-    let finalCoverage = baseCoverage;
-
-    if (!hasOneValidSentence) {
-        finalCoverage = Math.min(finalCoverage, 50); 
-    } else {
-        if (allCategoriesHit) {
-            if (isTextCompleted) {
-                finalCoverage = 100; 
-            } else {
-                finalCoverage = 95;  
-            }
-        } else {
-            finalCoverage = Math.min(finalCoverage, 80); 
-        }
-    }
-
-    if (finalCoverage > 100) finalCoverage = 100;
-    let color = "#1a1a1a";
-    if (finalCoverage === 100) color = "#10b981"; 
-    else if (hasOneValidSentence && finalCoverage > 50) color = "#3b82f6"; 
-    else if (!hasOneValidSentence && baseCoverage > 50) color = "#f59e0b"; 
-    setGauge(finalCoverage, color);
+    const matchedConcepts = new Set();
+    const foundBuckets = new Set();
+    scoringTargets.forEach(target => {
+        if (target.earnedPoints <= 0) return;
+        matchedConcepts.add(target.id);
+        foundBuckets.add(target.bucket);
+    });
+    const weights = { gist: 40, setting: 35, mood: 25 };
+    const broad = Object.keys(weights).reduce((sum, bucket) =>
+        sum + (foundBuckets.has(bucket) ? weights[bucket] : 0), 0);
+    const depth = Math.min(1, matchedConcepts.size / 6);
+    const wordCount = (text.match(/[A-Za-z]+(?:['’][A-Za-z]+)?/g) || []).length;
+    const hasPredicate = /\b(?:am|is|are|was|were|has|have|had|can|will|would|should|looks?|seems?|stands?|sits?|holds?|walks?|runs?|drinks?|reads?|opens?|plays?|wears?|working|looking|standing|sitting|holding|walking|drinking|reading|opening)\b/i.test(text);
+    const hasCompleteForm = wordCount >= 6 && hasPredicate && /[.!?]["'’]?$/.test(text);
+    // Meaningfulness is heuristic: perfect coverage does NOT certify correct English.
+    let coverage = Math.round(broad * (0.55 + 0.45 * depth));
+    if (!hasCompleteForm || foundBuckets.size < 3) coverage = Math.min(coverage, 79);
+    const color = coverage >= 85 ? '#10b981' : coverage >= 50 ? '#3b82f6' : '#c2872d';
+    setGauge(Math.max(0, Math.min(100, coverage)), color);
 }
 
 function setGauge(coverage, color) {
@@ -224,70 +206,59 @@ function restoreCaretPosition(context, caretPos) {
     selection.addRange(range);
 }
 
-function boldMatchedWords() {
-    const caretPos = saveCaretPosition(userInput);
-    let htmlContent = userInput.innerText; 
-    const wordsToHighlight = alreadyHitWords.filter(w => w.length > 3 || w === 'cup' || w === 'bun');
-    wordsToHighlight.forEach(word => {
-        const regex = new RegExp(`\\b(${word})\\b`, 'gi');
-        htmlContent = htmlContent.replace(regex, `<span class="matched-word">$1</span>`);
-    });
-    userInput.innerHTML = htmlContent;
-    restoreCaretPosition(userInput, caretPos);
+// Never rewrite contenteditable.innerHTML while a student types.
+// Previously it broke IME composition/caret placement and interpreted typed HTML.
+
+function normalizeTokens(value) {
+    return String(value || '').toLowerCase().match(/[a-z]+(?:'[a-z]+)?/g) || [];
 }
-
-userInput.addEventListener('input', () => {
-    if (isFormatting) return; 
-    initAudio(); 
-    const rawText = userInput.innerText;
-    const textForTyping = rawText.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, " ");
-    const inputWords = textForTyping.split(/\s+/);
-    
-    let tempCategoryHits = { gist: 0, setting: 0, mood: 0 };
-    let tempEarnedScore = 0;
-    let newHitFound = false;
-    let perfectHitFound = false;
-
-    const stopWords = ['a', 'an', 'the', 'is', 'are', 'was', 'were', 'in', 'on', 'at', 'of', 'for', 'to', 'with', 'it', 'we', 'they', 'he', 'she'];
-
-    scoringTargets.forEach(target => {
-        const targetWords = target.targetPhrase.split(' ');
-        let sigWords = targetWords.filter(w => !stopWords.includes(w));
-        if (sigWords.length === 0) sigWords = targetWords; 
-        let matchCount = 0;
-        sigWords.forEach(tw => {
-            if (inputWords.includes(tw)) {
-                matchCount++;
-                if (!alreadyHitWords.includes(tw)) alreadyHitWords.push(tw);
+function matchesOneSentence(phrase, sentences) {
+    const target = normalizeTokens(phrase);
+    const stops = new Set(['a','an','the','is','are','was','were','in','on','at','of','for','to','with','it','we','they','he','she','by','and']);
+    const important = target.filter(w => !stops.has(w));
+    if (important.length === 0) return false;
+    return sentences.some(sentence => {
+        const words = normalizeTokens(sentence);
+        // Strongly prefer exact phrase matches; tolerate reordered content words
+        // only when more than one meaningful word supports the concept.
+        if (target.length <= words.length) {
+            for (let i = 0; i <= words.length - target.length; i++) {
+                if (target.every((w,j) => words[i+j] === w)) return true;
             }
-        });
-        const matchRatio = matchCount / sigWords.length;
-        let pointsToAward = 0;
-        if (matchRatio >= 0.75) {
-            pointsToAward = target.weight;
-            if (pointsToAward > target.earnedPoints) perfectHitFound = true;
-        } else if (matchRatio >= 0.40) {
-            pointsToAward = target.weight * 0.5;
         }
-        if (pointsToAward > 0) {
-            tempEarnedScore += pointsToAward;
-            if (matchRatio >= 0.40) tempCategoryHits[target.bucket]++; 
-        }
-        if (pointsToAward > target.earnedPoints) {
-            newHitFound = true;
-            userInput.classList.add('hit-flash');
-            setTimeout(() => userInput.classList.remove('hit-flash'), 200);
-        }
-        target.earnedPoints = pointsToAward;
+        if (important.length < 2) return target.length === 1 && words.includes(important[0]);
+        const present = important.filter(word => words.includes(word)).length;
+        return present >= 2 && (present / important.length) >= .8;
     });
-    currentEarnedScore = tempEarnedScore;
-    categoryHits = tempCategoryHits;
-    updateCoverageDisplay(rawText);
-    updateFocusButtonStyles(); 
-
-    if (newHitFound) {
-        playHitSound(perfectHitFound); 
-        isFormatting = true;
-        try { boldMatchedWords(); } finally { isFormatting = false; }
+}
+userInput.addEventListener('input', () => {
+    const text = userInput.innerText || '';
+    const sentences = text.split(/[.!?;\n]+/).filter(part => part.trim().length > 0);
+    const before = new Set(scoringTargets.filter(t => t.earnedPoints > 0).map(t => t.id));
+    const matched = new Map();
+    const foundWords = new Set();
+    scoringTargets.forEach(target => {
+        const hit = matchesOneSentence(target.targetPhrase, sentences);
+        target.earnedPoints = hit ? target.weight : 0;
+        if (hit) {
+            if (!matched.has(target.bucket)) matched.set(target.bucket, new Set());
+            matched.get(target.bucket).add(target.id);
+            normalizeTokens(target.targetPhrase).filter(w => w.length >= 4).forEach(w => foundWords.add(w));
+        }
+    });
+    categoryHits = {
+        gist: matched.has('gist') ? matched.get('gist').size : 0,
+        setting: matched.has('setting') ? matched.get('setting').size : 0,
+        mood: matched.has('mood') ? matched.get('mood').size : 0
+    };
+    alreadyHitWords = Array.from(foundWords).slice(0, 40);
+    currentEarnedScore = scoringTargets.reduce((n,t) => n+t.earnedPoints, 0);
+    updateCoverageDisplay(text);
+    updateFocusButtonStyles();
+    const after = new Set(scoringTargets.filter(t => t.earnedPoints > 0).map(t => t.id));
+    if (Array.from(after).some(id => !before.has(id))) {
+        try { initAudio(); playHitSound(false); } catch (_) { /* audio is optional */ }
+        userInput.classList.add('hit-flash');
+        setTimeout(() => userInput.classList.remove('hit-flash'), 180);
     }
 });
