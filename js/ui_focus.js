@@ -39,21 +39,38 @@ window.speakText = function(text) {
     window.speechSynthesis.speak(utterance);
 };
 
-// 英語と日本語をセットにしたインタラクティブタグ生成
-function createTagHtml(en, ja) {
-    let cleanEn = en.replace(/~/g, '').replace(/'/g, "\\'").trim();
-    return `
-        <div class="f-tag-wrapper" onclick="this.classList.toggle('show-ja')">
-            <div class="f-tag" style="display:flex; align-items:center; text-align:left;">
-                <span class="tts-btn" onclick="event.stopPropagation(); speakText('${cleanEn}')">🔊</span>
-                <span style="flex:1;">${en}</span>
-            </div>
-            <div class="f-tag-ja">${ja}</div>
-        </div>
-    `;
+// Hint text is escaped before insertion to avoid interpreting lesson data as HTML.
+function escapeHint(text) {
+    return String(text == null ? '' : text).replace(/[&<>"']/g, ch =>
+        ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch]);
 }
+function createTagHtml(en, ja) {
+    const cleanEn=String(en||'').replace(/~/g,'').trim();
+    return '<div class="f-tag-wrapper" tabindex="0" role="button" aria-label="タップして日本語訳を表示">' +
+      '<div class="f-tag" style="display:flex;align-items:center;text-align:left;">' +
+      '<button type="button" class="tts-btn" data-speak="'+escapeHint(cleanEn)+'" aria-label="英語を読み上げる">🔊</button>' +
+      '<span style="flex:1;">'+escapeHint(cleanEn)+'</span></div>' +
+      '<div class="f-tag-ja">'+escapeHint(ja||'')+'</div></div>';
+}
+if(hintContent) {
+    hintContent.addEventListener('click', e => {
+        const sound=e.target.closest('[data-speak]');
+        if(sound && hintContent.contains(sound)) {
+            e.stopPropagation();window.speakText(sound.getAttribute('data-speak'));return;
+        }
+        const tag=e.target.closest('.f-tag-wrapper');
+        if(tag && hintContent.contains(tag))tag.classList.toggle('show-ja');
+    });
+    hintContent.addEventListener('keydown', e => {
+        if(e.key!=='Enter'&&e.key!==' ')return;
+        const tag=e.target.closest('.f-tag-wrapper');
+        if(tag && hintContent.contains(tag) && e.target===tag) {
+            e.preventDefault();tag.classList.toggle('show-ja');
+        }
+    });
+}
+// Dynamic hint data belongs to the selected scene.
 
-// ★修正：ヒントの内容を現在のデータ（window.currentSceneData）から動的に生成する関数
 function getDynamicHint(target) {
     // デフォルト（カフェ）のヒントデータ（フォールバック用）
     const defaultHints = {
@@ -253,19 +270,9 @@ function renderHintPage() {
             currentGroup = item.groupLabel;
         }
 
-        let enText = item.text.replace(/\*(.*?)\*/g, "<strong>$1</strong>");
-        let cleanEnText = item.text.replace(/\*(.*?)\*/g, "$1").replace(/'/g, "\\'"); 
-        let jaText = item.text_ja || item.ja || "（詳細な訳）";
-
-        html += `
-            <div class="f-tag-wrapper" onclick="this.classList.toggle('show-ja')">
-                <div class="f-tag" style="display:flex; align-items:center; text-align:left;">
-                    <span class="tts-btn" onclick="event.stopPropagation(); speakText('${cleanEnText}')">🔊</span>
-                    <span style="flex:1;">${enText}</span>
-                </div>
-                <div class="f-tag-ja">${jaText}</div>
-            </div>
-        `;
+        const enText = String(item.text||'').replace(/\*(.*?)\*/g,'$1');
+        const jaText = item.text_ja || item.ja || '（詳細な訳）';
+        html += createTagHtml(enText,jaText);
     });
 
     if (currentGroup !== '') html += `</div></div>`; 
@@ -319,50 +326,37 @@ function updateGlowAndButtons() {
     }
 }
 
-// --- リサイズバー（ドラッグで幅を調整）の機能 ---
+// Mouse, stylus and touch resizer
 document.addEventListener('DOMContentLoaded', function () {
-    const resizer = document.getElementById('dragMe');
-    const leftSide = document.getElementById('left-sidebar');
-    const container = document.getElementById('game-container');
-
-    if (!resizer || !leftSide || !container) return;
-
-    let x = 0;
-    let leftWidth = 0;
-
-    const mouseDownHandler = function (e) {
-        x = e.clientX;
-        leftWidth = leftSide.getBoundingClientRect().width;
-
-        document.addEventListener('mousemove', mouseMoveHandler);
-        document.addEventListener('mouseup', mouseUpHandler);
-        
+    const resizer=document.getElementById('dragMe');
+    const leftSide=document.getElementById('left-sidebar');
+    if(!resizer||!leftSide)return;
+    let active=false,startX=0,startWidth=0,pointerId=null;
+    resizer.style.touchAction='none';
+    resizer.setAttribute('role','separator');
+    resizer.setAttribute('aria-orientation','vertical');
+    resizer.setAttribute('aria-label','ヒント欄の幅を調節');
+    resizer.tabIndex=0;
+    resizer.addEventListener('pointerdown', e=>{
+        if(e.pointerType==='mouse'&&e.button!==0)return;
+        if(window.matchMedia && window.matchMedia('(max-width:1100px)').matches)return;
+        active=true;pointerId=e.pointerId;startX=e.clientX;
+        startWidth=leftSide.getBoundingClientRect().width;
+        if(resizer.setPointerCapture)resizer.setPointerCapture(pointerId);
         resizer.classList.add('resizing');
-        document.body.style.cursor = 'col-resize'; 
-        
-        leftSide.style.userSelect = 'none';
-        leftSide.style.pointerEvents = 'none';
-    };
-
-    const mouseMoveHandler = function (e) {
-        const dx = e.clientX - x;
-        const newWidth = leftWidth + dx;
-
-        if (newWidth > 250 && newWidth < 600) {
-            leftSide.style.flex = `0 0 ${newWidth}px`;
-        }
-    };
-
-    const mouseUpHandler = function () {
-        resizer.classList.remove('resizing');
-        document.body.style.cursor = '';
-        
-        leftSide.style.userSelect = '';
-        leftSide.style.pointerEvents = '';
-
-        document.removeEventListener('mousemove', mouseMoveHandler);
-        document.removeEventListener('mouseup', mouseUpHandler);
-    };
-
-    resizer.addEventListener('mousedown', mouseDownHandler);
+    });
+    resizer.addEventListener('pointermove',e=>{
+        if(!active||e.pointerId!==pointerId)return;
+        const width=Math.max(250,Math.min(600,startWidth+e.clientX-startX));
+        leftSide.style.flex='0 0 '+width+'px';
+    });
+    function finish(){active=false;pointerId=null;resizer.classList.remove('resizing');}
+    resizer.addEventListener('pointerup',finish);
+    resizer.addEventListener('pointercancel',finish);
+    resizer.addEventListener('keydown',e=>{
+        if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight')return;
+        e.preventDefault();
+        const current=leftSide.getBoundingClientRect().width;
+        leftSide.style.flex='0 0 '+Math.max(250,Math.min(600,current+(e.key==='ArrowRight'?20:-20)))+'px';
+    });
 });
