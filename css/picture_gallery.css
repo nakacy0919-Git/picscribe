@@ -1,0 +1,11 @@
+.ps-gallery-tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#f7fafd;border:1px solid #d9e4ef;border-radius:12px;padding:10px 12px;margin:8px 0 15px;color:#204362}
+.ps-gallery-tools label{font-size:13px;font-weight:700}
+.ps-gallery-tools input{min-width:175px;flex:1 1 220px;font:16px/1.4 "Noto Sans JP",sans-serif;border:1px solid #b8cce0;border-radius:8px;padding:8px 11px;background:#fff;color:#193952}
+.ps-gallery-tools select{min-height:40px;padding:8px;border:1px solid #b8cce0;border-radius:8px;background:#fff;color:#193952;font-size:13px}
+.ps-gallery-count{font-size:12px;color:#607a94}
+.image-grid .image-card[hidden]{display:none!important}
+.ps-gallery-badge{display:inline-block;align-self:flex-start;margin-top:5px;padding:2px 8px;border-radius:10px;background:#edf0f4;color:#697887;font-size:10px;font-weight:700}
+.ps-gallery-started{background:#dbf5e9;color:#137958}
+.ps-gallery-missing{opacity:.55;pointer-events:none}
+.ps-gallery-tools :focus-visible{outline:2px solid #2a82c7;outline-offset:1px}
+@media(max-width:650px){.ps-gallery-tools{padding:9px}.ps-gallery-tools label{width:100%}.ps-gallery-tools select{flex:1 1 auto}}
