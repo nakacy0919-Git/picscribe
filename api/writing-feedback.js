@@ -168,9 +168,14 @@ export default async function handler(req,res) {
     'Never invent mistakes, quotes, details in a picture, or score certainty. '+
     'If the evidence is insufficient, state that clearly. '+
     'For picture description set scores to an empty array. '+
-    'For exam tasks score each of four practice categories from 0 to 4, '+
-    'but clearly describe them as practice estimates, not EIKEN official grades. '+
-    'Provide 1-4 strengths, 0-5 specific corrections, corrected version, upgraded version, and one next learning action.';
+    'For exam tasks use EXACTLY these four unique criterion names: 内容, 構成, 語彙, 文法, scored 0-4 each. '+
+    'These are practice estimates only, never official EIKEN grades. '+
+    'Every revisions.original MUST be an exact contiguous quote from the student writing, with the same punctuation and case. '+
+    'No invented error quotes. Only identify well-supported mistakes. '+
+    'For email tasks check that required questions and responses are present, and for summary tasks check key ideas and factual faithfulness. '+
+    'Explain score reasons with evidence visible in the submitted writing. '+
+    'Preserve student meaning, and keep suggested corrected model within target word count when feasible. '+
+    'Provide 1-4 strengths, up to 5 specific corrections, corrected version, upgraded version, and one next learning action.';
   const controller=new AbortController();
   const timeout=setTimeout(()=>controller.abort(),25000);
   try {
