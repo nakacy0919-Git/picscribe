@@ -1,0 +1,12 @@
+.ps-quests{margin:10px 0;padding:10px 12px;border:1px solid #cde3df;background:#f7fffc;border-radius:10px;font-family:"Noto Sans JP",sans-serif}
+.ps-quests-title{display:flex;justify-content:space-between;align-items:center;gap:7px;color:#204b48;font-size:13px}
+.ps-quest-rank{font-weight:800;color:#13775b;font-size:12px}.ps-quest-track{height:7px;margin:8px 0 10px;background:#dceae6;border-radius:8px;overflow:hidden}
+.ps-quest-bar{display:block;background:#28a981;width:0;height:100%;transition:width .25s}
+.ps-quest-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.ps-quest{display:flex;gap:5px;align-items:flex-start;background:#fff;border:1px solid #d8e6e1;border-radius:7px;padding:7px}
+.ps-quest-check{color:#809a92;font-size:16px;min-width:16px}.ps-quest-done{background:#e4fff1;border-color:#6bc8a6}.ps-quest-done .ps-quest-check{color:#11825a}
+.ps-quest strong{display:block;font-size:11px;color:#244e43}.ps-quest small{display:block;color:#728781;font-size:10px;line-height:1.4;margin-top:2px}
+.ps-quest-next{font-size:11px;margin:8px 0;color:#346657}.ps-quest-notice{font-size:10px;color:#7b918a;line-height:1.5;margin:4px 0 0}
+@keyframes psQuestPop{50%{box-shadow:0 0 0 5px #55d7a144}}.ps-quest-pop{animation:psQuestPop .25s ease-out}
+@media (prefers-reduced-motion:reduce){.ps-quest-pop{animation:none}.ps-quest-bar{transition:none}}
+@media (max-width:620px){.ps-quest-list{grid-template-columns:1fr}}
