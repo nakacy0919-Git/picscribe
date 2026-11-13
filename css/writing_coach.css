@@ -1,0 +1,25 @@
+/* Guided Writing Coach: compact, responsive and readable on iPad */
+.ps-coach {border:1px solid #dce5f1; background:#f8fbff; border-radius:14px; padding:12px 14px; margin-bottom:12px; font-family:"Noto Sans JP",sans-serif; color:#163047; font-size:13px;}
+.ps-coach-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:9px;}
+.ps-coach-head strong{font-size:15px;color:#17365e;}
+.ps-mode-switch{display:flex;gap:4px;padding:3px;background:#e6edf8;border-radius:9px;}
+.ps-mode-switch button{border:0; background:transparent; border-radius:7px; padding:4px 10px; font:inherit;cursor:pointer;color:#325675;}
+.ps-mode-switch button[aria-pressed="true"]{background:#fff;color:#123c75;font-weight:700;box-shadow:0 1px 3px #0002;}
+.ps-steps{display:flex;gap:5px;flex-wrap:wrap;}
+.ps-step{border:1px solid #c9d8e6;border-radius:30px;padding:4px 7px;color:#64748b;background:#fff;font-size:11px;}
+.ps-step-done{border-color:#73d5b6;background:#e7fff4;color:#116b4e;font-weight:700;}
+.ps-next{margin:8px 0;color:#183552;font-size:13px;line-height:1.55;}
+.ps-hint{display:flex;flex-direction:column;background:#fff7dc;border-left:3px solid #f6be49;border-radius:6px;padding:7px 10px;line-height:1.4;gap:3px;}
+.ps-hint-en{font-weight:700;color:#704d11;}
+.ps-hint-ja{color:#735d38;font-size:12px;}
+.ps-checks{display:flex;gap:5px;flex-wrap:wrap;margin:9px 0 7px;}
+.ps-check{border:1px solid #dde5ed;background:#fff;padding:4px 7px;border-radius:7px;font-size:11px;color:#435b70;}
+.ps-coach-actions{display:flex;gap:6px;flex-wrap:wrap;}
+.ps-coach-actions button{border:1px solid #bdd1e6;border-radius:7px;background:#fff;color:#184f85;padding:7px 9px;font-weight:600;cursor:pointer;min-height:34px;}
+.ps-coach-actions button:last-child{background:#194f92;color:white;border-color:#194f92;}
+.ps-coach-actions button:disabled{opacity:.55;cursor:not-allowed;}
+.ps-local-note{font-size:10px;color:#748398;line-height:1.5;margin:7px 0 0;}
+.ps-compare,.ps-ai-feedback{background:#fff;border:1px solid #dce5f1;border-radius:8px;padding:9px 11px;margin-top:8px;overflow-wrap:anywhere;white-space:pre-wrap;line-height:1.6;}
+.ps-compare p,.ps-ai-feedback p{margin:6px 0;}
+.ps-coach .hidden{display:none!important;}
+@media(max-width:700px){.ps-coach{padding:9px;}.ps-coach-actions button{flex:1 1 42%;}.ps-next{font-size:12px;}}
