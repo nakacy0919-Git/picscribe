@@ -28,6 +28,21 @@ const SCHEMA = {
   }
 };
 const hits = new Map();
+function configured() {
+  return process.env.PICSCRIBE_AI_ENABLED==='true' &&
+    Boolean(process.env.OPENAI_API_KEY) &&
+    typeof process.env.PICSCRIBE_AI_CLASS_CODE==='string' &&
+    process.env.PICSCRIBE_AI_CLASS_CODE.length>=12;
+}
+// Compare provided and expected codes without leaking matching prefix timing.
+function codeMatches(provided, expected) {
+  if(typeof provided!=='string'||typeof expected!=='string')return false;
+  const a=Buffer.from(provided,'utf8'),b=Buffer.from(expected,'utf8');
+  if(a.length!==b.length||a.length>256)return false;
+  let mismatch=0;
+  for(let i=0;i<a.length;i++)mismatch |= a[i]^b[i];
+  return mismatch===0;
+}
 function limited(ip) {
   const now=Date.now(), old=hits.get(ip)||{since:now,count:0};
   const entry=now-old.since>60000?{since:now,count:0}:old;
@@ -35,7 +50,9 @@ function limited(ip) {
   if(hits.size>500) {
     for(const [key,v] of hits) { if(now-v.since>60000) hits.delete(key); }
   }
-  return entry.count>4;
+  // Permit a classroom behind one school's shared egress IP; still not a
+  // distributed rate limiter. Production requires a shared quota per identity.
+  return entry.count>40;
 }
 function brief(str,max) {return typeof str==='string'?str.slice(0,max):'';}
 function error(res,status,message) { return res.status(status).json({message}); }
@@ -63,11 +80,15 @@ function validateResult(result) {
 export default async function handler(req,res) {
   res.setHeader('Cache-Control','no-store');
   res.setHeader('X-Content-Type-Options','nosniff');
+  if(req.method==='GET')return res.status(200).json({
+    enabled:configured(),teacherCodeRequired:true,
+    message:configured()?'AI機能は設定されています。利用コードが必要です。':'AI添削はまだ有効化されていません。'
+  });
   if(req.method!=='POST') {
-    res.setHeader('Allow','POST');
-    return error(res,405,'POSTのみ利用できます。');
+    res.setHeader('Allow','GET, POST');
+    return error(res,405,'GETまたはPOSTを利用してください。');
   }
-  if(process.env.PICSCRIBE_AI_ENABLED!=='true' || !process.env.OPENAI_API_KEY)
+  if(!configured())
     return error(res,503,'AI添削は開発環境で未設定です。管理者によるAPI設定が必要です。');
   const origin=req.headers.origin;
   const host=req.headers['x-forwarded-host']||req.headers.host;
@@ -75,6 +96,8 @@ export default async function handler(req,res) {
     try {if(new URL(origin).host!==String(host).split(',')[0].trim()) return error(res,403,'Origin not permitted');}
     catch(_) {return error(res,403,'Origin not permitted');}
   }
+  if(!codeMatches(req.headers['x-picscribe-class-code'],process.env.PICSCRIBE_AI_CLASS_CODE))
+    return error(res,401,'AI利用コードが正しくありません。先生に確認してください。');
   const ip=String(req.headers['x-forwarded-for']||req.socket&&req.socket.remoteAddress||'unknown').split(',')[0].trim();
   if(limited(ip)) return error(res,429,'利用回数の上限に達しました。少し後で再度お試しください。');
   let body=req.body;
