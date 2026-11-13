@@ -155,6 +155,8 @@
  });
  const original=window.showSelectionScreen;
  if(typeof original==='function')window.showSelectionScreen=function(){original();render();};
+ const back=document.getElementById('back-to-home-btn');
+ if(back)back.addEventListener('click',render);
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)render();});
  render();
 })();
