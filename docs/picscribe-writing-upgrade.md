@@ -1,15 +1,15 @@
 # PicScribe Guided Writing + EIKEN Studio (development only)
 
-Development branch: \`feature/picscribe-coach-eiken-20261113\`  
-This branch intentionally does **not** update \`main\`, trigger a production deployment, or enable the AI endpoint.
+Development branch: `feature/picscribe-coach-eiken-20261113`  
+This branch intentionally does **not** update `main`, run any deployment action, or enable the AI endpoint.
 
 ## Added
 
-- \`js/writing_coach.js\` and \`css/writing_coach.css\`: Guided/Free modes for the existing 35 picture-description scenes; four focus milestones (subject, action, setting, mood); context-sensitive hints from each scene's existing data; light, clearly labeled form checks; on-device autosave; save-and-compare revisions; optional on-demand AI feedback.
-- \`js/eiken_practice.js\` and \`css/eiken_practice.css\`: EIKEN writing practice for 3, Pre-2, Pre-2 Plus, 2, Pre-1, 1; task-specific original sample prompts for opinion, email, and summary formats; word-count targets, scaffolding, on-device drafts and comparisons.
-- \`api/writing-feedback.js\`: opt-in, server-side AI feedback with structured JSON output, bounded inputs, origin filtering, light in-instance throttling, and a disabled-by-default safety switch.
-- \`js/main.js\`: fix a dictionary modal null-element error, avoid untrusted HTML in suggestions/explanation, and remove unsubstantiated corpus-frequency claims.
-- \`index.html\`: load the new modules and styles.
+- `js/writing_coach.js` and `css/writing_coach.css`: Guided/Free modes for the existing 35 picture-description scenes; four focus milestones (subject, action, setting, mood); context-sensitive hints from each scene's existing data; light, clearly labeled form checks; on-device autosave; save-and-compare revisions; optional on-demand AI feedback.
+- `js/eiken_practice.js` and `css/eiken_practice.css`: EIKEN writing practice for 3, Pre-2, Pre-2 Plus, 2, Pre-1, 1; task-specific original sample prompts for opinion, email, and summary formats; word-count targets, scaffolding, on-device drafts and comparisons.
+- `api/writing-feedback.js`: opt-in, server-side AI feedback with structured JSON output, bounded inputs, origin filtering, light in-instance throttling, and a disabled-by-default safety switch.
+- `js/main.js`: fix a dictionary modal null-element error, avoid untrusted HTML in suggestions/explanation, and remove unsubstantiated corpus-frequency claims.
+- `index.html`: load the new modules and styles.
 
 ## EIKEN word count reference (2026)
 
@@ -35,11 +35,11 @@ Reference:
 
 In an isolated development environment, configure server-side environment variables:
 
-\`\`\`text
+```text
 PICSCRIBE_AI_ENABLED=true
 OPENAI_API_KEY=<server-side secret>
 PICSCRIBE_AI_MODEL=gpt-4.1-mini
-\`\`\`
+```
 
 Do **not** place the secret in JavaScript, HTML, localStorage, or any Vercel public environment variable. These values were **not** set during this development pass. API calls fail closed (HTTP 503) when not configured.
 
@@ -56,7 +56,7 @@ Before any public rollout: add user authentication or teacher invite limits, a p
 7. With no AI env configuration, press AI Feedback: an understandable unavailable message should appear without exposing secrets or breaking the page.
 8. In a locked-down development environment only, configure AI; test malformed requests, wrong grade/task combinations, incomplete model outputs, and teacher-graded sample essays.
 9. Check iPad portrait/landscape, iPhone, desktop, on-screen keyboard, tap targets and screen readers.
-10. Confirm \`main\` has not changed and production deployment is not triggered.
+10. Confirm `main` has not changed and production deployment is not triggered.
 
 ## Notes and limitations
 
