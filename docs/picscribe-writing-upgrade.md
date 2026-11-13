@@ -10,6 +10,15 @@ This branch intentionally does **not** update `main`, run any deployment action,
 - `api/writing-feedback.js`: opt-in, server-side AI feedback with structured JSON output, bounded inputs, origin filtering, light in-instance throttling, and a disabled-by-default safety switch.
 - `js/main.js`: fix a dictionary modal null-element error, avoid untrusted HTML in suggestions/explanation, and remove unsubstantiated corpus-frequency claims.
 - `index.html`: load the new modules and styles.
+- `js/game_core.js`: prevent HTML rewriting while typing, reduce repeated synonym scoring, and make Coverage Rate an explicitly non-grammar heuristic. Input HTML/caret safety improved.
+- `js/writing_quests.js` and `css/writing_quests.css`: four mini challenges (present progressive, location, multiple sentences, connectors) with immediate feedback; marks only the observed pattern, never grammatical correctness.
+- `js/eiken_exam_mode.js` and `css/eiken_exam_mode.css`: optional 10/15/20/30 minute practice timer and task-aware self-revision checklists; time expiry does not delete or lock work.
+- `js/writing_portfolio.js` and `css/writing_portfolio.css`: on-device writing overview, resume cards, bounded JSON backup/restore and explicit clearing for shared iPads. No remote tracking.
+- `css/learning_layout.css`: responsive iPad portrait/landscape layout, input focus, touch targets and reduced-motion support.
+- `js/ui_focus.js`: escaped hint text, keyboard access to translation hints, and pointer-/Pencil-compatible resize controls.
+- `js/ai_client.js`: explicit user confirmation prior to essay transmission; session-only teacher code, never store the code in localStorage.
+- `tests/smoke.test.cjs`: no-dependency smoke test suite: run `node --test tests/smoke.test.cjs` after checking out the branch.
+
 
 ## EIKEN word count reference (2026)
 
@@ -39,9 +48,10 @@ In an isolated development environment, configure server-side environment variab
 PICSCRIBE_AI_ENABLED=true
 OPENAI_API_KEY=<server-side secret>
 PICSCRIBE_AI_MODEL=gpt-4.1-mini
+PICSCRIBE_AI_CLASS_CODE=<minimum 12-character teacher-distributed secret>
 ```
 
-Do **not** place the secret in JavaScript, HTML, localStorage, or any Vercel public environment variable. These values were **not** set during this development pass. API calls fail closed (HTTP 503) when not configured.
+Do **not** place the secret in JavaScript, HTML, localStorage, or any Vercel public environment variable. These values were **not** set during this development pass. AI POST requests fail closed (HTTP 503) when unconfigured, and require an exact teacher class code when enabled (otherwise HTTP 401). A GET request reports only whether AI is configured. Never publicly enable this endpoint without proper authentication, shared usage limits and teacher approval.
 
 Before any public rollout: add user authentication or teacher invite limits, a persistent/shared rate limiter (current in-memory limiter does not work reliably across serverless instances), a spending cap/alerts, privacy notice for student essays, a deletion policy, and teacher-reviewed scoring calibration. The AI grades are estimates only and are **not** official EIKEN scores.
 
@@ -60,7 +70,18 @@ Before any public rollout: add user authentication or teacher invite limits, a p
 
 ## Notes and limitations
 
-- Existing coverage remains a *keyword coverage heuristic*, not a grammar score. The new coach adds scaffolded progress and simple form checks; complex correctness requires AI feedback.
+- The revised coverage is still a *content-keyword and sentence-form heuristic*, **not** a grammar score. Multiple synonyms for one visual concept cannot alone inflate the coverage score. The new coach adds scaffolded progress and simple form checks; complex correctness requires AI feedback.
 - Local drafts are stored in the browser only, not centrally synchronized. Shared devices should use care. Do not enter real names or other identifying information into the writing box.
 - The sample exam prompts are original practice tasks, not reproduced official exam papers.
 - The AI endpoint has been syntax-checked and exercised with mocked responses. **Live provider calls and real browser/iPad end-to-end testing were not completed in this pass.**
+
+## November 14 follow-up QA (development branch only)
+
+- JavaScript syntax checks passed for all changed and new modules.
+- Mocked picture-engine checks: isolated keyword fragments were capped below 80%; longer supported descriptions progressed, and user-typed HTML was not assigned to `innerHTML`.
+- Mocked AI endpoint checks: disabled response, missing/wrong class code, authorized response, and invalid task fields behaved as expected.
+- Verified the new modules are included in the branch's `index.html`, in dependency order.
+- Verified `main/index.html` still has none of the development modules.
+- Added source smoke tests, **but these tests have not yet been executed through Node in a full checkout**.
+- No AI provider key was configured. No real model request, Vercel deployment, or live browser/iPad end-to-end test was performed.
+- **Pre-production gates:** test on student iPads; verify original 35 scene data and photo alignment; run Node smoke suite; calibrate AI feedback with teacher scores; set up production-grade authentication, a persistent quota and a fixed spending ceiling; confirm teacher privacy/parental consent policy for minors.
