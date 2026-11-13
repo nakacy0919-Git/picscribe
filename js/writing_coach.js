@@ -83,7 +83,22 @@
   function hintFor(stage) {
     var d = data(), focus = d.focus_hints || {};
     var group = stage <= 1 ? 'gist' : stage === 2 ? 'setting' : 'mood';
-    var list = focus[group] || [];
+    // The original café scene predates focus_hints and uses a different data schema.
+    var cafeHints = {
+      gist: [
+        {en:'A woman is sitting in a cafe.',ja:'女性がカフェに座っています。'},
+        {en:'She is drinking coffee.',ja:'彼女はコーヒーを飲んでいます。'}
+      ],
+      setting: [
+        {en:'A notebook is on the table.',ja:'テーブルの上にノートがあります。'},
+        {en:'She is sitting by a window.',ja:'窓のそばに座っています。'}
+      ],
+      mood: [
+        {en:'The cafe looks cozy and peaceful.',ja:'カフェは居心地がよく穏やかに見えます。'}
+      ]
+    };
+    var list = (focus[group] && focus[group].length ? focus[group] :
+      ((d.image_id==='cafe_woman.webp') ? cafeHints[group] : [])) || [];
     var index = stage === 1 ? 1 : 0;
     return list[index] || list[0] || null;
   }
