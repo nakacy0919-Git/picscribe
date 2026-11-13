@@ -195,8 +195,6 @@
     aiBox.appendChild(title);
     [
       ['総評', result.summary_ja],
-      ['改善した英文', result.corrected],
-      ['発展した英文', result.upgraded],
       ['次の一歩', result.next_step_ja]
     ].forEach(function(pair) {
       var p = document.createElement('p');
@@ -204,6 +202,9 @@
       aiBox.appendChild(p);
     });
     aiBox.classList.remove('hidden');
+    window.dispatchEvent(new CustomEvent('picscribe:ai-feedback',{detail:{
+      mode:'picture',result:result,draft:input.innerText,sceneId:sceneId
+    }}));
   }
   async function requestFeedback() {
     if (!input.innerText.trim()) { next.textContent = '英文を書いてから添削しましょう。'; return; }
