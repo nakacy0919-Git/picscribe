@@ -185,6 +185,14 @@
     var out = el('ps-ai-output'); out.replaceChildren();
     addText(out, 'AIによる参考評価', '英検公式の採点や合否判定ではありません');
     addText(out,'総評',result.summary_ja);
+    if(Number.isInteger(result.word_count)){
+      var range=Array.isArray(result.word_target)?result.word_target:null;
+      addText(out,'語数',String(result.word_count)+'語'+(range?'（指定 '+range[0]+'〜'+range[1]+'語・'+
+        (result.word_range_ok?'範囲内':'範囲外')+'）':''));
+    }
+    if(Number.isInteger(result.score_total))
+      addText(out,'学習用の参考点',String(result.score_total)+'/16（公式採点ではありません）');
+
     if (result.scores && result.scores.length) {
       result.scores.forEach(function(entry) {
         addText(out,entry.criterion + ' ' + entry.score + '/4',entry.reason_ja);
