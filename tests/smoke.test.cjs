@@ -21,20 +21,25 @@ test('index loads all new modules in dependency order',()=>{
   const html=read('index.html');
   const scripts=[...html.matchAll(/<script src="(js\/[^"]+)"/g)].map(m=>m[1]);
   for(const s of ['js/ai_client.js','js/writing_coach.js','js/writing_quests.js',
-    'js/eiken_practice.js','js/eiken_exam_mode.js','js/writing_portfolio.js']){
+    'js/eiken_practice.js','js/eiken_exam_mode.js','js/writing_portfolio.js',
+    'js/revision_workshop.js','js/teacher_calibration.js','js/picture_gallery.js']){
     assert.ok(scripts.includes(s),s);
     assert.ok(fs.existsSync(path.join(ROOT,s)),s);
   }
   assert.ok(scripts.indexOf('js/ai_client.js')<scripts.indexOf('js/writing_coach.js'));
   assert.ok(scripts.indexOf('js/writing_coach.js')<scripts.indexOf('js/writing_quests.js'));
   assert.ok(scripts.indexOf('js/eiken_practice.js')<scripts.indexOf('js/eiken_exam_mode.js'));
+  assert.ok(scripts.indexOf('js/mode_picture.js')<scripts.indexOf('js/picture_gallery.js'));
+  assert.ok(scripts.indexOf('js/eiken_practice.js')<scripts.indexOf('js/revision_workshop.js'));
+  assert.ok(scripts.indexOf('js/eiken_practice.js')<scripts.indexOf('js/teacher_calibration.js'));
   for(const [,link] of html.matchAll(/href="(css\/[^"]+\.css)"/g))
     assert.ok(fs.existsSync(path.join(ROOT,link)),link);
 });
 test('browser scripts and server API parse without syntax errors',()=>{
   for(const p of ['js/game_core.js','js/ui_focus.js','js/main.js','js/writing_coach.js',
     'js/writing_quests.js','js/writing_portfolio.js','js/eiken_practice.js',
-    'js/eiken_exam_mode.js','js/ai_client.js','api/writing-feedback.js']){
+    'js/eiken_exam_mode.js','js/ai_client.js','js/revision_workshop.js',
+    'js/teacher_calibration.js','js/picture_gallery.js','api/writing-feedback.js']){
     const source=read(p).replace('export default async function handler','async function handler');
     assert.doesNotThrow(()=>new Function(source),p);
   }
